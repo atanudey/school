@@ -19,15 +19,11 @@ class User extends CI_Controller {
 		parent::__construct();
 		$this->load->library(array('session'));
 		$this->load->helper(array('url'));
-		$this->load->model('user_model');
-		
+		$this->load->model('user_model');		
 	}
 	
-	
 	public function index() {
-		
 
-		
 	}
 	
 	/**
@@ -80,10 +76,8 @@ class User extends CI_Controller {
 				// send error to the view
 				$this->load->view('header');
 				$this->load->view('user/register/register', $data);
-				$this->load->view('footer');
-				
-			}
-			
+				$this->load->view('footer');				
+			}			
 		}
 		
 	}

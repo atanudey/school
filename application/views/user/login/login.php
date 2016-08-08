@@ -21,6 +21,13 @@
 			</div>
 			<?= form_open() ?>
 				<div class="form-group">
+					<label for="usertype">User Type</label>
+					<select class="form-control" id="user_type_id" name="user_type_id" placeholder="Enter an user type">
+						<option value="">Select user type</option>
+						<option value="2" selected>School</option>
+					</select>					
+				</div>
+				<div class="form-group">
 					<label for="username">Username</label>
 					<input type="text" class="form-control" id="username" name="username" placeholder="Your username">
 				</div>

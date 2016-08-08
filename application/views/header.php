@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Site title</title>
+	<title>Educare</title>
 	<meta name="description" content="">
 	<meta name="keywords" content="">
 	<meta name="author" content="">
@@ -50,7 +50,7 @@
 
 	<main id="site-content" role="main">
 		
-		<?php if (isset($_SESSION)) : ?>
+		<?php /*if (isset($_SESSION)) : ?>
 			<div class="container">
 				<div class="row">
 					<div class="col-md-12">
@@ -58,5 +58,5 @@
 					</div>
 				</div><!-- .row -->
 			</div><!-- .container -->
-		<?php endif; ?>
+		<?php endif;*/ ?>
 		

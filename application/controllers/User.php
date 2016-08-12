@@ -43,10 +43,10 @@ class User extends CI_Controller {
 		
 		// set validation rules
 		$this->form_validation->set_rules('user_type_id','User Type','trim|required');
-		$this->form_validation->set_rules('username', 'Username', 'trim|required|alpha_numeric|min_length[4]|is_unique[users.username]', array('is_unique' => 'This username already exists. Please choose another one.'));
+		$this->form_validation->set_rules('username', 'Username', 'trim|required|alpha_numeric|min_length[4]|is_unique[login.user_id]', array('is_unique' => 'This username already exists. Please choose another one.'));
 		$this->form_validation->set_rules('name','Name','trim|required');
 		$this->form_validation->set_rules('mob1','Mobile','trim|required|numeric');
-		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[users.email]');
+		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[login.email]');
 		$this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
 		$this->form_validation->set_rules('password_confirm', 'Confirm Password', 'trim|required|min_length[6]|matches[password]');				
 		$this->form_validation->set_rules('zipcode','Zip','trim|required|integer');
@@ -144,6 +144,7 @@ class User extends CI_Controller {
 
 					// set session user datas
 					$_SESSION['user']      = $user;
+					$_SESSION['logged_in']    = (bool)true;
 					
 					// user login ok
 					$this->load->view('header');
@@ -191,19 +192,10 @@ class User extends CI_Controller {
 				unset($_SESSION[$key]);
 			}
 			
-			// user logout ok
-			$this->load->view('header');
-			$this->load->view('user/logout/logout_success', $data);
-			$this->load->view('footer');
-			
-		} else {
-			
-			// there user was not logged in, we cannot logged him out,
-			// redirect him to site root
-			redirect('/');
-			
 		}
-		
+
+		// redirect him to site root
+		redirect('/');		
 	}
 	
 }

@@ -1,44 +1,55 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
-<div class="container">
-	<div class="row">
-		<?php if (validation_errors()) : ?>
-			<div class="col-md-12">
-				<div class="alert alert-danger" role="alert">
-					<?= validation_errors() ?>
+<!--body panel starts -->
+<div class="bodyPanel">
+	<div class="loginPanelOuter">
+		<h1>Login</h1>
+		<div class="loginPanelInner">
+			<?php if (validation_errors()) : ?>
+				<div class="col-md-12">
+					<div class="alert alert-danger" role="alert">
+						<?= validation_errors() ?>
+					</div>
 				</div>
-			</div>
-		<?php endif; ?>
-		<?php if (isset($error)) : ?>
-			<div class="col-md-12">
-				<div class="alert alert-danger" role="alert">
-					<?= $error ?>
+			<?php endif; ?>
+			<?php if (isset($error)) : ?>
+				<div class="col-md-12">
+					<div class="alert alert-danger" role="alert">
+						<?= $error ?>
+					</div>
 				</div>
-			</div>
-		<?php endif; ?>
-		<div class="col-md-12">
-			<div class="page-header">
-				<h1>Login</h1>
-			</div>
+			<?php endif; ?>
 			<?= form_open() ?>
-				<div class="form-group">
-					<label for="usertype">User Type</label>
-					<select class="form-control" id="user_type_id" name="user_type_id" placeholder="Enter an user type">
-						<option value="">Select user type</option>
-						<option value="2" selected>School</option>
-					</select>					
+				<div class="fldRow selectbox">
+					<div class="select-style">
+						<select id="user_type_id" name="user_type_id">
+							<option value="">User Type</option>
+							<option value="2">School</option>
+						</select>
+					</div>				
 				</div>
-				<div class="form-group">
-					<label for="username">Username</label>
-					<input type="text" class="form-control" id="username" name="username" placeholder="Your username">
+				<div class="fldRow">					
+					<input type="text" id="username" name="username" placeholder="Username">
 				</div>
-				<div class="form-group">
-					<label for="password">Password</label>
-					<input type="password" class="form-control" id="password" name="password" placeholder="Your password">
+				<div class="fldRow">					
+					<input type="password" id="password" name="password" placeholder="Password">
 				</div>
-				<div class="form-group">
-					<input type="submit" class="btn btn-default" value="Login">
+				<div class="fldRow">
+					<p><a href="#">Forgot  your password?</a>  |  <a href="#">Reset Password</a></p>
+				</div>
+				<div class="fldRow">
+					<button class="signInBtn">SIGN IN</button>
+				</div>
+				<div class="fldRow">
+					<p>You can reach us at : <a href="mailto:info@krpsolutions.co.in">info@krpsolutions.co.in</a></p>
+				</div>
+				<div class="btmBtns">
+					<div class="btmBtnsInner">
+						<a href="<?= base_url('register') ?>" class="signUpBtn">SIGN UP</a>
+						<a href="#" class="updateProfileBtn">UPDATE PROFILE</a>
+					</div>
 				</div>
 			</form>
 		</div>
-	</div><!-- .row -->
-</div><!-- .container -->
+	</div>
+</div>
+<!--body panel ends--> 

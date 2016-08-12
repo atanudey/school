@@ -1,110 +1,33 @@
--- phpMyAdmin SQL Dump
--- version 3.4.5
--- http://www.phpmyadmin.net
---
--- Host: localhost
--- Generation Time: Aug 08, 2016 at 10:00 PM
--- Server version: 5.5.16
--- PHP Version: 5.3.8
+-- -----------------------------------------------------
+-- Schema educare_db
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `educare_db` ;
+USE `educare_db` ;
 
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
+-- -----------------------------------------------------
+-- Table `educare_db`.`User_Type`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `educare_db`.`User_Type` ;
 
+CREATE TABLE IF NOT EXISTS `educare_db`.`User_Type` (
+  `ID` INT NOT NULL AUTO_INCREMENT,
+  `Type_Name` VARCHAR(20) NULL COMMENT '1. School\n2. Gurdian\n3. Agent\n4. Admin\n5. Company',
+  PRIMARY KEY (`ID`))
+ENGINE = InnoDB;
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+INSERT INTO `user_type` (`ID`, `Type_Name`) VALUES
+(1, 'Admin'),
+(2, 'School'),
+(3, 'Gurdian'),
+(4, 'Agent'),
+(5, 'Company');
 
---
--- Database: `educare_db`
---
+-- -----------------------------------------------------
+-- Table `educare_db`.`Login`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `educare_db`.`Login` ;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `candidate_type`
---
-
-CREATE TABLE IF NOT EXISTS `candidate_type` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `Type_Name` varchar(45) NOT NULL COMMENT 'Student/Staff',
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `ci_sessions`
---
-
-CREATE TABLE IF NOT EXISTS `ci_sessions` (
-  `id` varchar(40) NOT NULL,
-  `ip_address` varchar(45) NOT NULL,
-  `timestamp` int(10) unsigned NOT NULL DEFAULT '0',
-  `data` blob NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `ci_sessions_timestamp` (`timestamp`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `ci_sessions`
---
-
-INSERT INTO `ci_sessions` (`id`, `ip_address`, `timestamp`, `data`) VALUES
-('03241a2a110d549f33fcf1d491f8fd8e5c75901a', '::1', 1470682844, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437303638323735333b),
-('1a6ab650ef282b9bfc7bc6aac489a3d1ccbcee40', '::1', 1470679935, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437303637393839313b),
-('1e10b2d2343412c5f48b42f96689eb92803daade', '::1', 1470686350, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437303638363037303b757365727c4f3a383a22737464436c617373223a31373a7b733a323a224944223b733a313a2231223b733a343a224e616d65223b733a393a224174616e7520446579223b733a373a22557365725f4944223b733a353a226174616e75223b733a383a2250617373776f7264223b733a363a22677569746172223b733a383a2249735f41646d696e223b4e3b733a353a22456d61696c223b733a32303a226d726174616e7564657940676d61696c2e636f6d223b733a343a224d6f6231223b733a31303a2239303037353539373639223b733a373a2241646472657373223b733a32303a2231372f41204475726761204261726920526f6164223b733a343a2243697479223b733a373a224b6f6c6b617461223b733a353a225374617465223b733a31313a22576573742042656e67616c223b733a373a225a6970436f6465223b733a363a22373030303238223b733a393a225363686f6f6c5f4944223b733a313a2231223b733a31323a22557365725f547970655f4944223b733a313a2232223b733a31303a22637265617465645f6174223b733a31393a22323031362d30382d30382032313a31373a3437223b733a31303a22757064617465645f6174223b733a31393a22323031362d30382d30382032313a31373a3437223b733a393a2269735f616374697665223b733a313a2230223b733a31303a2269735f64656c65746564223b733a313a2230223b7d),
-('3e43714c41bd7260da61507ae3235881cda69472', '::1', 1470683867, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437303638333631313b),
-('78855c270e16ec339ada756798a7f4603dba0fa7', '::1', 1470684029, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437303638333935323b),
-('a6b05c1f1b19cd78f6d43a4f69e45131202753d5', '::1', 1470685210, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437303638343937323b),
-('af3b1fb2eb53f19ccc6d7d9c5e3b05539787461e', '::1', 1470677317, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437303637373330353b),
-('cba17e1e7a4369136e82e52d38a38067cd4ba701', '::1', 1470684515, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437303638343239323b),
-('d3d487d060753127706518ec0b5f45383616cee4', '::1', 1470681005, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437303638303738373b),
-('de1d1f16871240e83e4f3fd282f2921bf2fb5135', '::1', 1470685960, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437303638353638313b757365725f69647c693a303b757365726e616d657c733a303a22223b6c6f676765645f696e7c623a313b69735f636f6e6669726d65647c623a303b69735f61646d696e7c623a303b757365727c4f3a383a22737464436c617373223a31373a7b733a323a224944223b733a313a2232223b733a343a224e616d65223b733a393a224174616e7520446579223b733a373a22557365725f4944223b733a353a2273656e7475223b733a383a2250617373776f7264223b733a363a22677569746172223b733a383a2249735f41646d696e223b4e3b733a353a22456d61696c223b733a32303a226d726174616e7564657940676d61696c2e636f6d223b733a343a224d6f6231223b733a31303a2238383230363130303934223b733a373a2241646472657373223b733a32303a2231372f41204475726761204261726920526f6164223b733a343a2243697479223b733a373a224b6f6c6b617461223b733a353a225374617465223b733a31313a22576573742042656e67616c223b733a373a225a6970436f6465223b733a363a22373030303238223b733a393a225363686f6f6c5f4944223b733a313a2231223b733a31323a22557365725f547970655f4944223b733a313a2232223b733a31303a22637265617465645f6174223b733a31393a22323031362d30382d30382032313a32303a3236223b733a31303a22757064617465645f6174223b733a31393a22323031362d30382d30382032313a32303a3236223b733a393a2269735f616374697665223b733a313a2230223b733a31303a2269735f64656c65746564223b733a313a2230223b7d),
-('e638384de1af8126416c28fa8d7b12d2a7b4215c', '::1', 1470679825, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437303637393532363b),
-('e7f041d5b2b0194687b58e87d9c5b49c8ff43bba', '::1', 1470681465, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437303638313338343b),
-('ecb63c2bb1090ddeb7add0b4644f7bdf029e565d', '::1', 1470684923, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437303638343634313b),
-('f61eaedb02aa0c78840fc59ab6fba9d9a5e6576c', '::1', 1470678836, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437303637383736373b),
-('ff784b9d599789849088d4c1a514a06ec899cb92', '::1', 1470685592, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437303638353330313b757365725f69647c693a303b757365726e616d657c733a303a22223b6c6f676765645f696e7c623a313b69735f636f6e6669726d65647c623a303b69735f61646d696e7c623a303b757365727c4f3a383a22737464436c617373223a31373a7b733a323a224944223b733a313a2232223b733a343a224e616d65223b733a393a224174616e7520446579223b733a373a22557365725f4944223b733a353a2273656e7475223b733a383a2250617373776f7264223b733a363a22677569746172223b733a383a2249735f41646d696e223b4e3b733a353a22456d61696c223b733a32303a226d726174616e7564657940676d61696c2e636f6d223b733a343a224d6f6231223b733a31303a2238383230363130303934223b733a373a2241646472657373223b733a32303a2231372f41204475726761204261726920526f6164223b733a343a2243697479223b733a373a224b6f6c6b617461223b733a353a225374617465223b733a31313a22576573742042656e67616c223b733a373a225a6970436f6465223b733a363a22373030303238223b733a393a225363686f6f6c5f4944223b733a313a2231223b733a31323a22557365725f547970655f4944223b733a313a2232223b733a31303a22637265617465645f6174223b733a31393a22323031362d30382d30382032313a32303a3236223b733a31303a22757064617465645f6174223b733a31393a22323031362d30382d30382032313a32303a3236223b733a393a2269735f616374697665223b733a313a2230223b733a31303a2269735f64656c65746564223b733a313a2230223b7d);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `class`
---
-
-CREATE TABLE IF NOT EXISTS `class` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `Name` varchar(20) NOT NULL,
-  `Section` varchar(20) NOT NULL,
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `event`
---
-
-CREATE TABLE IF NOT EXISTS `event` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `Name` varchar(60) NOT NULL,
-  `Description` varchar(600) DEFAULT NULL,
-  `Message` varchar(160) DEFAULT NULL,
-  `Date` date DEFAULT NULL,
-  `School_ID` varchar(7) NOT NULL,
-  PRIMARY KEY (`ID`),
-  KEY `fk_Event_School1_idx` (`School_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `login`
---
-
-CREATE TABLE IF NOT EXISTS `login` (
+CREATE TABLE `educare_db`.`login` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `Name` varchar(60) DEFAULT NULL,
   `User_ID` varchar(20) NOT NULL,
@@ -118,13 +41,19 @@ CREATE TABLE IF NOT EXISTS `login` (
   `ZipCode` bigint(20) DEFAULT NULL,
   `School_ID` varchar(7) DEFAULT NULL COMMENT 'School_ID field will be blank or ''0'', if the user type is not school.',
   `User_Type_ID` int(11) NOT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT '0',
-  `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ID`),
-  KEY `fk_Login_User_Type1_idx` (`User_Type_ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+  KEY `fk_Login_User_Type1_idx` (`User_Type_ID`),
+  CONSTRAINT `fk_Login_User_Type1` FOREIGN KEY (`User_Type_ID`) REFERENCES `educare_db`.`user_type` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Alter table for `login`
+--
+
+ALTER TABLE  `login` ADD  `created_at` DATETIME NOT NULL AFTER  `User_Type_ID` ,
+ADD  `updated_at` DATETIME NOT NULL AFTER  `created_at` ,
+ADD  `is_active` TINYINT( 1 ) NOT NULL DEFAULT  '0' AFTER  `updated_at` ,
+ADD  `is_deleted` TINYINT( 1 ) NOT NULL DEFAULT  '0' AFTER  `is_active`;
 
 --
 -- Dumping data for table `login`
@@ -136,155 +65,208 @@ INSERT INTO `login` (`ID`, `Name`, `User_ID`, `Password`, `Is_Admin`, `Email`, `
 
 -- --------------------------------------------------------
 
---
--- Table structure for table `school`
---
+-- -----------------------------------------------------
+-- Table `educare_db`.`School`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `educare_db`.`School` ;
 
-CREATE TABLE IF NOT EXISTS `school` (
-  `ID` varchar(7) NOT NULL COMMENT 'Like: ''SC00001''',
-  `School_Name` varchar(60) NOT NULL,
-  `Description` varchar(1000) CHARACTER SET utf8 DEFAULT NULL,
-  `Address1` varchar(45) DEFAULT NULL,
-  `Address2` varchar(45) DEFAULT NULL,
-  `State` varchar(30) DEFAULT NULL,
-  `Pin` varchar(7) DEFAULT NULL,
-  `No_Of_Students` int(11) DEFAULT NULL,
-  `No_Of_Machines` int(11) DEFAULT NULL,
-  `Event_Active` tinyint(4) DEFAULT '0' COMMENT '1 or 0',
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+CREATE TABLE IF NOT EXISTS `educare_db`.`School` (
+  `ID` VARCHAR(7) NOT NULL COMMENT 'Like: \'SC00001\'',
+  `School_Name` VARCHAR(60) NOT NULL,
+  `Description` NVARCHAR(1000) NULL,
+  `Address1` VARCHAR(45) NULL,
+  `Address2` VARCHAR(45) NULL,
+  `State` VARCHAR(30) NULL,
+  `Pin` VARCHAR(7) NULL,
+  `No_Of_Students` INT(11) NULL,
+  `No_Of_Machines` INT(11) NULL,
+  `Event_Active` TINYINT(4) NULL DEFAULT 0 COMMENT '1 or 0',
+  PRIMARY KEY (`ID`))
+ENGINE = InnoDB;
 
---
--- Dumping data for table `school`
---
+INSERT INTO `school` (`ID`, `School_Name`, `Description`, `Address1`, `Address2`, `State`, `Pin`, `No_Of_Students`, `No_Of_Machines`, `Event_Active`) VALUES ('', 'South Suburban School (Main)', 'Established in 1874. Sir Ashutosh Mukherjee was a student of this school.', 'Bhowanipore', 'Kolkata', 'West Bengal', '700025', '2500', '100', '1');
 
-INSERT INTO `school` (`ID`, `School_Name`, `Description`, `Address1`, `Address2`, `State`, `Pin`, `No_Of_Students`, `No_Of_Machines`, `Event_Active`) VALUES
-('', 'South Suburban School (Main)', 'Established in 1874', 'Bhownipore', 'Harish Mukherjee Road', 'West Bengal', '700025', 2500, 500, 1);
+-- -----------------------------------------------------
+-- Table `educare_db`.`Class`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `educare_db`.`Class` ;
 
--- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `educare_db`.`Class` (
+  `ID` INT(11) NOT NULL AUTO_INCREMENT,
+  `Name` VARCHAR(20) NOT NULL,
+  `Section` VARCHAR(20) NOT NULL,
+  PRIMARY KEY (`ID`))
+ENGINE = InnoDB;
 
---
--- Table structure for table `school_pointofcontact`
---
+-- -----------------------------------------------------
+-- Table `educare_db`.`School_PointOfContact`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `educare_db`.`School_PointOfContact` ;
 
-CREATE TABLE IF NOT EXISTS `school_pointofcontact` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `PointOfContact_Name` varchar(60) NOT NULL,
-  `Address` varchar(60) DEFAULT NULL,
-  `Mob1` varchar(15) DEFAULT NULL,
-  `Mob2` varchar(15) DEFAULT NULL,
-  `Email_ID` varchar(60) DEFAULT NULL,
-  `School_ID` varchar(7) NOT NULL,
+CREATE TABLE IF NOT EXISTS `educare_db`.`School_PointOfContact` (
+  `ID` INT(11) NOT NULL AUTO_INCREMENT,
+  `PointOfContact_Name` VARCHAR(60) NOT NULL,
+  `Address` VARCHAR(60) NULL,
+  `Mob1` VARCHAR(15) NULL,
+  `Mob2` VARCHAR(15) NULL,
+  `Email_ID` VARCHAR(60) NULL,
+  `School_ID` VARCHAR(7) NOT NULL,
   PRIMARY KEY (`ID`),
-  KEY `fk_School_PointOfContact_School1_idx` (`School_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+  CONSTRAINT `fk_School_PointOfContact_School1`
+    FOREIGN KEY (`School_ID`)
+    REFERENCES `educare_db`.`School` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
 
--- --------------------------------------------------------
+CREATE INDEX `fk_School_PointOfContact_School1_idx` ON `educare_db`.`School_PointOfContact` (`School_ID` ASC);
+
+-- -----------------------------------------------------
+-- Table `educare_db`.`Candidate_Type`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `educare_db`.`Candidate_Type` ;
+
+CREATE TABLE IF NOT EXISTS `educare_db`.`Candidate_Type` (
+  `ID` INT(11) NOT NULL AUTO_INCREMENT,
+  `Type_Name` VARCHAR(45) NOT NULL COMMENT 'Student/Staff' ,
+  PRIMARY KEY (`ID`))
+ENGINE = InnoDB;
 
 --
--- Table structure for table `screen_master`
+-- Table structure for table `ci_sessions`
 --
 
-CREATE TABLE IF NOT EXISTS `screen_master` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `Screen_Name` varchar(40) NOT NULL,
+CREATE TABLE IF NOT EXISTS `ci_sessions` (
+  `id` varchar(40) NOT NULL,
+  `ip_address` varchar(45) NOT NULL,
+  `timestamp` int(10) unsigned NOT NULL DEFAULT '0',
+  `data` blob NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `ci_sessions_timestamp` (`timestamp`)
+) ENGINE=InnoDB;
+
+-- -----------------------------------------------------
+-- Table `educare_db`.`SC00001_Candidate`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `educare_db`.`SC00001_Candidate` ;
+
+CREATE TABLE IF NOT EXISTS `educare_db`.`SC00001_Candidate` (
+  `Candidate_ID` INT(11) NOT NULL,
+  `CARD_NO` VARCHAR(20) NOT NULL,
+  `Roll_No` INT(11) NOT NULL,
+  `Candidate_Name` VARCHAR(45) NOT NULL,
+  `Address1` VARCHAR(60) NULL,
+  `Address2` VARCHAR(60) NULL,
+  `State` VARCHAR(30) NULL,
+  `Pin` VARCHAR(7) NULL,
+  `Guardian_Name` VARCHAR(45) NOT NULL,
+  `Email_ID` VARCHAR(60) NULL,
+  `Mob1` VARCHAR(15) NOT NULL,
+  `Mob2` VARCHAR(15) NULL,
+  `Blood_Group` VARCHAR(10) NULL,
+  `Gender` VARCHAR(6) NULL,
+  `Age` SMALLINT(6) NULL,
+  `Is_Admin` TINYINT(4) NULL DEFAULT 0,
+  `IN_OUT` VARCHAR(3) NULL COMMENT 'IN/OUT',
+  `School_ID` VARCHAR(7) NOT NULL,
+  `Class_ID` INT(11) NOT NULL,
+  `Candidate_Type_ID` INT(11) NOT NULL,
+  PRIMARY KEY (`Candidate_ID`),
+  INDEX `fk_SC00001_Candidate_School1_idx` (`School_ID` ASC),
+  INDEX `fk_SC00001_Candidate_Class1_idx` (`Class_ID` ASC),
+  INDEX `fk_SC00001_Candidate_Candidate_Type1_idx` (`Candidate_Type_ID` ASC),
+  CONSTRAINT `fk_SC00001_Candidate_School1`
+    FOREIGN KEY (`School_ID`)
+    REFERENCES `educare_db`.`School` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_SC00001_Candidate_Class1`
+    FOREIGN KEY (`Class_ID`)
+    REFERENCES `educare_db`.`Class` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_SC00001_Candidate_Candidate_Type1`
+    FOREIGN KEY (`Candidate_Type_ID`)
+    REFERENCES `educare_db`.`Candidate_Type` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `educare_db`.`SC00001_Attendance`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `educare_db`.`SC00001_Attendance` ;
+
+CREATE TABLE IF NOT EXISTS `educare_db`.`SC00001_Attendance` (
+  `ID` INT(11) NOT NULL AUTO_INCREMENT,
+  `Date` DATE NOT NULL,
+  `Time` TIME NOT NULL,
+  `IN_OUT` VARCHAR(3) NULL COMMENT 'IN/OUT',
+  `SC00001_Candidate_ID` INT(11) NOT NULL,
   PRIMARY KEY (`ID`),
-  UNIQUE KEY `ID_UNIQUE` (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+  INDEX `fk_SC00001_Attendance_SC00001_Candidate1_idx` (`SC00001_Candidate_ID` ASC),
+  CONSTRAINT `fk_SC00001_Attendance_SC00001_Candidate1`
+    FOREIGN KEY (`SC00001_Candidate_ID`)
+    REFERENCES `educare_db`.`SC00001_Candidate` (`Candidate_ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
 
--- --------------------------------------------------------
+-- -----------------------------------------------------
+-- Table `educare_db`.`Event`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `educare_db`.`Event` ;
 
---
--- Table structure for table `users`
---
-
-CREATE TABLE IF NOT EXISTS `users` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `user_type_id` int(10) unsigned NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `mobile` int(11) NOT NULL,
-  `username` varchar(255) NOT NULL DEFAULT '',
-  `email` varchar(255) NOT NULL DEFAULT '',
-  `password` varchar(255) NOT NULL DEFAULT '',
-  `address` text NOT NULL,
-  `city` varchar(255) NOT NULL,
-  `state` varchar(255) NOT NULL,
-  `zip` int(6) NOT NULL,
-  `avatar` varchar(255) DEFAULT 'default.jpg',
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime DEFAULT NULL,
-  `is_admin` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `is_confirmed` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `user_privilege`
---
-
-CREATE TABLE IF NOT EXISTS `user_privilege` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `Is_Active` tinyint(4) DEFAULT '0',
-  `Remarks` varchar(45) DEFAULT NULL,
-  `Screen_Master_ID` int(11) NOT NULL,
-  `User_Type_ID` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `educare_db`.`Event` (
+  `ID` INT(11) NOT NULL AUTO_INCREMENT,
+  `Name` VARCHAR(60) NOT NULL,
+  `Description` VARCHAR(600) NULL,
+  `Message` VARCHAR(160) NULL,
+  `Date` DATE NULL,
+  `School_ID` VARCHAR(7) NOT NULL,
   PRIMARY KEY (`ID`),
-  KEY `fk_User_Privilege_Screen_Master1_idx` (`Screen_Master_ID`),
-  KEY `fk_User_Privilege_User_Type1_idx` (`User_Type_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+  INDEX `fk_Event_School1_idx` (`School_ID` ASC),
+  CONSTRAINT `fk_Event_School1`
+    FOREIGN KEY (`School_ID`)
+    REFERENCES `educare_db`.`School` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
 
--- --------------------------------------------------------
+-- CREATE INDEX `fk_Event_School1_idx` ON `educare_db`.`Event` (`School_ID` ASC);
 
---
--- Table structure for table `user_type`
---
+-- -----------------------------------------------------
+-- Table `educare_db`.`Screen_Master`
+-- -----------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `user_type` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `Type_Name` varchar(20) DEFAULT NULL COMMENT '1. School\n2. Gurdian\n3. Agent\n4. Admin\n5. Company',
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+CREATE TABLE IF NOT EXISTS `educare_db`.`Screen_Master` (
+  `ID` INT(11) NOT NULL AUTO_INCREMENT,
+  `Screen_Name` VARCHAR(40) NOT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE INDEX `ID_UNIQUE` (`ID` ASC))
+ENGINE = InnoDB;
 
---
--- Dumping data for table `user_type`
---
+-- -----------------------------------------------------
+-- Table `educare_db`.`User_Privilege`
+-- -----------------------------------------------------
 
-INSERT INTO `user_type` (`ID`, `Type_Name`) VALUES
-(1, 'Administrator'),
-(2, 'School');
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `event`
---
-ALTER TABLE `event`
-  ADD CONSTRAINT `fk_Event_School1` FOREIGN KEY (`School_ID`) REFERENCES `school` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
---
--- Constraints for table `login`
---
-ALTER TABLE `login`
-  ADD CONSTRAINT `fk_Login_User_Type1` FOREIGN KEY (`User_Type_ID`) REFERENCES `user_type` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
---
--- Constraints for table `school_pointofcontact`
---
-ALTER TABLE `school_pointofcontact`
-  ADD CONSTRAINT `fk_School_PointOfContact_School1` FOREIGN KEY (`School_ID`) REFERENCES `school` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
---
--- Constraints for table `user_privilege`
---
-ALTER TABLE `user_privilege`
-  ADD CONSTRAINT `fk_User_Privilege_Screen_Master1` FOREIGN KEY (`Screen_Master_ID`) REFERENCES `screen_master` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_User_Privilege_User_Type1` FOREIGN KEY (`User_Type_ID`) REFERENCES `user_type` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+CREATE TABLE IF NOT EXISTS `educare_db`.`User_Privilege` (
+  `ID` INT(11) NOT NULL AUTO_INCREMENT,
+  `Is_Active` TINYINT(4) NULL DEFAULT 0,
+  `Remarks` VARCHAR(45) NULL,
+  `Screen_Master_ID` INT(11) NOT NULL,
+  `User_Type_ID` INT NOT NULL,
+  PRIMARY KEY (`ID`),
+  INDEX `fk_User_Privilege_Screen_Master1_idx` (`Screen_Master_ID` ASC),
+  INDEX `fk_User_Privilege_User_Type1_idx` (`User_Type_ID` ASC),
+  CONSTRAINT `fk_User_Privilege_Screen_Master1`
+    FOREIGN KEY (`Screen_Master_ID`)
+    REFERENCES `educare_db`.`Screen_Master` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_User_Privilege_User_Type1`
+    FOREIGN KEY (`User_Type_ID`)
+    REFERENCES `educare_db`.`User_Type` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;

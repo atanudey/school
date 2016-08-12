@@ -1,11 +1,11 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
-<div class="container">
-	<div class="row">
-		<div class="col-md-12">
-			<div class="page-header">
-				<h1>Thank you for registering your new account!</h1>
-			</div>
+<!--body panel starts -->
+<div class="bodyPanel">
+	<div class="loginPanelOuter">
+		<h1>Thank you for registering with Educare!</h1>
+		<div>
 			<p>You have successfully register. Please check your email inbox to confirm your email address.</p>
 		</div>
-	</div><!-- .row -->
-</div><!-- .container -->
+	</div><!-- .loginPanelOuter -->
+</div>
+<!--body panel ends--> 

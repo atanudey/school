@@ -1,13 +1,8 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
-	</main><!-- #site-content -->
-
-	<footer id="site-footer" role="contentinfo">
-	</footer><!-- #site-footer -->
-
-	<!-- js -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-	<script src="<?= base_url('assets/js/bootstrap.min.js') ?>"></script>
-	<script src="<?= base_url('assets/js/script.js') ?>"></script>
-
+<!--footer starts -->
+    <div class="footer">
+    	<p>Copyright &copy; 2016 KRP Educare. All Rights Reserved. Powered By : <span><a href="#"><img src="<?= base_url('assets/images/footer-logo.png') ?>" /></a></span></p>
+    </div>
+    <!--footer ends -->
 </body>
 </html>

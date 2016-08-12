@@ -1,0 +1,31 @@
+@charset "utf-8";
+/* CSS Document */
+@media (max-width: 768px) {
+.theme1 .rightContact,
+.theme2 .rightContact,
+.theme3 .rightContact{
+	text-align:left;
+	padding-top:15px;
+	}
+}
+@media (max-width: 500px) {
+.theme1 .btmBtnsInner .signUpBtn,
+.theme2 .btmBtnsInner .signUpBtn,
+.theme3 .btmBtnsInner .signUpBtn{
+	float:none;
+	width:100%;
+	margin-bottom:10px;
+	}
+.theme1 .btmBtnsInner .updateProfileBtn,
+.theme2 .btmBtnsInner .updateProfileBtn,
+.theme3 .btmBtnsInner .updateProfileBtn{
+	float:none;
+	width:100%;
+}
+.theme1 .loginPanelInner,
+.theme2 .loginPanelInner,
+.theme3 .loginPanelInner{
+	padding:25px;
+}
+
+}

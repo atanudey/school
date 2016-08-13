@@ -5,7 +5,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
 <title>KRP Educare</title>
+<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-1.12.3.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
 <link href="<?= base_url('assets/css/bootstrap.min.css') ?>" rel="stylesheet" type="text/css" />
+<link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css" />
 <link href="<?= base_url('assets/css/style.css') ?>" rel="stylesheet" type="text/css" />
 <link href="<?= base_url('assets/css/responsive-style.css') ?>" rel="stylesheet" type="text/css" />
 <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,500,700,900,900italic' rel='stylesheet' type='text/css'>
@@ -24,7 +28,9 @@
 				<?php if (!empty($_SESSION['user'])) { ?>
 				<div>
 					<ul>
-						<?php if (isset($_SESSION['user']) && $_SESSION['logged_in'] === true) { ?>							
+						<?php if (isset($_SESSION['user']) && $_SESSION['logged_in'] === true) { ?>
+							<li><a href="<?= base_url('school') ?>">School</a><li>
+							<li><a href="<?= base_url('report') ?>">View Report</a><li>							
 							<li><a href="<?= base_url('logout') ?>">Logout</a></li>
 						<?php } ?>							
 					</ul>

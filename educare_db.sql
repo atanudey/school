@@ -274,14 +274,3 @@ ENGINE = InnoDB;
 
 ALTER TABLE `educare_db`.`school` 
 ADD COLUMN `School_ID` VARCHAR(7) NULL AFTER `Event_Active`;
-
-ALTER TABLE `educare_db`.`sc00001_candidate` 
-ADD INDEX `fk_SC00001_Candidate_School1_idx` (`School_ID` ASC),
-DROP INDEX `fk_SC00001_Candidate_School1_idx` ;
-
-ALTER TABLE `educare_db`.`event` 
-ADD INDEX `fk_Event_School1_idx` (`School_ID` ASC),
-DROP INDEX `fk_Event_School1_idx` ;
-
-ALTER TABLE `educare_db`.`school` 
-CHANGE COLUMN `ID` `ID` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Like: \'SC00001\'' ;

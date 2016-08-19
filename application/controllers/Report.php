@@ -4,12 +4,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Report extends CI_Controller {
 
 	function __construct() {		
-		parent::__construct();
-		$this->load->helper(array('url'));
+		parent::__construct();		
 	}
 	
-	function index() {		
-		$this->reporticolib->generate();		
+	function index() {				
+		$this->load->template('report/index');
 	}
+
+	function view() {}
 }
 ?>

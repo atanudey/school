@@ -29,6 +29,6 @@
  * @version $Id: index.php,v 1.8 2014/05/17 15:12:31 peter Exp $
  */
 
-header("Location: run.php?project=admin&execute_mode=ADMIN&clear_session=1");
+ header("Location: run.php?project=admin&execute_mode=ADMIN&clear_session=1");
 
 ?>

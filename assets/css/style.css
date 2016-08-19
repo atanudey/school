@@ -1,5 +1,5 @@
 @charset "utf-8";
-
+/* CSS Document */
 
 /*-------------Global Style----------------*/
 * {margin: 0; padding: 0;}
@@ -33,10 +33,9 @@ img {
 address{color:#fff;}
 input, select, textarea, button {
     margin: 0;
-    border: none;
+    /*border: none;*/
     padding: 0;
-    outline: none;
-    -webkit-appearance:none;
+    /*outline: none;*/
 }
 input[type=submit], button {cursor: pointer;}
 a{ text-decoration: none; outline: none!important;}
@@ -65,13 +64,20 @@ h1,h2,h3,h4,h5,h6,p{
 body{
 	font-family: 'Roboto', sans-serif;
 }
-
+.logo{
+	padding-top:1px;
+	}
 .theme1 .topPanel{
 	background:#fff;
 	padding:20px 0;
 	}
 .theme1 .rightContact{
 	text-align:right;
+	}
+.theme1 .rightContact p{
+	font-size:13px;
+	line-height:19px;
+	color:#000;
 	}
 .theme1 .rightContact p a{
 	color:#000;
@@ -179,6 +185,7 @@ body{
 	display:block;
 	width:100%;
 	box-shadow:0 2px 2px rgba(0,0,0,0.5);
+	transition:all 0.5s ease-in;
 	}
 .theme1 .signInBtn:hover{
 	background:#e0e0e0;
@@ -208,6 +215,7 @@ body{
 	text-align:center;
 	float:left;
 	text-transform:uppercase;
+	transition:all 0.5s ease-in;
 	}
 .theme1 .btmBtnsInner .signUpBtn:hover{
 	background:#0b7a78;
@@ -229,6 +237,7 @@ body{
 	text-align:center;
 	float:right;
 	text-transform:uppercase;
+	transition:all 0.5s ease-in;
 	}
 .theme1 .btmBtnsInner .updateProfileBtn:hover{
 	background:#0e9262;
@@ -259,8 +268,13 @@ body{
 
 .theme1 .footer{
 	background:#fff;
-	padding:25px 0;
+	padding:25px 10px;
 	text-align:center;
+	}
+.theme1 .footer p{
+	font-size:13px;
+	line-height:19px;
+	color:#212121;
 	}
 .theme1 .footer p span{
 	display:inline-table;
@@ -282,6 +296,11 @@ body{
 	}
 .theme2 .rightContact{
 	text-align:right;
+	}
+.theme2 .rightContact p{
+	font-size:13px;
+	line-height:19px;
+	color:#000;
 	}
 .theme2 .rightContact p a{
 	color:#000;
@@ -389,6 +408,7 @@ color:#fff !important;
 	display:block;
 	width:100%;
 	box-shadow:0 2px 2px rgba(0,0,0,0.5);
+	transition:all 0.5s ease-in;
 	}
 .theme2 .signInBtn:hover{
 	background:#e0e0e0;
@@ -418,6 +438,7 @@ color:#fff !important;
 	text-align:center;
 	float:left;
 	text-transform:uppercase;
+	transition:all 0.5s ease-in;
 	}
 .theme2 .btmBtnsInner .signUpBtn:hover{
 	background:#081f5a;
@@ -439,6 +460,7 @@ color:#fff !important;
 	text-align:center;
 	float:right;
 	text-transform:uppercase;
+	transition:all 0.5s ease-in;
 	}
 .theme2 .btmBtnsInner .updateProfileBtn:hover{
 	background:#ce2020;
@@ -469,8 +491,13 @@ color:#fff !important;
 
 .theme2 .footer{
 	background:#fff;
-	padding:25px 0;
+	padding:25px 10px;
 	text-align:center;
+	}
+.theme2 .footer p{
+	font-size:13px;
+	line-height:19px;
+	color:#212121;
 	}
 .theme2 .footer p span{
 	display:inline-table;
@@ -492,6 +519,11 @@ body{
 	}
 .theme3 .rightContact{
 	text-align:right;
+	}
+.theme3 .rightContact p{
+	font-size:13px;
+	line-height:19px;
+	color:#000;
 	}
 .theme3 .rightContact p a{
 	color:#000;
@@ -599,6 +631,7 @@ color:#fff !important;
 	display:block;
 	width:100%;
 	box-shadow:0 2px 2px rgba(0,0,0,0.5);
+	transition:all 0.5s ease-in;
 	}
 .theme3 .signInBtn:hover{
 	background:#e0e0e0;
@@ -628,6 +661,7 @@ color:#fff !important;
 	text-align:center;
 	float:left;
 	text-transform:uppercase;
+	transition:all 0.5s ease-in;
 	}
 .theme3 .btmBtnsInner .signUpBtn:hover{
 	background:#081f5a;
@@ -649,6 +683,7 @@ color:#fff !important;
 	text-align:center;
 	float:right;
 	text-transform:uppercase;
+	transition:all 0.5s ease-in;
 	}
 .theme3 .btmBtnsInner .updateProfileBtn:hover{
 	background:#ce2020;
@@ -679,8 +714,13 @@ color:#fff !important;
 
 .theme3 .footer{
 	background:#fff;
-	padding:25px 0;
+	padding:25px 10px;
 	text-align:center;
+	}
+.theme3 .footer p{
+	font-size:13px;
+	line-height:19px;
+	color:#212121;
 	}
 .theme3 .footer p span{
 	display:inline-table;
@@ -691,3 +731,187 @@ color:#fff !important;
 
 /*-------------Theme 3 Style Ends----------------*/
 
+
+/*------------Attendence Report Starts-----------------*/
+.bannerPic img{
+	width:100%;
+	max-width:100%;
+	}
+.paddingBtm40{
+	padding-bottom:40px;
+	}
+.paddingBtm20{
+	padding-bottom:20px;
+	}
+.marginBtm40{
+	margin-bottom:40px;
+	}
+.rightHeading{
+	text-align:right;
+	}
+.reportPanel h2{
+	font-family: 'Roboto', sans-serif;
+	font-size:22px;
+	line-height:26px;
+	font-weight:normal;
+	color:#fff;
+	}
+.reportPanel h3{
+	font-family: 'Roboto', sans-serif;
+	font-size:17px;
+	line-height:21px;
+	font-weight:normal;
+	color:#fff;
+	}
+.reportWhiteBox{
+	background:#fff;
+	border-radius:5px;
+	margin-bottom:45px;
+	}
+.reportHeading{	
+	border-radius:5px;
+	padding:20px 40px;
+	background:#e9e7e1;
+	background: -webkit-linear-gradient(#fbfbfa, #e9e7e1); 
+	background: -o-linear-gradient(#fbfbfa, #e9e7e1);
+	background: -moz-linear-gradient(#fbfbfa, #e9e7e1);
+	background: linear-gradient(#fbfbfa, #e9e7e1);
+	border:1px solid #d4d4d4;
+	}
+.reportInner{
+	padding:20px 40px 0 40px;
+	}
+.borderdWhiteBox{
+	border:1px solid #dbdbdb;
+	border-radius:5px;
+	margin-bottom:40px;
+	}
+.reportBlockContent{
+	height:195px;
+	padding:20px;
+	overflow-x:hidden;
+	overflow:auto;
+	}
+.borderdWhiteBox .reportHeading{
+	border-top:none;
+	border-left:none;
+	border-right:none;
+	padding:15px 20px 10px;
+	}
+.fldRowInline:after, .fldRowInline:before {
+    content: "";
+    display: table;
+}
+.fldRowInline:after {
+    clear: both;
+}
+.fldRowInline input{
+	float:left;
+	margin-right:10px;
+	}
+.fldRowInline label{
+	float:left;
+	display:block;
+	padding-right:20px;
+	}
+.reportBlockContent .fldRowInline{
+	padding-bottom:10px;
+	}
+.boxPadding{
+	padding:30px 15px;
+	}
+.dateFld{
+	position:relative;
+	width:245px;
+	float:left;
+	padding-right:25px;
+	}
+.dateFld label{
+	float:left;
+	width:60px;
+	padding-right:10px;
+	}
+.dateFld input{
+	width:145px;
+	border:1px solid #ccc;
+	padding:5px;
+	border-radius:5px;
+	float:left;
+	}
+.theme1 .reportBtnsBtm .processBtn{
+	background:#102e7b;
+	padding:15px 20px;
+	font-size:14px;
+	line-height:22px;
+	color:#fff;
+	border:none;
+	border-radius:4px;
+	display:inline-block;
+	width:155px;
+	text-align:center;
+	text-transform:uppercase;
+	transition:all 0.5s ease-in;
+	}
+.theme1 .reportBtnsBtm{
+	text-align:center;
+	}
+.theme1 .reportBtnsBtm .processBtn:hover{
+	background:#081f5c;
+	}
+	
+	
+	
+.inlineDateFlds label{
+	padding-top:8px;
+	}
+.dateOption{
+	padding-top:6px;
+	float:left;
+	}
+.dateOption label{
+	padding-top:0;
+	}
+/*------------Attendence Report Ends-----------------*/
+
+.theme2 .reportBtnsBtm .processBtn{
+	background:#eb4141;
+	padding:15px 20px;
+	font-size:14px;
+	line-height:22px;
+	color:#fff;
+	border:none;
+	border-radius:4px;
+	display:inline-block;
+	width:155px;
+	text-align:center;
+	text-transform:uppercase;
+	transition:all 0.5s ease-in;
+	}
+.theme2 .reportBtnsBtm{
+	text-align:center;
+	}
+.theme2 .reportBtnsBtm .processBtn:hover{
+	background:#ce2020;
+	}
+	
+	
+.theme3 .reportBtnsBtm .processBtn{
+	background:#eb4141;
+	padding:15px 20px;
+	font-size:14px;
+	line-height:22px;
+	color:#fff;
+	border:none;
+	border-radius:4px;
+	display:inline-block;
+	width:155px;
+	text-align:center;
+	text-transform:uppercase;
+	transition:all 0.5s ease-in;
+	}
+.theme3 .reportBtnsBtm{
+	text-align:center;
+	}
+.theme3 .reportBtnsBtm .processBtn:hover{
+	background:#ce2020;
+	}

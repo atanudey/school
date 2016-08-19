@@ -18,9 +18,9 @@ class School extends CI_Controller
     function index()
     {
         $data['school'] = $this->school_model->get_all_school();
-        $this->load->view('header');
-        $this->load->view('school/index',$data);
-        $this->load->view('footer');
+        
+        $this->load->template('school/index',$data);
+        
     }
 
     /*
@@ -59,9 +59,9 @@ class School extends CI_Controller
         }
         else
         {
-            $this->load->view('header');
-            $this->load->view('school/add');
-            $this->load->view('footer');
+            
+            $this->load->template('school/add');
+            
         }
     }  
 
@@ -108,9 +108,9 @@ class School extends CI_Controller
             {   
                 $data['school'] = $this->school_model->get_school($ID);
     
-                $this->load->view('header');
-                $this->load->view('school/edit',$data);
-                $this->load->view('footer');
+                
+                $this->load->template('school/edit',$data);
+                
             }
         }
         else

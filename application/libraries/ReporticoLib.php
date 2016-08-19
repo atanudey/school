@@ -4,7 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class ReporticoLib {
 	
 	function __construct() {	
-		require_once APPPATH . "libraries/reportico44/reportico.php";
+		require_once APPPATH . "../assets/reportico44/reportico.php";
 	}
 
 	function generate() {

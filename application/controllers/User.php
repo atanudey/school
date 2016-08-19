@@ -52,9 +52,9 @@ class User extends CI_Controller {
 		if ($this->form_validation->run() === false) {
 			
 			// validation not ok, send validation errors to the view
-			$this->load->view('header');
-			$this->load->view('user/register/register', $data);
-			$this->load->view('footer');
+			
+			$this->load->template('user/register/register', $data);
+			
 			
 		} else {
 			
@@ -82,9 +82,9 @@ class User extends CI_Controller {
 			if ($this->user_model->create_user($params)) {
 				
 				// user creation ok
-				$this->load->view('header');
-				$this->load->view('user/register/register_success', $data);
-				$this->load->view('footer');
+				
+				$this->load->template('user/register/register_success', $data);
+				
 				
 			} else {
 				
@@ -92,9 +92,9 @@ class User extends CI_Controller {
 				$data->error = 'There was a problem creating your new account. Please try again.';
 				
 				// send error to the view
-				$this->load->view('header');
-				$this->load->view('user/register/register', $data);
-				$this->load->view('footer');				
+				
+				$this->load->template('user/register/register', $data);
+								
 			}			
 		}
 		
@@ -124,9 +124,9 @@ class User extends CI_Controller {
 			if ($this->form_validation->run() == false) {
 				
 				// validation not ok, send validation errors to the view
-				$this->load->view('header');
-				$this->load->view('user/login/login');
-				$this->load->view('footer');
+				
+				$this->load->template('user/login/login');
+				
 				
 			} else {
 				
@@ -145,9 +145,9 @@ class User extends CI_Controller {
 					$_SESSION['logged_in']    = (bool)true;
 					
 					// user login ok
-					$this->load->view('header');
-					$this->load->view('user/login/login_success', $data);
-					$this->load->view('footer');
+					
+					$this->load->template('user/login/login_success', $data);
+					
 					
 				} else {
 					
@@ -155,9 +155,9 @@ class User extends CI_Controller {
 					$data->error = 'Wrong username or password.';
 					
 					// send error to the view
-					$this->load->view('header');
-					$this->load->view('user/login/login', $data);
-					$this->load->view('footer');
+					
+					$this->load->template('user/login/login', $data);
+					
 					
 				}
 				
@@ -165,9 +165,9 @@ class User extends CI_Controller {
 		} else {
 
 			// user login ok
-			$this->load->view('header');
-			$this->load->view('user/login/login_success');
-			$this->load->view('footer');
+			
+			$this->load->template('user/login/login_success');
+			
 		}
 		
 	}

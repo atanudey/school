@@ -274,3 +274,5 @@ ENGINE = InnoDB;
 
 ALTER TABLE `educare_db`.`school` 
 ADD COLUMN `School_ID` VARCHAR(7) NULL AFTER `Event_Active`;
+
+ALTER TABLE `sc00001_candidate` CHANGE `Candidate_ID` `Candidate_ID` INT( 11 ) NOT NULL AUTO_INCREMENT;

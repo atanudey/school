@@ -23,7 +23,13 @@
 					<div class="select-style">
 						<select id="user_type_id" name="user_type_id">
 							<option value="">User Type</option>
-							<option value="2">School</option>
+							<?php 
+							foreach($all_user_type as $user_type)
+							{
+								$selected = "";							
+								echo '<option value="'.$user_type['ID'].'" $"."selected>'.$user_type['Type_Name'].'</option>';
+							} 
+							?>
 						</select>
 					</div>				
 				</div>

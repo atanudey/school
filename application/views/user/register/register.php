@@ -23,16 +23,28 @@
 					<span class="selectArrow"></span>
 					<div class="select-style">
 					<select id="user_type_id" name="user_type_id">
-						<option value="volvo">User Type</option>
-						<option value="2">School</option>
+						<option value="">User Type</option>
+						<?php 
+						foreach($all_user_type as $user_type)
+						{
+							$selected = "";							
+							echo '<option value="'.$user_type['ID'].'" $"."selected>'.$user_type['Type_Name'].'</option>';
+						} 
+						?>
 					</select>
 					</div>
 				</div>
 				<div class="fldRow selectBox">
 					<div class="select-style">
-					<select name="school_id" id="school_id">
-						<option value="volvo">School Name</option>
-						<option value="1">South Suburban School (Main)</option>
+					<select name="school_id" name="school_id">
+						<option value="">Select School</option>
+						<?php 
+						foreach($all_school as $school)
+						{
+							$selected = "";							
+							echo '<option value="'.$school['ID'].'" $"."selected>'.$school['School_Name'].'</option>';
+						} 
+						?>
 					</select>
 					</div>
 				</div>

@@ -7,6 +7,7 @@
 </script>
 
 <!--body panel starts -->
+<?php echo form_open('report/generate'); ?>
 <div class="bodyPanel reportPanel">
     <div class="container">
         <div class="row paddingBtm40">
@@ -20,7 +21,7 @@
 
         <div class="reportWhiteBox">
             <div class="reportHeading accordion">
-                <div class="fldRowInline"><input type="radio" name="report_type"> <h4>Students Report</h4></div>
+                <div class="fldRowInline"><input type="radio" name="report_type" value="student"> <h4>Students Report</h4></div>
             </div>
             <div class="reportInner panel" style="display:none">
                 <div class="paddingBtm20">
@@ -34,38 +35,38 @@
                     <div class="col-sm-6">
                         <div class="borderdWhiteBox">
                             <div class="reportHeading">
-                                <div class="checkbox-inline"> <label><input type="checkbox">If Class</label></div>
+                                <div class="checkbox-inline"> <label><input type="radio" name="filter_type" value="class">Class</label></div>
                             </div>
                             <div class="reportBlockContent">
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 1</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 2</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 3</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 4</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 5</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 6</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 7</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 8</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 9</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 10</label></div>
+                                <div class="fldRowInline"><input type="radio" name="class" value="1"> <label>Class 1</label></div>
+                                <div class="fldRowInline"><input type="radio" name="class" value="2"> <label>Class 2</label></div>
+                                <div class="fldRowInline"><input type="radio" name="class" value="3"> <label>Class 3</label></div>
+                                <div class="fldRowInline"><input type="radio" name="class" value="4"> <label>Class 4</label></div>
+                                <div class="fldRowInline"><input type="radio" name="class" value="5"> <label>Class 5</label></div>
+                                <div class="fldRowInline"><input type="radio" name="class" value="6"> <label>Class 6</label></div>
+                                <div class="fldRowInline"><input type="radio" name="class" value="7"> <label>Class 7</label></div>
+                                <div class="fldRowInline"><input type="radio" name="class" value="8"> <label>Class 8</label></div>
+                                <div class="fldRowInline"><input type="radio" name="class" value="9"> <label>Class 9</label></div>
+                                <div class="fldRowInline"><input type="radio" name="class" value="10"> <label>Class 10</label></div>
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-6">
                         <div class="borderdWhiteBox">
                             <div class="reportHeading">
-                                <div class="checkbox-inline"> <label><input type="checkbox"> Section</label></div>
+                                <div class="checkbox-inline"> <label><input type="radio" name="filter_type" value="section"> Section</label></div>
                             </div>
                             <div class="reportBlockContent">
-                                <div class="fldRowInline"><input type="checkbox"> <label>Section A</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Section B</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Section C</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Section D</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Section E</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Section F</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Section G</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Section H</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Section I</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Section J</label></div>
+                                <div class="fldRowInline"><input type="radio" name="section" value="A"> <label>Section A</label></div>
+                                <div class="fldRowInline"><input type="radio" name="section" value="B"> <label>Section B</label></div>
+                                <div class="fldRowInline"><input type="radio" name="section" value="C"> <label>Section C</label></div>
+                                <div class="fldRowInline"><input type="radio" name="section" value="D"> <label>Section D</label></div>
+                                <div class="fldRowInline"><input type="radio" name="section" value="E"> <label>Section E</label></div>
+                                <div class="fldRowInline"><input type="radio" name="section" value="F"> <label>Section F</label></div>
+                                <div class="fldRowInline"><input type="radio" name="section" value="G"> <label>Section G</label></div>
+                                <div class="fldRowInline"><input type="radio" name="section" value="H"> <label>Section H</label></div>
+                                <div class="fldRowInline"><input type="radio" name="section" value="H"> <label>Section I</label></div>
+                                <div class="fldRowInline"><input type="radio" name="section" value="I"> <label>Section J</label></div>
                             </div>
                         </div>
                     </div>
@@ -74,7 +75,7 @@
                     <div class="col-sm-6">
                         <div class="borderdWhiteBox">
                             <div class="reportHeading" class="accordion">
-                                <div class="checkbox-inline"> <label><input type="checkbox"> Student</label></div>
+                                <div class="checkbox-inline"> <label><input type="radio" name="filter_type" value="student">Student</label></div>
                             </div>
                             <div class="reportBlockContent">
                                 <div class="fldRowInline"><input type="checkbox"> <label>Class 1</label></div>
@@ -96,7 +97,7 @@
         
         <div class="reportWhiteBox">
             <div class="reportHeading accordion">
-                <div class="fldRowInline"><input type="radio" name="report_type"> <h4>Staff Attendence Report</h4></div>
+                <div class="fldRowInline"><input type="radio" name="report_type" value="staff"> <h4>Staff Attendence Report</h4></div>
             </div>
             <div class="reportInner panel" style="display:none">
                 <div class="row">
@@ -172,8 +173,9 @@
             </div>
         </div>
         <div class="reportBtnsBtm">
-                <a href="#" class="processBtn">Process</a>
+                <input type="submit" name="process" value="Process" class="processBtn">
         </div>
     </div>
 </div>
+</form>
 <!--body panel ends -->

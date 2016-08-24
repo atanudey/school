@@ -18,6 +18,8 @@ class User extends CI_Controller {
 		
 		parent::__construct();
 		$this->load->model('user_model');		
+		$this->load->model('school_model');
+		$this->load->model('user_type_model');
 	}
 	
 	public function index() {
@@ -33,7 +35,8 @@ class User extends CI_Controller {
 	public function register() {
 		
 		// create the data object
-		$data = new stdClass();
+		//$data = new stdClass();
+		$data = array();
 		
 		// load form helper and validation library
 		$this->load->helper('form');
@@ -47,11 +50,13 @@ class User extends CI_Controller {
 		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[login.email]');
 		$this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
 		$this->form_validation->set_rules('password_confirm', 'Confirm Password', 'trim|required|min_length[6]|matches[password]');				
-		$this->form_validation->set_rules('zipcode','Zip','trim|required|integer');
+		$this->form_validation->set_rules('zipcode','Zip','trim|required|integer');	
 		
 		if ($this->form_validation->run() === false) {
 			
 			// validation not ok, send validation errors to the view
+			$data['all_school'] = $this->school_model->get_all_school();
+			$data['all_user_type'] = $this->user_type_model->get_all_user_type();
 			
 			$this->load->template('user/register/register', $data);
 			
@@ -109,8 +114,8 @@ class User extends CI_Controller {
 	public function login() {
 		
 		if (empty($_SESSION['user'])) {
-			// create the data object
-			$data = new stdClass();
+			
+			$data = array();
 			
 			// load form helper and validation library
 			$this->load->helper('form');
@@ -124,8 +129,10 @@ class User extends CI_Controller {
 			if ($this->form_validation->run() == false) {
 				
 				// validation not ok, send validation errors to the view
+
+				$data['all_user_type'] = $this->user_type_model->get_all_user_type();
 				
-				$this->load->template('user/login/login');
+				$this->load->template('user/login/login', $data);
 				
 				
 			} else {
@@ -140,9 +147,13 @@ class User extends CI_Controller {
 					$user_id = $this->user_model->get_user_id_from_username($username);
 					$user    = $this->user_model->get_user($user_id);
 
+					//echo $user->School_ID;
+					$school  = $this->school_model->get_school("SC" . str_pad($user->School_ID, 5, '0', STR_PAD_LEFT));
+
 					// set session user datas
 					$_SESSION['user']      = $user;
-					$_SESSION['logged_in']    = (bool)true;
+					$_SESSION['school']    = $school;
+					$_SESSION['logged_in'] = (bool)true;
 					
 					// user login ok
 					

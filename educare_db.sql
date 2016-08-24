@@ -276,3 +276,6 @@ ALTER TABLE `educare_db`.`school`
 ADD COLUMN `School_ID` VARCHAR(7) NULL AFTER `Event_Active`;
 
 ALTER TABLE `sc00001_candidate` CHANGE `Candidate_ID` `Candidate_ID` INT( 11 ) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE  `ci_sessions` ADD  `user_id` INT UNSIGNED NOT NULL AFTER  `id` ,
+ADD  `user_type_id` INT UNSIGNED NOT NULL AFTER  `user_id`;

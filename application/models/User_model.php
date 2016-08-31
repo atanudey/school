@@ -52,7 +52,7 @@ class User_model extends CI_Model {
 		$this->db->where('user_type_id', $user_type_id);		
 
 		$hash = $this->db->get()->row('password');
-		//return $this->verify_password_hash($password, $hash);
+		return $this->verify_password_hash($password, $hash);
 		return true;		
 	}
 	

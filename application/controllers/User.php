@@ -33,9 +33,7 @@ class User extends CI_Controller {
 	 * @return void
 	 */
 	public function register() {
-		
-		// create the data object
-		//$data = new stdClass();
+				
 		$data = array();
 		
 		// load form helper and validation library
@@ -59,8 +57,7 @@ class User extends CI_Controller {
 			$data['all_user_type'] = $this->user_type_model->get_all_user_type();
 			
 			$this->load->template('user/register/register', $data);
-			
-			
+						
 		} else {
 			
 			// set variables from the form
@@ -69,7 +66,7 @@ class User extends CI_Controller {
 				$params = array(
 					'Name' => $this->input->post('name'),
 					'User_ID' => $this->input->post('username'),
-					'Password' => $this->input->post('password'),
+					'Password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
 					'Is_Admin' => $this->input->post('is_admin'),
 					'Email' => $this->input->post('email'),
 					'Mob1' => $this->input->post('mob1'),
@@ -79,27 +76,20 @@ class User extends CI_Controller {
 					'ZipCode' => $this->input->post('zipcode'),
 					'School_ID' => $this->input->post('school_id'),
 					'User_Type_ID' => $this->input->post('user_type_id'),
-					'created_at' => date('Y-m-j H:i:s'),
-					'updated_at' => date('Y-m-j H:i:s'),
+					'Added_On' => date('Y-m-j H:i:s'),
+					'Updated_On' => date('Y-m-j H:i:s'),
 				);
 			}
 
-			if ($this->user_model->create_user($params)) {
-				
-				// user creation ok
-				
-				$this->load->template('user/register/register_success', $data);
-				
-				
-			} else {
-				
+			if ($this->user_model->create_user($params)) {				
+				// user creation ok				
+				$this->load->template('user/register/register_success', $data);				
+			} else {				
 				// user creation failed, this should never happen
-				$data->error = 'There was a problem creating your new account. Please try again.';
+				$data["error"] = 'There was a problem creating your new account. Please try again.';
 				
-				// send error to the view
-				
-				$this->load->template('user/register/register', $data);
-								
+				// send error to the view				
+				$this->load->template('user/register/register', $data);								
 			}			
 		}
 		
@@ -163,13 +153,10 @@ class User extends CI_Controller {
 				} else {
 					
 					// login failed
-					$data->error = 'Wrong username or password.';
+					$data["error"] = 'Wrong username or password.';
 					
-					// send error to the view
-					
-					$this->load->template('user/login/login', $data);
-					
-					
+					// send error to the view					
+					$this->load->template('user/login/login', $data);					
 				}
 				
 			} 

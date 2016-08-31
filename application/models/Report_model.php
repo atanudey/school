@@ -6,7 +6,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * 
  * @extends CI_Model
  */
-class User_model extends CI_Model {
+class Report_model extends CI_Model {
 
 	/**
 	 * __construct function.
@@ -22,6 +22,9 @@ class User_model extends CI_Model {
 	}
 
 	public function get_attendance($params) {
-		
+		//echo "CALL MonthwiseReport('".implode("','", $params)."')"; die;
+		$this->db->query("CALL MonthwiseReport('".implode("','", $params)."')");
+		$query = $this->db->query("SELECT * FROM `MonthWiseReportTable`");		
+		return $query->result_array();
 	}
 }

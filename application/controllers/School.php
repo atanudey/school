@@ -17,10 +17,8 @@ class School extends CI_Controller
      */
     function index()
     {
-        $data['school'] = $this->school_model->get_all_school();
-        
-        $this->load->template('school/index',$data);
-        
+        $data['school'] = $this->school_model->get_all_school();        
+        $this->load->template('school/index',$data);        
     }
 
     /*

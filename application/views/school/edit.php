@@ -1,4 +1,5 @@
 <?php echo validation_errors(); ?>
+<div class="container tblwrap">
 <?php echo form_open('school/edit/'.$school['ID'],array("class"=>"form-horizontal")); ?>
 
 	<div class="form-group">
@@ -130,3 +131,4 @@
 	</div>
 	
 <?php echo form_close(); ?>
+</div>

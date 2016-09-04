@@ -1,4 +1,5 @@
 <?php echo validation_errors(); ?>
+<div class="container tblwrap">
 <?php echo form_open('school/add',array("class"=>"form-horizontal")); ?>
 	<div class="form-group">
 		<label for="School_Name" class="col-md-4 control-label">School Name</label>
@@ -129,3 +130,4 @@
 	</div>
 
 <?php echo form_close(); ?>
+</div>

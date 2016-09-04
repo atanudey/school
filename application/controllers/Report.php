@@ -5,6 +5,15 @@ class Report extends CI_Controller {
 
 	function __construct() {		
 		parent::__construct();
+
+		if ( ! $this->session->userdata('logged_in'))
+		{			
+			$allowed = array();
+			if ( ! in_array($this->router->fetch_method(), $allowed)) {
+				redirect('login');
+			}
+		}
+
 		$this->load->model('report_model');	
 	}
 	

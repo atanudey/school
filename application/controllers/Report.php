@@ -75,7 +75,7 @@ class Report extends CI_Controller {
 	}
 
 	function generate() {
-		print_r($_REQUEST); die;
+		//print_r($_REQUEST); die;
 
 		$start_date = explode("-",$this->input->post('start_date'));
 		$end_date = explode("-",$this->input->post('end_date'));

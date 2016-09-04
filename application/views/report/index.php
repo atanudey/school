@@ -19,18 +19,18 @@
         });
 
         $(".select_all").on('change', function(){             
-            $(this).closest('.reportHeading').next().find(".checkbox").prop('checked', $(this).prop("checked"));
+            $(this).closest('.reportHeading').next().find(".checkbox_cst").prop('checked', $(this).prop("checked"));
             $("#student_block").find('input').each(function () {
                 $(this).prop('disabled', true);
             });
         });
 
-        $('.checkbox').on('change', function(){         
+        $('.checkbox_cst').on('change', function(){         
             if(false == $(this).prop("checked")){
                 $(this).closest('.reportBlockContent').prev().find('.select_all').prop('checked', false);
             }
 
-            if ($(this).closest('.reportBlockContent').find('.checkbox:checked').size() == $(this).closest('.reportBlockContent').find('.checkbox').size() ){
+            if ($(this).closest('.reportBlockContent').find('.checkbox_cst:checked').size() == $(this).closest('.reportBlockContent').find('.checkbox_cst').size() ){
                 $(this).closest('.reportBlockContent').prev().find('.select_all').prop('checked', true);
             }
         });
@@ -70,7 +70,7 @@
                             </div>
                             <div class="reportBlockContent">
                                 <?php foreach(range(1, 10) as $class) { ?>
-                                    <div class="fldRowInline checkbox"><input type="checkbox" name="class[]" value="<?php echo $class; ?>"> <label>Class <?php echo $class; ?></label></div>
+                                    <div class="fldRowInline"><input type="checkbox" name="class[]" class="checkbox_cst" value="Class <?php echo $class; ?>"> <label>Class <?php echo $class; ?></label></div>
                                 <?php } ?>                                 
                             </div>
                         </div>
@@ -82,7 +82,7 @@
                             </div>
                             <div class="reportBlockContent">
                                 <?php foreach(range('A', 'I') as $section) { ?>
-                                    <div class="fldRowInline checkbox"><input type="checkbox" name="section[]" value="<?php echo $section; ?>"> <label>Section <?php echo $section; ?></label></div>
+                                    <div class="fldRowInline"><input type="checkbox" class="checkbox_cst" name="section[]" value="<?php echo $section; ?>"> <label>Section <?php echo $section; ?></label></div>
                                 <?php } ?>                                
                             </div>
                         </div>
@@ -95,8 +95,8 @@
                                 <div class="checkbox-inline"> <label><input type="checkbox" name="select_all_student" id="select_all_student" class="select_all" value="student">Student</label></div>
                             </div>
                             <div class="reportBlockContent">
-                                <div class="fldRowInline checkbox">
-                                    <!-- <input type="checkbox" name="class[]" value="<?php echo $class; ?>"> <label>Class <?php echo $class; ?></label></div> -->
+                                <div class="fldRowInline">
+                                    <!-- <input type="checkbox" name="class[]" class="checkbox_cst" value="<?php echo $class; ?>"> <label>Class <?php echo $class; ?></label></div> -->
                                 </div>                               
                             </div>
                         </div>

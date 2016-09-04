@@ -39,6 +39,9 @@ class User extends CI_Controller {
 		// load form helper and validation library
 		$this->load->helper('form');
 		$this->load->library('form_validation');
+
+		//Loading a custom helper for sending template based emails
+		$this->load->helper('email_template');
 		
 		// set validation rules
 		$this->form_validation->set_rules('user_type_id','User Type','trim|required');
@@ -82,8 +85,24 @@ class User extends CI_Controller {
 			}
 
 			if ($this->user_model->create_user($params)) {				
-				// user creation ok				
-				$this->load->template('user/register/register_success', $data);				
+				// user creation ok								
+    			$this->load->template('user/register/register_success', $data);
+
+				$SITE_EMAIL = $this->config->item('site_email');
+				$SITE_EMAIL_NAME = $this->config->item('site_email_name');
+
+				$email_params = array(			
+					"template_path" => 'templates/registration_email',
+					"template_data" => array('name' => $params['Name']),
+					"from" => $SITE_EMAIL,
+					"from_name" => $SITE_EMAIL_NAME,
+					"to" => $params['Email'],
+					"to_name" => $params['Name'],
+					"subject" => "Welcome to Educare",			
+				);
+				
+				$this->email_template->send();
+
 			} else {				
 				// user creation failed, this should never happen
 				$data["error"] = 'There was a problem creating your new account. Please try again.';
@@ -116,24 +135,17 @@ class User extends CI_Controller {
 			$this->form_validation->set_rules('username', 'Username', 'required|alpha_numeric');
 			$this->form_validation->set_rules('password', 'Password', 'required');
 			
-			if ($this->form_validation->run() == false) {
-				
+			if ($this->form_validation->run() == false) {				
 				// validation not ok, send validation errors to the view
-
-				$data['all_user_type'] = $this->user_type_model->get_all_user_type();
-				
-				$this->load->template('user/login/login', $data);
-				
-				
-			} else {
-				
+				$data['all_user_type'] = $this->user_type_model->get_all_user_type();												
+			} else {				
 				// set variables from the form
 				$user_type_id = $this->input->post('user_type_id');
 				$username = $this->input->post('username');
 				$password = $this->input->post('password');
 				
 				if ($this->user_model->resolve_user_login($user_type_id, $username, $password)) {
-					
+
 					$user_id = $this->user_model->get_user_id_from_username($username);
 					$user    = $this->user_model->get_user($user_id);
 
@@ -143,31 +155,36 @@ class User extends CI_Controller {
 					// set session user datas
 					$_SESSION['user']      = $user;
 					$_SESSION['school']    = $school;
-					$_SESSION['logged_in'] = (bool)true;
-					
-					// user login ok
-					
-					$this->load->template('user/login/login_success', $data);
-					
+					$_SESSION['logged_in'] = (bool)true;				
 					
 				} else {
 					
 					// login failed
-					$data["error"] = 'Wrong username or password.';
-					
-					// send error to the view					
-					$this->load->template('user/login/login', $data);					
-				}
-				
+					$data["error"] = 'Wrong username or password. Try again.';										
+				}				
 			} 
-		} else {
-
-			// user login ok
-			
-			$this->load->template('user/login/login_success');
-			
-		}
+		} 
 		
+		$template = "admin_staff";
+		if (!empty($_SESSION['user'])) {
+
+			switch(intval($_SESSION['user']->User_Type_ID)) {
+				case 1: $template = "admin_staff";
+						break;
+				case 2: $template = "admin_staff";
+						break;
+				case 3: $template = "school_guardians";
+						break;
+				case 4: $template = "school_guardians";
+						break;				
+			}	
+
+			$this->load->template('user/home/'.$template);	
+
+		} else {			
+			// send error to the view					
+			$this->load->template('user/login/index', $data);
+		}	
 	}
 	
 	/**
@@ -193,5 +210,25 @@ class User extends CI_Controller {
 		// redirect him to site root
 		redirect('/');		
 	}
-	
+
+	public function home() {
+		$this->load->template('user/home/index');
+	}
+
+	public function email() {
+
+		$email_params = array(			
+			"template_path" => 'templates/registration_email',
+			"template_data" => array(),
+			"from" => "mr.atanu.dey.83@gmail.com",
+			"from_name" => "Atanu Dey",
+			"to" => "mratanudey@gmail.com",
+			"to_name" => "Sentu Dey",
+			"subject" => "Mail Subject is here",			
+		);
+
+		if (!send_email($email_params)) {
+			echo "Failed to send email";
+		}
+	}	
 }

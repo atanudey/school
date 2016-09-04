@@ -14,11 +14,9 @@ class User_model extends CI_Model {
 	 * @access public
 	 * @return void
 	 */
-	public function __construct() {
-		
+	public function __construct() {		
 		parent::__construct();
-		$this->load->database();
-		
+		$this->load->database();		
 	}
 	
 	/**
@@ -46,10 +44,11 @@ class User_model extends CI_Model {
 	 */
 	public function resolve_user_login($user_type_id, $username, $password) {
 		
-		$this->db->select('password');
-		$this->db->from('login');
-		$this->db->where('user_id', $username);
-		$this->db->where('user_type_id', $user_type_id);		
+		$this->db->select('password')
+				->from('login')
+				->where('user_id', $username)
+				->where('user_type_id', $user_type_id)
+				->where('is_active', '1');		
 
 		$hash = $this->db->get()->row('password');
 		return $this->verify_password_hash($password, $hash);

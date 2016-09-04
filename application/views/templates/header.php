@@ -10,6 +10,8 @@
 		<script type="text/javascript" language="javascript" src="<?= base_url('assets/js/jquery.dataTables.min.js') ?>"></script>
 		<script type="text/javascript" language="javascript" src="<?= base_url('assets/js/dataTables.bootstrap.min.js') ?>"></script>
 		<script type="text/javascript" src="<?= base_url('assets/js/slider.js') ?>"></script>
+        <script type="text/javascript" src="<?= base_url('assets/js/script.js') ?>"></script>
+
 		<link href="<?= base_url('assets/css/bootstrap.min.css') ?>" rel="stylesheet" type="text/css" />
 		<link href="<?= base_url('assets/css/dataTables.bootstrap.min.css') ?>" rel="stylesheet" type="text/css" />
 		<link href="<?= base_url('assets/css/style.css') ?>" rel="stylesheet" type="text/css" />
@@ -38,7 +40,7 @@
                             <li>Email : <a href="mailto:info@krpsolutions.co.in">info@krpsolutions.co.in</a></li>
 							<?php if (!empty($_SESSION['user'])) { ?>
 								<li><span> | <img src="<?= base_url('assets/images/user-icon.png')?>" /></span> Welcome Admin | </li>
-								<li><a href="#">Logout</a></li>
+								<li><a href="<?= base_url('logout') ?>">Logout</a></li>
 							<?php } ?>
                         </ul>
                     </div>

@@ -3,7 +3,38 @@
         $(".accordion").on('click', function(){
             $(this).next().toggle();
         });
-    });    
+
+        $("#report_type_all").on('click', function(){
+            $(this).closest('.reportInner').find('.row').hide();
+        });
+
+        $("#report_type_class").on('click', function(){
+            $(this).closest('.reportInner').find('.row').hide();
+            $("#class_section_block").show();
+
+        });
+
+        $("#report_type_student").on('click', function(){
+            $(this).closest('.reportInner').find('.row').show();            
+        });
+
+        $(".select_all").on('change', function(){             
+            $(this).closest('.reportHeading').next().find(".checkbox").prop('checked', $(this).prop("checked"));
+            $("#student_block").find('input').each(function () {
+                $(this).prop('disabled', true);
+            });
+        });
+
+        $('.checkbox').on('change', function(){         
+            if(false == $(this).prop("checked")){
+                $(this).closest('.reportBlockContent').prev().find('.select_all').prop('checked', false);
+            }
+
+            if ($(this).closest('.reportBlockContent').find('.checkbox:checked').size() == $(this).closest('.reportBlockContent').find('.checkbox').size() ){
+                $(this).closest('.reportBlockContent').prev().find('.select_all').prop('checked', true);
+            }
+        });
+    });  
 </script>
 
 <!--body panel starts -->
@@ -21,73 +52,52 @@
 
         <div class="reportWhiteBox">
             <div class="reportHeading accordion">
-                <div class="fldRowInline"><input type="radio" name="report_type" value="student"> <h4>Students Report</h4></div>
+                <div class="fldRowInline"><input type="radio" name="report_type" value="student" checked="checked"> <h4>Students Report</h4></div>
             </div>
-            <div class="reportInner panel" style="display:none">
+            <div class="reportInner panel">
                 <div class="paddingBtm20">
                     <div class="fldRowInline">
-                        <label><input type="radio" name="student_report_type" value="all"> All</label>
-                        <label><input type="radio" name="student_report_type" value="class"> Class</label>
-                        <label><input type="radio" name="student_report_type" value="student"> Student</label>
+                        <label><input type="radio" name="student_report_type" id="report_type_all" value="all" checked="checked"> All</label>
+                        <label><input type="radio" name="student_report_type" id="report_type_class" value="class"> Class</label>
+                        <label><input type="radio" name="student_report_type" id="report_type_student" value="student"> Student</label>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" id="class_section_block" style="display:none">
                     <div class="col-sm-6">
                         <div class="borderdWhiteBox">
                             <div class="reportHeading">
-                                <div class="checkbox-inline"> <label><input type="checkbox" name="filter_type" value="class">Class</label></div>
+                                <div class="checkbox-inline"> <label><input type="checkbox" name="select_all_class" id="select_all_class" class="select_all" value="class">Class (Select All)</label></div>
                             </div>
                             <div class="reportBlockContent">
-                                <div class="fldRowInline"><input type="checkbox" name="class[]" value="Class 1"> <label>Class 1</label></div>
-                                <div class="fldRowInline"><input type="checkbox" name="class[]" value="Class 2"> <label>Class 2</label></div>
-                                <div class="fldRowInline"><input type="checkbox" name="class[]" value="Class 3"> <label>Class 3</label></div>
-                                <div class="fldRowInline"><input type="checkbox" name="class[]" value="Class 4"> <label>Class 4</label></div>
-                                <div class="fldRowInline"><input type="checkbox" name="class[]" value="Class 5"> <label>Class 5</label></div>
-                                <div class="fldRowInline"><input type="checkbox" name="class[]" value="Class 6"> <label>Class 6</label></div>
-                                <div class="fldRowInline"><input type="checkbox" name="class[]" value="Class 7"> <label>Class 7</label></div>
-                                <div class="fldRowInline"><input type="checkbox" name="class[]" value="Class 8"> <label>Class 8</label></div>
-                                <div class="fldRowInline"><input type="checkbox" name="class[]" value="Class 9"> <label>Class 9</label></div>
-                                <div class="fldRowInline"><input type="checkbox" name="class[]" value="Class 10"> <label>Class 10</label></div>
+                                <?php foreach(range(1, 10) as $class) { ?>
+                                    <div class="fldRowInline checkbox"><input type="checkbox" name="class[]" value="<?php echo $class; ?>"> <label>Class <?php echo $class; ?></label></div>
+                                <?php } ?>                                 
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-6">
                         <div class="borderdWhiteBox">
                             <div class="reportHeading">
-                                <div class="checkbox-inline"> <label><input type="checkbox" name="filter_type" value="section"> Section</label></div>
+                                <div class="checkbox-inline"> <label><input type="checkbox" name="select_all_section" id="select_all_section" class="select_all" value="section">Section (Select All)</label></div>
                             </div>
                             <div class="reportBlockContent">
-                                <div class="fldRowInline"><input type="checkbox" name="section[]" value="A"> <label>Section A</label></div>
-                                <div class="fldRowInline"><input type="checkbox" name="section[]" value="B"> <label>Section B</label></div>
-                                <div class="fldRowInline"><input type="checkbox" name="section[]" value="C"> <label>Section C</label></div>
-                                <div class="fldRowInline"><input type="checkbox" name="section[]" value="D"> <label>Section D</label></div>
-                                <div class="fldRowInline"><input type="checkbox" name="section[]" value="E"> <label>Section E</label></div>
-                                <div class="fldRowInline"><input type="checkbox" name="section[]" value="F"> <label>Section F</label></div>
-                                <div class="fldRowInline"><input type="checkbox" name="section[]" value="G"> <label>Section G</label></div>
-                                <div class="fldRowInline"><input type="checkbox" name="section[]" value="H"> <label>Section H</label></div>
-                                <div class="fldRowInline"><input type="checkbox" name="section[]" value="H"> <label>Section I</label></div>
-                                <div class="fldRowInline"><input type="checkbox" name="section[]" value="I"> <label>Section J</label></div>
+                                <?php foreach(range('A', 'I') as $section) { ?>
+                                    <div class="fldRowInline checkbox"><input type="checkbox" name="section[]" value="<?php echo $section; ?>"> <label>Section <?php echo $section; ?></label></div>
+                                <?php } ?>                                
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" id="student_block" style="display:none">
                     <div class="col-sm-6">
                         <div class="borderdWhiteBox">
                             <div class="reportHeading" class="accordion">
-                                <div class="checkbox-inline"> <label><input type="checkbox" name="filter_type" value="student">Student</label></div>
+                                <div class="checkbox-inline"> <label><input type="checkbox" name="select_all_student" id="select_all_student" class="select_all" value="student">Student</label></div>
                             </div>
                             <div class="reportBlockContent">
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 1</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 2</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 3</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 4</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 5</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 6</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 7</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 8</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 9</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Class 10</label></div>
+                                <div class="fldRowInline checkbox">
+                                    <!-- <input type="checkbox" name="class[]" value="<?php echo $class; ?>"> <label>Class <?php echo $class; ?></label></div> -->
+                                </div>                               
                             </div>
                         </div>
                     </div>

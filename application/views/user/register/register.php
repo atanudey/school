@@ -5,17 +5,13 @@
 		<h1>Sign Up</h1>
 		<div class="loginPanelInner">
 			<?php if (validation_errors()) : ?>
-				<div class="col-md-12">
-					<div class="alert alert-danger" role="alert">
-						<?= validation_errors() ?>
-					</div>
+				<div class="alert alert-danger" role="alert">
+					<?= validation_errors() ?>
 				</div>
 			<?php endif; ?>
 			<?php if (isset($error)) : ?>
-				<div class="col-md-12">
-					<div class="alert alert-danger" role="alert">
-						<?= $error ?>
-					</div>
+				<div class="alert alert-danger" role="alert">
+					<?= $error ?>
 				</div>
 			<?php endif; ?>
 			<?= form_open() ?>

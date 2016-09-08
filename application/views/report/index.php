@@ -164,11 +164,25 @@
                             <div class="fldRowInline boxPadding inlineDateFlds">
                                 <div class="fldRowInline dateFld">
                                     <label>From</label>
-                                    <input type="date" name="start_date" value="" />
+                                    <div class="well">
+									  <div id="Fromdate" class="input-append startdatetime-from">
+										<input data-format="dd/MM/yyyy" type="text" class="datetimepicker-input"></input>
+										<span class="add-on">
+										 <span class="glyphicon glyphicon-calendar"></span>
+										</span>
+									  </div>
+									</div>
                                 </div>
                                 <div class="fldRowInline dateFld">
                                     <label>To</label>
-                                    <input type="date" name="end_date" value="" />
+                                    <div class="well">
+									  <div id="todate" class="input-append startdatetime-from">
+										<input data-format="dd/MM/yyyy" type="text" class="datetimepicker-input"></input>
+										<span class="add-on">
+										 <span class="glyphicon glyphicon-calendar"></span>
+										</span>
+									  </div>
+									</div>
                                 </div>
                                 <div class="dateOption">
                                     <label><input type="radio" name="report_range_type" value="yly"> Yearly</label>             
@@ -188,4 +202,53 @@
     </div>
 </div>
 </form>
+<script type="text/javascript">
+/****** Form date To Date ***/
+  $(function() {
+   var d = new Date();
+	var currentmonth = function(){
+	   var month = d.getMonth()+1;
+		var day = d.getDate();
+		var output = (day<10 ? '0' : '') + day + '/' +
+		(month<10 ? '0' : '') + month + '/' +
+		 d.getFullYear();
+		 return output;
+	  };
+	  
+	  var prevmonth = function(){
+	    var month = d.getMonth();
+		var day = d.getDate();
+		var output = (day<10 ? '0' : '') + day + '/' +
+		(month<10 ? '0' : '') + month + '/' +
+		 d.getFullYear();
+		 return output;
+	  };
+	  
+	  $("#Fromdate .datetimepicker-input").val(prevmonth);
+	  $("#todate .datetimepicker-input").val(currentmonth);
+		
+       //var today= new Date();
+	   var formfirstDate = new Date(d.getFullYear(), d.getMonth(0)-8, 1);
+       var lastDate = new Date(d.getFullYear(), d.getMonth(0), 9);
+	   var firstDate = new Date(d.getFullYear(), d.getMonth(0)-1, 9);
+	   //console.log(d.getMonth(0)-7, 14);
+	   //console.log(firstDate);
+		$('#todate').datetimepicker({
+			language: 'en',
+			format: 'dd/MM/yyyy',
+			startDate: firstDate,
+            endDate: lastDate
+		});
+		
+	  
+		$('#Fromdate').datetimepicker({
+			language: 'en',
+			format: 'dd/MM/yyyy',
+			startDate: formfirstDate,
+            endDate: lastDate
+		});
+		
+  });
+ /****** End Form date To Date ***/
+</script>
 <!--body panel ends -->

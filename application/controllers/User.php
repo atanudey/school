@@ -57,7 +57,7 @@ class User extends CI_Controller {
 			
 			// validation not ok, send validation errors to the view
 			$data['all_school'] = $this->school_model->get_all_school();
-			$data['all_user_type'] = $this->user_type_model->get_all_user_type();
+			$data['all_user_type'] = $this->user_type_model->get_all_user_type('');
 			
 			$this->load->template('user/register/register', $data);
 						
@@ -88,7 +88,7 @@ class User extends CI_Controller {
 				// user creation ok								
     			$this->load->template('user/register/register_success', $data);
 
-				$SITE_EMAIL = $this->config->item('site_email');
+				/*$SITE_EMAIL = $this->config->item('site_email');
 				$SITE_EMAIL_NAME = $this->config->item('site_email_name');
 
 				$email_params = array(			
@@ -101,7 +101,7 @@ class User extends CI_Controller {
 					"subject" => "Welcome to Educare",			
 				);
 				
-				$this->email_template->send();
+				send_email();*/
 
 			} else {				
 				// user creation failed, this should never happen
@@ -130,15 +130,15 @@ class User extends CI_Controller {
 			$this->load->helper('form');
 			$this->load->library('form_validation');
 			
+			// validation not ok, send validation errors to the view
+			$data['all_user_type'] = $this->user_type_model->get_all_user_type();
+			
 			// set validation rules
 			$this->form_validation->set_rules('user_type_id','User Type','trim|required');
 			$this->form_validation->set_rules('username', 'Username', 'required|alpha_numeric');
 			$this->form_validation->set_rules('password', 'Password', 'required');
 			
-			if ($this->form_validation->run() == false) {				
-				// validation not ok, send validation errors to the view
-				$data['all_user_type'] = $this->user_type_model->get_all_user_type();												
-			} else {				
+			if ($this->form_validation->run() == true) {								
 				// set variables from the form
 				$user_type_id = $this->input->post('user_type_id');
 				$username = $this->input->post('username');
@@ -157,8 +157,7 @@ class User extends CI_Controller {
 					$_SESSION['school']    = $school;
 					$_SESSION['logged_in'] = (bool)true;				
 					
-				} else {
-					
+				} else {					
 					// login failed
 					$data["error"] = 'Wrong username or password. Try again.';										
 				}				

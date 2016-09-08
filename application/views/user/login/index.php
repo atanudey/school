@@ -17,23 +17,28 @@
 			<?= form_open() ?>
 				<div class="fldRow selectbox">
 					<div class="select-style">
-						<select id="user_type_id" name="user_type_id">
+						<select id="user_type_id" name="user_type_id" required='required'>
 							<option value="">User Type</option>
 							<?php 
 							foreach($all_user_type as $user_type)
 							{
-								$selected = "";							
-								echo '<option value="'.$user_type['ID'].'" $"."selected>'.$user_type['Type_Name'].'</option>';
+								//$selected = "";	
+							?>	
+								<option value="<?php echo $user_type['ID'];?>" <?php echo set_select('user_type_id',  $user_type['ID']); ?>><?php echo $user_type['Type_Name'];?></option>
+							<?php
 							} 
 							?>
 						</select>
+						<span style="color:red">*This field is required</span>
 					</div>				
 				</div>
 				<div class="fldRow">					
-					<input type="text" id="username" name="username" placeholder="Username">
+					<input type="text" id="username" name="username" placeholder="Username" title="Enter user name" required='required' value="<?php echo set_value("username");?>"> 
+					<span style="color:red">*This field is required</span>
 				</div>
 				<div class="fldRow">					
-					<input type="password" id="password" name="password" placeholder="Password">
+					<input type="password" id="password" name="password" placeholder="Password" title="Enter the password" required='required' value="<?php echo set_value("password");?>">
+					<span style="color:red">*This field is required</span>
 				</div>
 				<div class="fldRow">
 					<p><a href="#">Forgot  your password?</a>  |  <a href="#">Reset Password</a></p>

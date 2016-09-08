@@ -17,7 +17,7 @@ class School_model extends CI_Model
      */
     function get_school($ID)
     {
-        return $this->db->get_where('school',array('ID'=>$ID))->row_array();
+        return $this->db->get_where('School',array('ID'=>$ID))->row_array();
     }
     
     /*
@@ -25,7 +25,7 @@ class School_model extends CI_Model
      */
     function get_all_school()
     {
-        return $this->db->get('school')->result_array();
+        return $this->db->get('School')->result_array();
     }
     
     /*
@@ -34,13 +34,13 @@ class School_model extends CI_Model
     function add_school($params)
     {
         $this->db->select_max('School_ID');
-        $result = $this->db->get('school')->row();  
+        $result = $this->db->get('School')->row();  
         $school_id = intval($result->School_ID);
 
         $params['School_ID'] = ++$school_id;
         $params['ID'] = "SC" . str_pad($school_id, 5, '0', STR_PAD_LEFT);
 
-        $this->db->insert('school', $params);
+        $this->db->insert('School', $params);
         return $this->db->insert_id();
     }
     
@@ -50,7 +50,7 @@ class School_model extends CI_Model
     function update_school($ID,$params)
     {
         $this->db->where('ID',$ID);
-        $this->db->update('school',$params);
+        $this->db->update('School',$params);
     }
     
     /*
@@ -58,6 +58,6 @@ class School_model extends CI_Model
      */
     function delete_school($ID)
     {
-        $this->db->delete('school',array('ID'=>$ID));
+        $this->db->delete('School',array('ID'=>$ID));
     }
 }

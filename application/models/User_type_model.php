@@ -16,15 +16,19 @@ class User_type_model extends CI_Model
      */
     function get_user_type($ID)
     {
-        return $this->db->get_where('user_type',array('ID'=>$ID))->row_array();
+        return $this->db->get_where('User_Type',array('ID'=>$ID))->row_array();
     }
     
     /*
      * Get all user_type
      */
-    function get_all_user_type()
-    {        
-        return $this->db->select('*')->where('Type_Name != ','Admin')->get('user_type')->result_array();
+    function get_all_user_type($mode="all")
+    {   
+		if (!empty($mode) && $mode == "all"){
+			return $this->db->select('*')->get('User_Type')->result_array();
+		}else{
+			return $this->db->select('*')->where('Type_Name != ','Admin')->get('User_Type')->result_array();
+		}		
     }
     
     /*
@@ -32,7 +36,7 @@ class User_type_model extends CI_Model
      */
     function add_user_type($params)
     {
-        $this->db->insert('user_type',$params);
+        $this->db->insert('User_Type',$params);
         return $this->db->insert_id();
     }
     
@@ -42,7 +46,7 @@ class User_type_model extends CI_Model
     function update_user_type($ID,$params)
     {
         $this->db->where('ID',$ID);
-        $this->db->update('user_type',$params);
+        $this->db->update('User_Type',$params);
     }
     
     /*
@@ -50,6 +54,6 @@ class User_type_model extends CI_Model
      */
     function delete_user_type($ID)
     {
-        $this->db->delete('user_type',array('ID'=>$ID));
+        $this->db->delete('User_Type',array('ID'=>$ID));
     }
 }

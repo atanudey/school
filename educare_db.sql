@@ -1,37 +1,390 @@
--- -----------------------------------------------------
--- Schema educare_db
--- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `educare_db` ;
-USE `educare_db` ;
+-- phpMyAdmin SQL Dump
+-- version 4.0.10.14
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost:3306
+-- Generation Time: Sep 07, 2016 at 06:35 AM
+-- Server version: 5.5.49-cll-lve
+-- PHP Version: 5.6.20
 
--- -----------------------------------------------------
--- Table `educare_db`.`User_Type`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `educare_db`.`User_Type` ;
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
 
-CREATE TABLE IF NOT EXISTS `educare_db`.`User_Type` (
-  `ID` INT NOT NULL AUTO_INCREMENT,
-  `Type_Name` VARCHAR(20) NULL COMMENT '1. School\n2. Gurdian\n3. Agent\n4. Admin\n5. Company',
-  PRIMARY KEY (`ID`))
-ENGINE = InnoDB;
 
-INSERT INTO `educare_db`.`User_Type` (`ID`, `Type_Name`) VALUES
-(1, 'Admin'),
-(2, 'School'),
-(3, 'Gurdian'),
-(4, 'Agent'),
-(5, 'Company');
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
 
--- -----------------------------------------------------
--- Table `educare_db`.`Login`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `educare_db`.`Login` ;
+--
+-- Database: `educare_db`
+--
+CREATE DATABASE IF NOT EXISTS `educare_db` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `educare_db`;
 
-CREATE TABLE `educare_db`.`login` (
+DELIMITER $$
+--
+-- Procedures
+--
+DROP PROCEDURE IF EXISTS `MonthWiseReport`$$
+CREATE DEFINER=`mydevloper`@`localhost` PROCEDURE `MonthWiseReport`(IN `start_month` INT(2), IN `end_month` INT(2), IN `school_id` VARCHAR(255), IN `class` VARCHAR(255), IN `section` VARCHAR(255))
+    NO SQL
+BEGIN
+	DECLARE notFound INT;
+
+	DECLARE mnth INT;
+	DECLARE sch_days INT;
+
+    DECLARE curs CURSOR FOR
+		SELECT `Month`, (`Month_Days` - (`Month_Off_Days` + `Extra_Leave`)) `total_school_days` FROM `School_Days` 
+        WHERE School_ID = school_id
+        AND `Month` BETWEEN start_month 
+        AND end_month;
+
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET notFound = 1;
+    
+	OPEN curs;
+    
+    CREATE TEMPORARY TABLE IF NOT EXISTS `MonthWiseReportTable` (
+		`Month` varchar(20) NOT NULL,
+        `Information` varchar(255) NOT NULL,
+		`Roll` varchar(255) NOT NULL DEFAULT '',
+		`Name` varchar(255) NOT NULL DEFAULT '',
+		`Address` varchar(255) DEFAULT '',
+		`Class` varchar(255) NOT NULL DEFAULT '',
+		`Section` varchar(255) NOT NULL DEFAULT '',
+		`Present` varchar(255) DEFAULT NULL DEFAULT '',
+		`Absent` varchar(255) DEFAULT NULL DEFAULT '',
+  		`Type` enum('header','data','summary') NOT NULL DEFAULT 'data'
+	) ENGINE=MEMORY;
+
+    CREATE TEMPORARY TABLE IF NOT EXISTS `GroupTable`(
+		`Month` varchar(20) NOT NULL,
+		`StudentCount` float NOT NULL,
+        `TotalPresent` float NOT NULL,
+        `TotalAbsent` float NOT NULL
+	) ENGINE=MEMORY;
+
+	SET notFound = 0;
+	REPEAT
+    
+		FETCH curs INTO mnth, sch_days;
+
+		INSERT INTO `MonthWiseReportTable` (`Month`, `Information`, `Type`)
+		SELECT mnth `Month`,
+               CONCAT(MONTHNAME(STR_TO_DATE(mnth, '%m')), ', ', YEAR(NOW())) `Infromation`,			   
+			   'header' `Type`;		
+        
+        INSERT INTO `MonthWiseReportTable` (`Month`, `Information`, `Roll`, `Name`, `Address`, `Class`, `Section`, `Present`, `Absent`) 
+        SELECT  mnth `Month`,
+                '' `Information`,
+				`Roll_No`  `Roll` ,  
+			    `Candidate_Name` Name, 
+				CONCAT(  `Address1` ,  `Address2` ) Address,  
+				CL.`Name`  `Class` ,
+				CL.`Section` `Section`,
+				FLOOR(COUNT( A.IN_OUT )/2) Present,
+				(sch_days - FLOOR(COUNT( A.IN_OUT )/2)) Absent
+		FROM  `SC00001_Candidate` C
+		JOIN  `SC00001_Attendance` A ON C.`Candidate_ID` = A.`Candidate_ID` 
+		JOIN  `Class` CL ON C.`class_id` = CL.`ID` 
+		WHERE FIND_IN_SET(  `School_ID` , school_id ) 
+		AND FIND_IN_SET( CL.`Name` ,  class ) 
+		AND FIND_IN_SET( CL.`Section` ,  section ) 
+		AND MONTH( A.`Date` ) = mnth 
+        GROUP BY A.`Candidate_ID`;
+
+		INSERT INTO `GroupTable` (`Month`, `StudentCount`, `TotalPresent`, `TotalAbsent`) 
+        SELECT  mnth `Month`,
+				COUNT(DISTINCT A.`Candidate_ID`) StudentCount,
+				FLOOR(COUNT( A.IN_OUT )/2) Present,
+				(sch_days - FLOOR(COUNT( A.IN_OUT )/2)) Absent
+		FROM `SC00001_Candidate` C JOIN  `SC00001_Attendance` A
+		ON C.`Candidate_ID` =  A.`Candidate_ID`  
+		JOIN `Class` CL 
+		ON C.`class_id` = CL.`ID` 
+		WHERE FIND_IN_SET(`School_ID`, school_id)
+		AND FIND_IN_SET(CL.`Name`, class)
+		AND FIND_IN_SET(CL.`Section`, section)
+		AND MONTH(A.`Date`) = mnth
+		GROUP BY A.`Candidate_ID`;
+        
+		INSERT INTO `MonthWiseReportTable` (`Month`, `Information`, `Present`, `Absent`, `Type`)
+		SELECT mnth `Month`,
+			   CONCAT('Total for ', COUNT(`StudentCount`), ' Students') `Information`,
+		 	   SUM(`TotalPresent`) `Present`,
+		 	   SUM(`TotalAbsent`) `Absent`,
+		 	   'summary' `Type` 
+		FROM `GroupTable` WHERE `Month` = mnth;
+        
+	UNTIL notFound END REPEAT;
+
+	CLOSE curs;
+END$$
+
+DROP PROCEDURE IF EXISTS `sp_InsertStudentAttendance`$$
+CREATE DEFINER=`mydevloper`@`localhost` PROCEDURE `sp_InsertStudentAttendance`(IN `schoolid` VARCHAR(7), IN `RFIdNo` VARCHAR(20), OUT `successmessage` VARCHAR(225))
+    NO SQL
+BEGIN
+
+DECLARE isSuccess INT1 DEFAULT 0;
+DECLARE server_time TIME DEFAULT CURTIME();
+DECLARE gress_in_time TIME;
+DECLARE current_IN_OUT VARCHAR(3);
+DECLARE school_candidate_tblname VARCHAR(18) DEFAULT CONCAT(schoolid, '_Candidate');
+DECLARE school_attendance_tblname VARCHAR(18) DEFAULT CONCAT(schoolid, '_Attendance');
+DECLARE messageText VARCHAR(160);
+DECLARE schoolid_for_where VARCHAR(15);
+ 
+DECLARE Candidate_ID INT;
+DECLARE Candidate_Name VARCHAR(45);
+DECLARE Guardian_Name VARCHAR(45);
+DECLARE Mob1 VARCHAR(15);
+DECLARE Gender VARCHAR(6);
+DECLARE IN_OUT VARCHAR(3);
+DECLARE School_Name VARCHAR(60);
+DECLARE Class_ID INT;
+DECLARE Cut_Off_Time TIME;
+DECLARE GressTime_To_InOut VARCHAR(8);
+DECLARE Candidate_Type_Name VARCHAR(10);
+DECLARE API_Key VARCHAR(50);
+DECLARE Route VARCHAR(20);
+
+DECLARE done INT DEFAULT FALSE;
+DECLARE cur_candidate CURSOR FOR SELECT * FROM candidate_vw;
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+SET successmessage = '0';
+SET schoolid_for_where = CONCAT('''', UPPER(schoolid), '''');
+SET @sql_statement = CONCAT('CREATE VIEW candidate_vw AS SELECT sc.Candidate_ID, sc.Candidate_Name, sc.Guardian_Name, sc.Mob1, sc.Gender, sc.IN_OUT, s.School_Name, sc.Class_ID, st.Cut_Off_Time, st.GressTime_To_InOut, ct.Type_Name, sp.API_Key, sp.Route FROM School s JOIN ', school_candidate_tblname, ' sc ON s.ID = sc.School_ID JOIN School_Timing st ON sc.School_ID = st.School_ID AND sc.Class_ID = st.Class_ID AND sc.IN_OUT != st.IN_OUT JOIN Candidate_Type ct ON sc.Candidate_Type_ID = ct.ID JOIN SMS_Provider sp WHERE sp.SMS_Type = ''Transaction'' AND sc.RFID_NO=', RFIdNo, ' AND s.ID=', schoolid_for_where);
+-- SET @sql_statement = CONCAT('CREATE VIEW candidate_vw AS SELECT sc.Candidate_ID, sc.Candidate_Name, sc.Gurdian_Name, sc.Mob1, sc.Gender, sc.IN_OUT, s.School_Name, sc.Class_ID, st.Cut_Off_Time, st.GressTime_To_InOut, ct.Type_Name FROM School s JOIN ', school_candidate_tblname, ' sc ON s.ID = sc.School_ID JOIN School_Timing st ON sc.School_ID = st.School_ID AND sc.Class_ID = st.Class_ID AND sc.IN_OUT != st.IN_OUT JOIN Candidate_Type ct ON sc.Candidate_Type_ID = ct.ID WHERE sc.RFID_NO=', RFIdNo, ' AND s.ID=', schoolid_for_where);
+PREPARE stmt FROM @sql_statement;	
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+OPEN cur_candidate;
+
+read_loop: LOOP
+	FETCH cur_candidate INTO Candidate_ID, Candidate_Name, Guardian_Name, Mob1, Gender, IN_OUT, School_Name, Class_ID, Cut_Off_Time, GressTime_To_InOut, Candidate_Type_Name, API_Key, Route;
+	IF done THEN
+		LEAVE read_loop;		
+    END IF;    
+     
+	IF(Candidate_ID IS NOT NULL) THEN    
+		IF (IN_OUT = 'IN') THEN
+			SET current_IN_OUT = 'OUT';
+            SET gress_in_time = ADDTIME(Cut_Off_Time, GressTime_To_InOut);  -- Adding Gress Time'00:30:00' with Cut_Off_Time
+             
+            IF (server_time >= Cut_Off_Time AND server_time <= gress_in_time) THEN
+				SET isSuccess = 1;
+                
+                SET messageText = CONCAT('Your ', if(Gender = '''M''', 'son ', 'daughter '), Candidate_Name, ' has left the school at ', server_time, '.');
+			ELSE
+				SET isSuccess = 0;
+            END IF;
+            
+		ELSE
+			SET current_IN_OUT = 'IN';            
+            SET gress_in_time = SUBTIME(Cut_Off_Time, GressTime_To_InOut);  -- Subtracting Gress Time'00:30:00' from Cut_Off_Time
+                        
+            IF (server_time >= gress_in_time AND server_time <= Cut_Off_Time) THEN
+				SET isSuccess = 1;
+                SET messageText = CONCAT('Your ', if(Gender = '''M''', 'son ', 'daughter '), Candidate_Name, ' has entered into the school at ', server_time, '.');
+			ELSE
+				SET isSuccess = 0;
+            END IF;            
+            
+		END IF;        	
+            
+		IF (isSuccess = 1) THEN            
+			# --Update Candidate table for IN_OUT
+			SET @sql_statement = CONCAT('UPDATE ', school_candidate_tblname, ' SET IN_OUT=''', current_IN_OUT, ''' WHERE Candidate_ID=', Candidate_ID);            
+			PREPARE stmt1 FROM @sql_statement;
+			EXECUTE stmt1;
+			DEALLOCATE PREPARE stmt1;
+                        
+			# --Insert record in Attendance table			
+            SET @sql_statement = CONCAT('INSERT INTO ', school_attendance_tblname, ' (Candidate_ID, Date, Time, IN_OUT) VALUES (', Candidate_ID, ',''', NOW(), ''', ''', server_time, ''',''', current_IN_OUT,''')');
+			PREPARE stmt1 FROM @sql_statement;
+			EXECUTE stmt1;
+			DEALLOCATE PREPARE stmt1;
+            
+			IF (Candidate_Type_Name = 'Student') THEN                
+                SET successmessage = CONCAT('1|', Mob1, '|', messageText, '|', API_Key, '|', Route);
+                -- SET successmessage = CONCAT('1|', Mob1, '|', messageText);				            
+            ELSE
+				SET successmessage = '1|0';
+            END IF;            
+                        
+		ELSE
+            SET successmessage = '0';
+		END IF;                    
+    ELSE
+		SET successmessage = '0';
+    END IF;
+
+END LOOP;
+Insert into log_sp_execution_test(execution_date, sp_message) values(NOW( ), successmessage);
+CLOSE cur_candidate;
+-- SELECT successmessage;
+DROP VIEW candidate_vw;
+
+END$$
+
+DROP PROCEDURE IF EXISTS `sp_TestOutResult`$$
+CREATE DEFINER=`mydevloper`@`localhost` PROCEDURE `sp_TestOutResult`(IN `schoolid` VARCHAR(7), IN `rfidno` VARCHAR(20), INOUT `successmessage` VARCHAR(200))
+    NO SQL
+BEGIN
+
+SET successmessage = '1|917890801439|Titli has entered into the school on time.';
+Insert into log_sp_execution_test(execution_date, sp_message) values(NOW( ), successmessage);
+-- SELECT successmessage;
+
+END$$
+
+DROP PROCEDURE IF EXISTS `TESTPROC`$$
+CREATE DEFINER=`mydevloper`@`localhost` PROCEDURE `TESTPROC`()
+    NO SQL
+BEGIN
+	INSERT INTO test SET `field1` = NOW(), `field2` = NOW();
+END$$
+
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `Candidate_Type`
+--
+
+DROP TABLE IF EXISTS `Candidate_Type`;
+CREATE TABLE IF NOT EXISTS `Candidate_Type` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Type_Name` varchar(45) NOT NULL COMMENT 'Student/Staff',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+
+--
+-- Dumping data for table `Candidate_Type`
+--
+
+INSERT INTO `Candidate_Type` (`ID`, `Type_Name`) VALUES
+(1, 'Student'),
+(2, 'Teacher'),
+(3, 'Staff');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ci_sessions`
+--
+
+DROP TABLE IF EXISTS `ci_sessions`;
+CREATE TABLE IF NOT EXISTS `ci_sessions` (
+  `id` varchar(40) NOT NULL,
+  `ip_address` varchar(45) NOT NULL,
+  `timestamp` int(10) unsigned NOT NULL DEFAULT '0',
+  `data` blob NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `ci_sessions_timestamp` (`timestamp`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `ci_sessions`
+--
+
+INSERT INTO `ci_sessions` (`id`, `ip_address`, `timestamp`, `data`) VALUES
+('02a8ccad932c5516146c7be669086221918e83a2', '116.193.132.167', 1473185831, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333138353833313b757365727c4f3a383a22737464436c617373223a31373a7b733a323a224944223b733a313a2231223b733a343a224e616d65223b733a393a224174616e7520446579223b733a373a22557365725f4944223b733a353a226174616e75223b733a383a2250617373776f7264223b733a36303a22243279243130244a4471315850563754417a524c7a695163577a5236757046726d45724d674f66424b7246546a5968507a4d64794964554531683932223b733a383a2249735f41646d696e223b4e3b733a353a22456d61696c223b733a32303a226d726174616e7564657940676d61696c2e636f6d223b733a343a224d6f6231223b733a31303a2239303030303030303030223b733a373a2241646472657373223b733a31363a2244756d2044756d2c204b6f6c6b617461223b733a343a2243697479223b733a373a224b6f6c6b617461223b733a353a225374617465223b733a31313a22576573742042656e67616c223b733a373a225a6970436f6465223b733a363a22373030303238223b733a393a225363686f6f6c5f4944223b733a373a2253433030303031223b733a31323a22557365725f547970655f4944223b733a313a2232223b733a383a2241646465645f4f6e223b733a31393a22323031362d30392d30342032303a30323a3131223b733a31303a22557064617465645f4f6e223b733a31393a22323031362d30392d30342031333a31333a3336223b733a393a2269735f616374697665223b733a313a2231223b733a31303a2269735f64656c65746564223b733a313a2230223b7d7363686f6f6c7c4e3b6c6f676765645f696e7c623a313b),
+('0c34782ac69eaea6e69b5b2c9571aee9c68cc146', '45.64.227.56', 1473176603, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333137363630333b),
+('1b54b81a09e56487e5b3acea171b53b7ce411ebd', '45.64.227.56', 1473159159, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333135393135393b),
+('30cbd764d58c7f59de65501eb8ed4b017e7aa435', '116.193.132.167', 1473189702, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333138393730323b),
+('33350f5a1337758b9c848c1cb086ff5abf8c02f1', '116.193.132.167', 1473182990, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333138323936373b),
+('44263811351c2bec274ca4313a74b35da64d355e', '116.193.132.167', 1473189227, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333138393231393b757365727c4f3a383a22737464436c617373223a31373a7b733a323a224944223b733a313a2231223b733a343a224e616d65223b733a393a224174616e7520446579223b733a373a22557365725f4944223b733a353a226174616e75223b733a383a2250617373776f7264223b733a36303a22243279243130244a4471315850563754417a524c7a695163577a5236757046726d45724d674f66424b7246546a5968507a4d64794964554531683932223b733a383a2249735f41646d696e223b4e3b733a353a22456d61696c223b733a32303a226d726174616e7564657940676d61696c2e636f6d223b733a343a224d6f6231223b733a31303a2239303030303030303030223b733a373a2241646472657373223b733a31363a2244756d2044756d2c204b6f6c6b617461223b733a343a2243697479223b733a373a224b6f6c6b617461223b733a353a225374617465223b733a31313a22576573742042656e67616c223b733a373a225a6970436f6465223b733a363a22373030303238223b733a393a225363686f6f6c5f4944223b733a373a2253433030303031223b733a31323a22557365725f547970655f4944223b733a313a2232223b733a383a2241646465645f4f6e223b733a31393a22323031362d30392d30342032303a30323a3131223b733a31303a22557064617465645f4f6e223b733a31393a22323031362d30392d30342031333a31333a3336223b733a393a2269735f616374697665223b733a313a2231223b733a31303a2269735f64656c65746564223b733a313a2230223b7d7363686f6f6c7c4e3b6c6f676765645f696e7c623a313b),
+('62c42ac6b6f72e82da45a1e6d24a80cdfe09e8b5', '45.64.227.56', 1473182742, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333138323734323b),
+('66f1ea72ba80895b51b378e14da7282c570dbe39', '45.64.227.56', 1473182710, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333138323731303b),
+('74a17ec22769142411f578d5cdea816b603f56ad', '116.193.132.167', 1473186199, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333138363139393b),
+('a9a91546c4390d87b6d1303b229cf219054c6a8f', '45.64.227.56', 1473167115, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333136373131353b),
+('ac4162945959e2b19a5a1d4cead786e441b2b863', '116.193.132.167', 1473188292, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333138383239323b757365727c4f3a383a22737464436c617373223a31373a7b733a323a224944223b733a313a2231223b733a343a224e616d65223b733a393a224174616e7520446579223b733a373a22557365725f4944223b733a353a226174616e75223b733a383a2250617373776f7264223b733a36303a22243279243130244a4471315850563754417a524c7a695163577a5236757046726d45724d674f66424b7246546a5968507a4d64794964554531683932223b733a383a2249735f41646d696e223b4e3b733a353a22456d61696c223b733a32303a226d726174616e7564657940676d61696c2e636f6d223b733a343a224d6f6231223b733a31303a2239303030303030303030223b733a373a2241646472657373223b733a31363a2244756d2044756d2c204b6f6c6b617461223b733a343a2243697479223b733a373a224b6f6c6b617461223b733a353a225374617465223b733a31313a22576573742042656e67616c223b733a373a225a6970436f6465223b733a363a22373030303238223b733a393a225363686f6f6c5f4944223b733a373a2253433030303031223b733a31323a22557365725f547970655f4944223b733a313a2232223b733a383a2241646465645f4f6e223b733a31393a22323031362d30392d30342032303a30323a3131223b733a31303a22557064617465645f4f6e223b733a31393a22323031362d30392d30342031333a31333a3336223b733a393a2269735f616374697665223b733a313a2231223b733a31303a2269735f64656c65746564223b733a313a2230223b7d7363686f6f6c7c4e3b6c6f676765645f696e7c623a313b),
+('ac7605d0808defca693738829858063469b459a8', '203.163.237.2', 1473167265, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333136373236353b),
+('bbc5f0d1e604217c00e5599e24eed01395de9454', '45.64.227.56', 1473176620, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333137363631393b757365727c4f3a383a22737464436c617373223a31373a7b733a323a224944223b733a313a2238223b733a343a224e616d65223b733a31333a22436f6d70616e79205374616666223b733a373a22557365725f4944223b733a31303a2253746166667573657231223b733a383a2250617373776f7264223b733a36303a22243279243130246141306f6b4b6b7075355043784e5037384b7a71474f54665a67735a4d3230584c774163304c4857417a6c7a42686933666c633165223b733a383a2249735f41646d696e223b4e3b733a353a22456d61696c223b733a32323a22632e73406b7270736f6c7574696f6e732e636f2e696e223b733a343a224d6f6231223b733a31303a2239303030303030303031223b733a373a2241646472657373223b733a303a22223b733a343a2243697479223b733a373a224b6f6c6b617461223b733a353a225374617465223b733a31313a22576573742042656e67616c223b733a373a225a6970436f6465223b733a363a22373030303031223b733a393a225363686f6f6c5f4944223b733a373a2253433030303031223b733a31323a22557365725f547970655f4944223b733a313a2234223b733a383a2241646465645f4f6e223b733a31393a22323031362d30392d30362030363a35383a3133223b733a31303a22557064617465645f4f6e223b733a31393a22323031362d30392d30352032333a35383a3431223b733a393a2269735f616374697665223b733a313a2231223b733a31303a2269735f64656c65746564223b733a313a2230223b7d7363686f6f6c7c4e3b6c6f676765645f696e7c623a313b),
+('d40f177549e0356bd4dd3478410f775d4eff74fc', '45.64.227.56', 1473188723, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333138383635353b757365727c4f3a383a22737464436c617373223a31373a7b733a323a224944223b733a313a2237223b733a343a224e616d65223b733a313a2247223b733a373a22557365725f4944223b733a393a22477561726469616e31223b733a383a2250617373776f7264223b733a36303a2224327924313024786e453759324b70714c544a757852566e636964532e7941506839684c516549746b5563706330502e6c7a524869444a4768515579223b733a383a2249735f41646d696e223b4e3b733a353a22456d61696c223b733a31323a22702e7040676d61696c2e696e223b733a343a224d6f6231223b733a31303a2239303030303030303031223b733a373a2241646472657373223b733a303a22223b733a343a2243697479223b733a373a224b6f6c6b617461223b733a353a225374617465223b733a31313a22576573742042656e67616c223b733a373a225a6970436f6465223b733a363a22373030303031223b733a393a225363686f6f6c5f4944223b733a373a2253433030303031223b733a31323a22557365725f547970655f4944223b733a313a2233223b733a383a2241646465645f4f6e223b733a31393a22323031362d30392d30362030363a31303a3339223b733a31303a22557064617465645f4f6e223b733a31393a22323031362d30392d30352032333a34313a3133223b733a393a2269735f616374697665223b733a313a2231223b733a31303a2269735f64656c65746564223b733a313a2230223b7d7363686f6f6c7c4e3b6c6f676765645f696e7c623a313b),
+('d897ed54d12d227e8153f63760bb77531e590333', '116.193.132.167', 1473188667, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333138383636373b),
+('e176b3db1c4947561d1c088568dae044163b95e0', '45.64.227.56', 1473182662, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333138323636323b),
+('e35fc70b6d2d7901d57487d610ce679c21063455', '116.193.132.167', 1473189118, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333138383930333b757365727c4f3a383a22737464436c617373223a31373a7b733a323a224944223b733a313a2231223b733a343a224e616d65223b733a393a224174616e7520446579223b733a373a22557365725f4944223b733a353a226174616e75223b733a383a2250617373776f7264223b733a36303a22243279243130244a4471315850563754417a524c7a695163577a5236757046726d45724d674f66424b7246546a5968507a4d64794964554531683932223b733a383a2249735f41646d696e223b4e3b733a353a22456d61696c223b733a32303a226d726174616e7564657940676d61696c2e636f6d223b733a343a224d6f6231223b733a31303a2239303030303030303030223b733a373a2241646472657373223b733a31363a2244756d2044756d2c204b6f6c6b617461223b733a343a2243697479223b733a373a224b6f6c6b617461223b733a353a225374617465223b733a31313a22576573742042656e67616c223b733a373a225a6970436f6465223b733a363a22373030303238223b733a393a225363686f6f6c5f4944223b733a373a2253433030303031223b733a31323a22557365725f547970655f4944223b733a313a2232223b733a383a2241646465645f4f6e223b733a31393a22323031362d30392d30342032303a30323a3131223b733a31303a22557064617465645f4f6e223b733a31393a22323031362d30392d30342031333a31333a3336223b733a393a2269735f616374697665223b733a313a2231223b733a31303a2269735f64656c65746564223b733a313a2230223b7d7363686f6f6c7c4e3b6c6f676765645f696e7c623a313b),
+('e6632353175156d84cd051c4b7bb805a23a1febe', '45.64.227.56', 1473159229, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333135393137383b757365727c4f3a383a22737464436c617373223a31373a7b733a323a224944223b733a313a2238223b733a343a224e616d65223b733a31333a22436f6d70616e79205374616666223b733a373a22557365725f4944223b733a31303a2253746166667573657231223b733a383a2250617373776f7264223b733a36303a22243279243130246141306f6b4b6b7075355043784e5037384b7a71474f54665a67735a4d3230584c774163304c4857417a6c7a42686933666c633165223b733a383a2249735f41646d696e223b4e3b733a353a22456d61696c223b733a32323a22632e73406b7270736f6c7574696f6e732e636f2e696e223b733a343a224d6f6231223b733a31303a2239303030303030303031223b733a373a2241646472657373223b733a303a22223b733a343a2243697479223b733a373a224b6f6c6b617461223b733a353a225374617465223b733a31313a22576573742042656e67616c223b733a373a225a6970436f6465223b733a363a22373030303031223b733a393a225363686f6f6c5f4944223b733a373a2253433030303031223b733a31323a22557365725f547970655f4944223b733a313a2234223b733a383a2241646465645f4f6e223b733a31393a22323031362d30392d30362030363a35383a3133223b733a31303a22557064617465645f4f6e223b733a31393a22323031362d30392d30352032333a35383a3431223b733a393a2269735f616374697665223b733a313a2231223b733a31303a2269735f64656c65746564223b733a313a2230223b7d7363686f6f6c7c4e3b6c6f676765645f696e7c623a313b),
+('e89e6566bc7777ceb0abfa5e9fde0f3e9b78ed5a', '116.193.132.167', 1473182595, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333138323539353b),
+('f121c220ecb5c8d57ed1899c7d277328819acc2e', '116.193.132.167', 1473182423, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333138323432333b),
+('fa2b9abf00c6f8cdf291eb2f4ac5c70429e29886', '116.193.132.167', 1473188886, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333138383539383b757365727c4f3a383a22737464436c617373223a31373a7b733a323a224944223b733a313a2237223b733a343a224e616d65223b733a313a2247223b733a373a22557365725f4944223b733a393a22477561726469616e31223b733a383a2250617373776f7264223b733a36303a2224327924313024786e453759324b70714c544a757852566e636964532e7941506839684c516549746b5563706330502e6c7a524869444a4768515579223b733a383a2249735f41646d696e223b4e3b733a353a22456d61696c223b733a31323a22702e7040676d61696c2e696e223b733a343a224d6f6231223b733a31303a2239303030303030303031223b733a373a2241646472657373223b733a303a22223b733a343a2243697479223b733a373a224b6f6c6b617461223b733a353a225374617465223b733a31313a22576573742042656e67616c223b733a373a225a6970436f6465223b733a363a22373030303031223b733a393a225363686f6f6c5f4944223b733a373a2253433030303031223b733a31323a22557365725f547970655f4944223b733a313a2233223b733a383a2241646465645f4f6e223b733a31393a22323031362d30392d30362030363a31303a3339223b733a31303a22557064617465645f4f6e223b733a31393a22323031362d30392d30352032333a34313a3133223b733a393a2269735f616374697665223b733a313a2231223b733a31303a2269735f64656c65746564223b733a313a2230223b7d7363686f6f6c7c4e3b6c6f676765645f696e7c623a313b),
+('fb462b2ccb887a38ada8c6eaf9469aec06fe41c4', '198.12.131.80', 1473152458, 0x5f5f63695f6c6173745f726567656e65726174657c693a313437333135323435383b);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `Class`
+--
+
+DROP TABLE IF EXISTS `Class`;
+CREATE TABLE IF NOT EXISTS `Class` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(20) NOT NULL,
+  `Section` varchar(20) NOT NULL,
+  `Added_On` timestamp NULL DEFAULT NULL,
+  `Updated_On` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `Updated_By` int(11) DEFAULT NULL,
+  `Is_Deleted` int(11) DEFAULT '0' COMMENT '0 = No\\n1 = Yes',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=11 ;
+
+--
+-- Dumping data for table `Class`
+--
+
+INSERT INTO `Class` (`ID`, `Name`, `Section`, `Added_On`, `Updated_On`, `Updated_By`, `Is_Deleted`) VALUES
+(1, 'Class 1', 'A', NULL, NULL, NULL, 0),
+(2, 'Class 1', 'B', NULL, NULL, NULL, 0),
+(3, 'Class 2', 'A', NULL, NULL, NULL, 0),
+(4, 'Class 2', 'B', NULL, NULL, NULL, 0),
+(5, 'Class 3', 'A', NULL, NULL, NULL, 0),
+(6, 'Class 3', 'B', NULL, NULL, NULL, 0),
+(7, 'Class 4', 'A', NULL, NULL, NULL, 0),
+(8, 'Class 4', 'B', NULL, NULL, NULL, 0),
+(9, 'Class 5', 'A', NULL, NULL, NULL, 0),
+(10, 'Class 5', 'B', NULL, NULL, NULL, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `Event`
+--
+
+DROP TABLE IF EXISTS `Event`;
+CREATE TABLE IF NOT EXISTS `Event` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(60) NOT NULL,
+  `Description` varchar(600) DEFAULT NULL,
+  `Message` varchar(160) DEFAULT NULL,
+  `Date` date DEFAULT NULL,
+  `School_ID` varchar(7) NOT NULL,
+  `Added_On` timestamp NULL DEFAULT NULL,
+  `Updated_On` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `Updated_By` int(11) DEFAULT NULL,
+  `Is_Deleted` int(11) DEFAULT '0' COMMENT '0 = No\\n1 = Yes',
+  PRIMARY KEY (`ID`),
+  KEY `fk_Event_School1_idx` (`School_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `login`
+--
+
+DROP TABLE IF EXISTS `login`;
+CREATE TABLE IF NOT EXISTS `login` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `Name` varchar(60) DEFAULT NULL,
   `User_ID` varchar(20) NOT NULL,
-  `Password` varchar(16) NOT NULL,
+  `Password` varchar(255) NOT NULL,
   `Is_Admin` tinyint(4) DEFAULT '0',
   `Email` varchar(60) DEFAULT NULL,
   `Mob1` varchar(13) DEFAULT NULL,
@@ -41,241 +394,1843 @@ CREATE TABLE `educare_db`.`login` (
   `ZipCode` bigint(20) DEFAULT NULL,
   `School_ID` varchar(7) DEFAULT NULL COMMENT 'School_ID field will be blank or ''0'', if the user type is not school.',
   `User_Type_ID` int(11) NOT NULL,
+  `Added_On` timestamp NULL DEFAULT NULL,
+  `Updated_On` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `is_active` tinyint(1) NOT NULL DEFAULT '0',
+  `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ID`),
-  KEY `fk_Login_User_Type1_idx` (`User_Type_ID`),
-  CONSTRAINT `fk_Login_User_Type1` FOREIGN KEY (`User_Type_ID`) REFERENCES `educare_db`.`User_Type` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Alter table for `login`
---
-
-ALTER TABLE  `educare_db`.`login` ADD  `created_at` DATETIME NOT NULL AFTER  `User_Type_ID` ,
-ADD  `updated_at` DATETIME NOT NULL AFTER  `created_at` ,
-ADD  `is_active` TINYINT( 1 ) NOT NULL DEFAULT  '0' AFTER  `updated_at` ,
-ADD  `is_deleted` TINYINT( 1 ) NOT NULL DEFAULT  '0' AFTER  `is_active`;
+  KEY `fk_Login_User_Type1_idx` (`User_Type_ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
 
 --
 -- Dumping data for table `login`
 --
 
-INSERT INTO `educare_db`.`login` (`ID`, `Name`, `User_ID`, `Password`, `Is_Admin`, `Email`, `Mob1`, `Address`, `City`, `State`, `ZipCode`, `School_ID`, `User_Type_ID`, `created_at`, `updated_at`, `is_active`, `is_deleted`) VALUES
-(1, 'Atanu Dey', 'atanu', 'guitar', NULL, 'mratanudey@gmail.com', '9007559769', '17/A Durga Bari Road', 'Kolkata', 'West Bengal', 700028, '1', 2, '2016-08-08 21:17:47', '2016-08-08 21:17:47', 0, 0),
-(2, 'Atanu Dey', 'sentu', 'guitar', NULL, 'mratanudey@gmail.com', '8820610094', '17/A Durga Bari Road', 'Kolkata', 'West Bengal', 700028, '1', 2, '2016-08-08 21:20:26', '2016-08-08 21:20:26', 0, 0);
+INSERT INTO `login` (`ID`, `Name`, `User_ID`, `Password`, `Is_Admin`, `Email`, `Mob1`, `Address`, `City`, `State`, `ZipCode`, `School_ID`, `User_Type_ID`, `Added_On`, `Updated_On`, `is_active`, `is_deleted`) VALUES
+(1, 'Atanu Dey', 'atanu', '$2y$10$JDq1XPV7TAzRLziQcWzR6upFrmErMgOfBKrFTjYhPzMdyIdUE1h92', NULL, 'mratanudey@gmail.com', '9000000000', 'Dum Dum, Kolkata', 'Kolkata', 'West Bengal', 700028, 'SC00001', 2, '2016-09-05 03:02:11', '2016-09-04 20:13:36', 1, 0),
+(2, 'Atanu Dey', 'atanudey', '$2y$10$44Ay5FDr2m/nSseRpIXItu3tIGAQ6J9yQivXqOUkLSQWHODv9npom', NULL, 'mratanudey83@gmail.com', '9000000000', 'Dum Dum, Kolkata', 'Kolkata', 'West Bengal', 700028, 'SC00001', 2, '2016-09-05 03:10:48', '2016-09-04 20:13:36', 1, 0),
+(5, 'Atanu Dey', 'atanud', '$2y$10$YpHeGyBEsFKCZrrMirTFr.b5ntDM2uPU29MC.18bHYELjiz3HTSLa', NULL, 'newsworm.india@gmail.com', '9000000000', 'Dum Dum, Kolkata', 'Kolkata', 'West Bengal', 700028, 'SC00001', 3, '2016-09-05 03:31:02', '2016-09-04 20:32:39', 1, 0),
+(6, 'Partha', 'Testing1', '$2y$10$5FgG6D9993Dm92mp.UweyOPVjR1JJIksYWiFswR.LmTJ7ZV14XliW', NULL, 'prana_chak@hotmail.com', '9051733137', 'fgsfg sfgfdg', 'Kolkata', 'West Bengal', 712124, 'SC00001', 2, '2016-09-05 23:35:21', '2016-09-05 16:37:04', 1, 0),
+(7, 'G', 'Guardian1', '$2y$10$xnE7Y2KpqLTJuxRVncidS.yAPh9hLQeItkUcpc0P.lzRHiDJGhQUy', NULL, 'p.p@gmail.in', '9000000001', '', 'Kolkata', 'West Bengal', 700001, 'SC00001', 3, '2016-09-06 13:10:39', '2016-09-06 06:41:13', 1, 0),
+(8, 'Company Staff', 'Staffuser1', '$2y$10$aA0okKkpu5PCxNP78KzqGOTfZgsZM20XLwAc0LHWAzlzBhi3flc1e', NULL, 'c.s@krpsolutions.co.in', '9000000001', '', 'Kolkata', 'West Bengal', 700001, 'SC00001', 4, '2016-09-06 13:58:13', '2016-09-06 06:58:41', 1, 0);
 
 -- --------------------------------------------------------
 
--- -----------------------------------------------------
--- Table `educare_db`.`School`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `educare_db`.`School` ;
+--
+-- Table structure for table `log_sp_execution_test`
+--
 
-CREATE TABLE IF NOT EXISTS `educare_db`.`School` (
-  `ID` VARCHAR(7) NOT NULL COMMENT 'Like: \'SC00001\'',
-  `School_Name` VARCHAR(60) NOT NULL,
-  `Description` NVARCHAR(1000) NULL,
-  `Address1` VARCHAR(45) NULL,
-  `Address2` VARCHAR(45) NULL,
-  `State` VARCHAR(30) NULL,
-  `Pin` VARCHAR(7) NULL,
-  `No_Of_Students` INT(11) NULL,
-  `No_Of_Machines` INT(11) NULL,
-  `Event_Active` TINYINT(4) NULL DEFAULT 0 COMMENT '1 or 0',
-  PRIMARY KEY (`ID`))
-ENGINE = InnoDB;
+DROP TABLE IF EXISTS `log_sp_execution_test`;
+CREATE TABLE IF NOT EXISTS `log_sp_execution_test` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `execution_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `sp_message` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=58 ;
 
-INSERT INTO `educare_db`.`School` (`ID`, `School_Name`, `Description`, `Address1`, `Address2`, `State`, `Pin`, `No_Of_Students`, `No_Of_Machines`, `Event_Active`) VALUES ('', 'South Suburban School (Main)', 'Established in 1874. Sir Ashutosh Mukherjee was a student of this school.', 'Bhowanipore', 'Kolkata', 'West Bengal', '700025', '2500', '100', '1');
+--
+-- Dumping data for table `log_sp_execution_test`
+--
 
--- -----------------------------------------------------
--- Table `educare_db`.`Class`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `educare_db`.`Class` ;
+INSERT INTO `log_sp_execution_test` (`ID`, `execution_date`, `sp_message`) VALUES
+(48, '2016-08-30 16:58:30', '1|919051733137|Your daughter Rusha has entered into the school at 22:28:30.|dfe9d88e60ed4314b3c138189368f79d2bef9671|107.200.10.02'),
+(49, '2016-08-31 04:16:14', '1|919051733137|Your daughter Rusha has entered into the school at 09:46:14.|dfe9d88e60ed4314b3c138189368f79d2bef9671|107.200.10.02'),
+(50, '2016-08-31 04:24:21', '1|919051733137|Your daughter Rusha has entered into the school at 09:54:21.|dfe9d88e60ed4314b3c138189368f79d2bef9671|107.200.10.02'),
+(51, '2016-08-31 04:56:41', '1|917890217074|Your daughter Rusha has entered into the school at 10:26:41.|dfe9d88e60ed4314b3c138189368f79d2bef9671|107.200.10.02'),
+(52, '2016-08-31 05:22:13', '1|917890217074|Your daughter Rusha has entered into the school at 10:52:13.|dfe9d88e60ed4314b3c138189368f79d2bef9671|107.200.10.02'),
+(53, '2016-08-31 05:57:45', '1|917890217074|Your daughter Rusha has entered into the school at 11:27:45.|dfe9d88e60ed4314b3c138189368f79d2bef9671|107.200.10.02'),
+(54, '2016-08-31 06:00:34', '1|919051733137|Your daughter Prahan has entered into the school at 11:30:34.|dfe9d88e60ed4314b3c138189368f79d2bef9671|107.200.10.02'),
+(55, '2016-08-31 06:02:56', '0'),
+(56, '2016-08-31 06:04:09', '0'),
+(57, '2016-08-31 06:31:08', '0');
 
-CREATE TABLE IF NOT EXISTS `educare_db`.`Class` (
-  `ID` INT(11) NOT NULL AUTO_INCREMENT,
-  `Name` VARCHAR(20) NOT NULL,
-  `Section` VARCHAR(20) NOT NULL,
-  PRIMARY KEY (`ID`))
-ENGINE = InnoDB;
+-- --------------------------------------------------------
 
--- -----------------------------------------------------
--- Table `educare_db`.`School_PointOfContact`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `educare_db`.`School_PointOfContact` ;
+--
+-- Table structure for table `SC00001_Attendance`
+--
 
-CREATE TABLE IF NOT EXISTS `educare_db`.`School_PointOfContact` (
-  `ID` INT(11) NOT NULL AUTO_INCREMENT,
-  `PointOfContact_Name` VARCHAR(60) NOT NULL,
-  `Address` VARCHAR(60) NULL,
-  `Mob1` VARCHAR(15) NULL,
-  `Mob2` VARCHAR(15) NULL,
-  `Email_ID` VARCHAR(60) NULL,
-  `School_ID` VARCHAR(7) NOT NULL,
+DROP TABLE IF EXISTS `SC00001_Attendance`;
+CREATE TABLE IF NOT EXISTS `SC00001_Attendance` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Time` time NOT NULL,
+  `IN_OUT` varchar(3) DEFAULT NULL COMMENT 'IN/OUT',
+  `Candidate_ID` int(11) NOT NULL,
   PRIMARY KEY (`ID`),
-  CONSTRAINT `fk_School_PointOfContact_School1`
-    FOREIGN KEY (`School_ID`)
-    REFERENCES `educare_db`.`School` (`ID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-CREATE INDEX `fk_School_PointOfContact_School1_idx` ON `educare_db`.`School_PointOfContact` (`School_ID` ASC);
-
--- -----------------------------------------------------
--- Table `educare_db`.`Candidate_Type`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `educare_db`.`Candidate_Type` ;
-
-CREATE TABLE IF NOT EXISTS `educare_db`.`Candidate_Type` (
-  `ID` INT(11) NOT NULL AUTO_INCREMENT,
-  `Type_Name` VARCHAR(45) NOT NULL COMMENT 'Student/Staff' ,
-  PRIMARY KEY (`ID`))
-ENGINE = InnoDB;
+  KEY `fk_SC0001_Attendance_SC0001_Candidate1_idx` (`Candidate_ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1401 ;
 
 --
--- Table structure for table `ci_sessions`
+-- Dumping data for table `SC00001_Attendance`
 --
 
-CREATE TABLE IF NOT EXISTS `ci_sessions` (
-  `id` varchar(40) NOT NULL,
-  `ip_address` varchar(45) NOT NULL,
-  `timestamp` int(10) unsigned NOT NULL DEFAULT '0',
-  `data` blob NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `ci_sessions_timestamp` (`timestamp`)
-) ENGINE=InnoDB;
+INSERT INTO `SC00001_Attendance` (`ID`, `Date`, `Time`, `IN_OUT`, `Candidate_ID`) VALUES
+(1, '2016-06-29 20:10:00', '00:00:00', 'IN', 1),
+(2, '2016-06-29 20:16:00', '00:00:00', 'OUT', 1),
+(3, '2016-01-07 20:10:00', '00:00:00', 'IN', 1),
+(4, '2016-01-07 20:16:00', '00:00:00', 'OUT', 1),
+(5, '2016-09-16 20:10:00', '00:00:00', 'IN', 2),
+(6, '2016-09-16 20:16:00', '00:00:00', 'OUT', 2),
+(7, '2016-09-08 20:10:00', '00:00:00', 'IN', 2),
+(8, '2016-09-08 20:16:00', '00:00:00', 'OUT', 2),
+(9, '2016-01-10 20:10:00', '00:00:00', 'IN', 3),
+(10, '2016-01-10 20:16:00', '00:00:00', 'OUT', 3),
+(11, '2016-10-13 20:10:00', '00:00:00', 'IN', 3),
+(12, '2016-10-13 20:16:00', '00:00:00', 'OUT', 3),
+(13, '2016-05-22 20:10:00', '00:00:00', 'IN', 1),
+(14, '2016-05-22 20:16:00', '00:00:00', 'OUT', 1),
+(15, '2016-01-23 20:10:00', '00:00:00', 'IN', 1),
+(16, '2016-01-23 20:16:00', '00:00:00', 'OUT', 1),
+(17, '2016-08-23 20:10:00', '00:00:00', 'IN', 3),
+(18, '2016-08-23 20:16:00', '00:00:00', 'OUT', 3),
+(19, '2016-05-24 20:10:00', '00:00:00', 'IN', 1),
+(20, '2016-05-24 20:16:00', '00:00:00', 'OUT', 1),
+(21, '2016-01-10 20:10:00', '00:00:00', 'IN', 3),
+(22, '2016-01-10 20:16:00', '00:00:00', 'OUT', 3),
+(23, '2016-08-25 20:10:00', '00:00:00', 'IN', 1),
+(24, '2016-08-25 20:16:00', '00:00:00', 'OUT', 1),
+(25, '2016-05-10 20:10:00', '00:00:00', 'IN', 2),
+(26, '2016-05-10 20:16:00', '00:00:00', 'OUT', 2),
+(27, '2016-02-02 20:10:00', '00:00:00', 'IN', 3),
+(28, '2016-02-02 20:16:00', '00:00:00', 'OUT', 3),
+(29, '2016-10-03 20:10:00', '00:00:00', 'IN', 2),
+(30, '2016-10-03 20:16:00', '00:00:00', 'OUT', 2),
+(31, '2016-06-27 20:10:00', '00:00:00', 'IN', 1),
+(32, '2016-06-27 20:16:00', '00:00:00', 'OUT', 1),
+(33, '2016-11-16 20:10:00', '00:00:00', 'IN', 2),
+(34, '2016-11-16 20:16:00', '00:00:00', 'OUT', 2),
+(35, '2016-09-09 20:10:00', '00:00:00', 'IN', 1),
+(36, '2016-09-09 20:16:00', '00:00:00', 'OUT', 1),
+(37, '2016-12-11 20:10:00', '00:00:00', 'IN', 3),
+(38, '2016-12-11 20:16:00', '00:00:00', 'OUT', 3),
+(39, '2016-03-26 20:10:00', '00:00:00', 'IN', 3),
+(40, '2016-03-26 20:16:00', '00:00:00', 'OUT', 3),
+(41, '2016-04-13 20:10:00', '00:00:00', 'IN', 2),
+(42, '2016-04-13 20:16:00', '00:00:00', 'OUT', 2),
+(43, '2016-06-07 20:10:00', '00:00:00', 'IN', 2),
+(44, '2016-06-07 20:16:00', '00:00:00', 'OUT', 2),
+(45, '2016-07-27 20:10:00', '00:00:00', 'IN', 1),
+(46, '2016-07-27 20:16:00', '00:00:00', 'OUT', 1),
+(47, '2016-10-05 20:10:00', '00:00:00', 'IN', 1),
+(48, '2016-10-05 20:16:00', '00:00:00', 'OUT', 1),
+(49, '2016-05-16 20:10:00', '00:00:00', 'IN', 1),
+(50, '2016-05-16 20:16:00', '00:00:00', 'OUT', 1),
+(51, '0000-00-00 00:00:00', '00:00:00', 'IN', 1),
+(52, '0000-00-00 00:00:00', '00:00:00', 'OUT', 1),
+(53, '2016-10-29 20:10:00', '00:00:00', 'IN', 1),
+(54, '2016-10-29 20:16:00', '00:00:00', 'OUT', 1),
+(55, '2016-10-20 20:10:00', '00:00:00', 'IN', 3),
+(56, '2016-10-20 20:16:00', '00:00:00', 'OUT', 3),
+(57, '2016-03-26 20:10:00', '00:00:00', 'IN', 1),
+(58, '2016-03-26 20:16:00', '00:00:00', 'OUT', 1),
+(59, '2016-01-06 20:10:00', '00:00:00', 'IN', 3),
+(60, '2016-01-06 20:16:00', '00:00:00', 'OUT', 3),
+(61, '2016-09-10 20:10:00', '00:00:00', 'IN', 2),
+(62, '2016-09-10 20:16:00', '00:00:00', 'OUT', 2),
+(63, '2016-03-24 20:10:00', '00:00:00', 'IN', 3),
+(64, '2016-03-24 20:16:00', '00:00:00', 'OUT', 3),
+(65, '2016-05-31 20:10:00', '00:00:00', 'IN', 1),
+(66, '2016-05-31 20:16:00', '00:00:00', 'OUT', 1),
+(67, '2016-12-02 20:10:00', '00:00:00', 'IN', 2),
+(68, '2016-12-02 20:16:00', '00:00:00', 'OUT', 2),
+(69, '2016-09-09 20:10:00', '00:00:00', 'IN', 2),
+(70, '2016-09-09 20:16:00', '00:00:00', 'OUT', 2),
+(71, '2016-07-14 20:10:00', '00:00:00', 'IN', 2),
+(72, '2016-07-14 20:16:00', '00:00:00', 'OUT', 2),
+(73, '2016-04-27 20:10:00', '00:00:00', 'IN', 2),
+(74, '2016-04-27 20:16:00', '00:00:00', 'OUT', 2),
+(75, '2016-02-07 20:10:00', '00:00:00', 'IN', 2),
+(76, '2016-02-07 20:16:00', '00:00:00', 'OUT', 2),
+(77, '2016-09-20 20:10:00', '00:00:00', 'IN', 3),
+(78, '2016-09-20 20:16:00', '00:00:00', 'OUT', 3),
+(79, '2016-11-01 20:10:00', '00:00:00', 'IN', 3),
+(80, '2016-11-01 20:16:00', '00:00:00', 'OUT', 3),
+(81, '2016-05-04 20:10:00', '00:00:00', 'IN', 2),
+(82, '2016-05-04 20:16:00', '00:00:00', 'OUT', 2),
+(83, '2016-05-26 20:10:00', '00:00:00', 'IN', 1),
+(84, '2016-05-26 20:16:00', '00:00:00', 'OUT', 1),
+(85, '2016-12-21 20:10:00', '00:00:00', 'IN', 2),
+(86, '2016-12-21 20:16:00', '00:00:00', 'OUT', 2),
+(87, '2016-10-14 20:10:00', '00:00:00', 'IN', 1),
+(88, '2016-10-14 20:16:00', '00:00:00', 'OUT', 1),
+(89, '2016-10-23 20:10:00', '00:00:00', 'IN', 1),
+(90, '2016-10-23 20:16:00', '00:00:00', 'OUT', 1),
+(91, '2016-01-18 20:10:00', '00:00:00', 'IN', 3),
+(92, '2016-01-18 20:16:00', '00:00:00', 'OUT', 3),
+(93, '2016-08-05 20:10:00', '00:00:00', 'IN', 2),
+(94, '2016-08-05 20:16:00', '00:00:00', 'OUT', 2),
+(95, '2016-03-05 20:10:00', '00:00:00', 'IN', 2),
+(96, '2016-03-05 20:16:00', '00:00:00', 'OUT', 2),
+(97, '2016-04-08 20:10:00', '00:00:00', 'IN', 2),
+(98, '2016-04-08 20:16:00', '00:00:00', 'OUT', 2),
+(99, '2016-10-17 20:10:00', '00:00:00', 'IN', 1),
+(100, '2016-10-17 20:16:00', '00:00:00', 'OUT', 1),
+(101, '2016-11-10 20:10:00', '00:00:00', 'IN', 2),
+(102, '2016-11-10 20:16:00', '00:00:00', 'OUT', 2),
+(103, '2016-08-31 20:10:00', '00:00:00', 'IN', 3),
+(104, '2016-08-31 20:16:00', '00:00:00', 'OUT', 3),
+(105, '2016-12-21 20:10:00', '00:00:00', 'IN', 1),
+(106, '2016-12-21 20:16:00', '00:00:00', 'OUT', 1),
+(107, '2016-11-15 20:10:00', '00:00:00', 'IN', 3),
+(108, '2016-11-15 20:16:00', '00:00:00', 'OUT', 3),
+(109, '2016-10-01 20:10:00', '00:00:00', 'IN', 2),
+(110, '2016-10-01 20:16:00', '00:00:00', 'OUT', 2),
+(111, '2016-04-11 20:10:00', '00:00:00', 'IN', 1),
+(112, '2016-04-11 20:16:00', '00:00:00', 'OUT', 1),
+(113, '2016-07-18 20:10:00', '00:00:00', 'IN', 2),
+(114, '2016-07-18 20:16:00', '00:00:00', 'OUT', 2),
+(115, '2016-04-14 20:10:00', '00:00:00', 'IN', 3),
+(116, '2016-04-14 20:16:00', '00:00:00', 'OUT', 3),
+(117, '2016-09-15 20:10:00', '00:00:00', 'IN', 1),
+(118, '2016-09-15 20:16:00', '00:00:00', 'OUT', 1),
+(119, '2016-08-07 20:10:00', '00:00:00', 'IN', 1),
+(120, '2016-08-07 20:16:00', '00:00:00', 'OUT', 1),
+(121, '2016-01-31 20:10:00', '00:00:00', 'IN', 2),
+(122, '2016-01-31 20:16:00', '00:00:00', 'OUT', 2),
+(123, '2016-02-06 20:10:00', '00:00:00', 'IN', 2),
+(124, '2016-02-06 20:16:00', '00:00:00', 'OUT', 2),
+(125, '2016-06-17 20:10:00', '00:00:00', 'IN', 3),
+(126, '2016-06-17 20:16:00', '00:00:00', 'OUT', 3),
+(127, '2016-07-29 20:10:00', '00:00:00', 'IN', 2),
+(128, '2016-07-29 20:16:00', '00:00:00', 'OUT', 2),
+(129, '2016-05-12 20:10:00', '00:00:00', 'IN', 3),
+(130, '2016-05-12 20:16:00', '00:00:00', 'OUT', 3),
+(131, '2016-03-24 20:10:00', '00:00:00', 'IN', 1),
+(132, '2016-03-24 20:16:00', '00:00:00', 'OUT', 1),
+(133, '2016-07-14 20:10:00', '00:00:00', 'IN', 2),
+(134, '2016-07-14 20:16:00', '00:00:00', 'OUT', 2),
+(135, '2016-09-15 20:10:00', '00:00:00', 'IN', 3),
+(136, '2016-09-15 20:16:00', '00:00:00', 'OUT', 3),
+(137, '2016-05-26 20:10:00', '00:00:00', 'IN', 1),
+(138, '2016-05-26 20:16:00', '00:00:00', 'OUT', 1),
+(139, '2016-10-28 20:10:00', '00:00:00', 'IN', 1),
+(140, '2016-10-28 20:16:00', '00:00:00', 'OUT', 1),
+(141, '2016-10-31 20:10:00', '00:00:00', 'IN', 2),
+(142, '2016-10-31 20:16:00', '00:00:00', 'OUT', 2),
+(143, '2016-02-06 20:10:00', '00:00:00', 'IN', 1),
+(144, '2016-02-06 20:16:00', '00:00:00', 'OUT', 1),
+(145, '2016-12-27 20:10:00', '00:00:00', 'IN', 3),
+(146, '2016-12-27 20:16:00', '00:00:00', 'OUT', 3),
+(147, '2016-09-24 20:10:00', '00:00:00', 'IN', 3),
+(148, '2016-09-24 20:16:00', '00:00:00', 'OUT', 3),
+(149, '2016-10-13 20:10:00', '00:00:00', 'IN', 1),
+(150, '2016-10-13 20:16:00', '00:00:00', 'OUT', 1),
+(151, '2016-03-31 20:10:00', '00:00:00', 'IN', 3),
+(152, '2016-03-31 20:16:00', '00:00:00', 'OUT', 3),
+(153, '2016-02-17 20:10:00', '00:00:00', 'IN', 2),
+(154, '2016-02-17 20:16:00', '00:00:00', 'OUT', 2),
+(155, '2016-03-31 20:10:00', '00:00:00', 'IN', 1),
+(156, '2016-03-31 20:16:00', '00:00:00', 'OUT', 1),
+(157, '2016-04-17 20:10:00', '00:00:00', 'IN', 1),
+(158, '2016-04-17 20:16:00', '00:00:00', 'OUT', 1),
+(159, '2016-04-08 20:10:00', '00:00:00', 'IN', 2),
+(160, '2016-04-08 20:16:00', '00:00:00', 'OUT', 2),
+(161, '2016-08-11 20:10:00', '00:00:00', 'IN', 2),
+(162, '2016-08-11 20:16:00', '00:00:00', 'OUT', 2),
+(163, '2016-03-22 20:10:00', '00:00:00', 'IN', 2),
+(164, '2016-03-22 20:16:00', '00:00:00', 'OUT', 2),
+(165, '2016-09-20 20:10:00', '00:00:00', 'IN', 2),
+(166, '2016-09-20 20:16:00', '00:00:00', 'OUT', 2),
+(167, '2016-07-29 20:10:00', '00:00:00', 'IN', 1),
+(168, '2016-07-29 20:16:00', '00:00:00', 'OUT', 1),
+(169, '2016-07-10 20:10:00', '00:00:00', 'IN', 2),
+(170, '2016-07-10 20:16:00', '00:00:00', 'OUT', 2),
+(171, '2016-10-18 20:10:00', '00:00:00', 'IN', 2),
+(172, '2016-10-18 20:16:00', '00:00:00', 'OUT', 2),
+(173, '2016-12-16 20:10:00', '00:00:00', 'IN', 1),
+(174, '2016-12-16 20:16:00', '00:00:00', 'OUT', 1),
+(175, '2016-04-14 20:10:00', '00:00:00', 'IN', 2),
+(176, '2016-04-14 20:16:00', '00:00:00', 'OUT', 2),
+(177, '2016-07-01 20:10:00', '00:00:00', 'IN', 3),
+(178, '2016-07-01 20:16:00', '00:00:00', 'OUT', 3),
+(179, '2016-10-25 20:10:00', '00:00:00', 'IN', 1),
+(180, '2016-10-25 20:16:00', '00:00:00', 'OUT', 1),
+(181, '2016-05-13 20:10:00', '00:00:00', 'IN', 1),
+(182, '2016-05-13 20:16:00', '00:00:00', 'OUT', 1),
+(183, '2016-10-21 20:10:00', '00:00:00', 'IN', 3),
+(184, '2016-10-21 20:16:00', '00:00:00', 'OUT', 3),
+(185, '2016-11-14 20:10:00', '00:00:00', 'IN', 1),
+(186, '2016-11-14 20:16:00', '00:00:00', 'OUT', 1),
+(187, '2016-07-01 20:10:00', '00:00:00', 'IN', 2),
+(188, '2016-07-01 20:16:00', '00:00:00', 'OUT', 2),
+(189, '2016-01-05 20:10:00', '00:00:00', 'IN', 1),
+(190, '2016-01-05 20:16:00', '00:00:00', 'OUT', 1),
+(191, '2016-04-01 20:10:00', '00:00:00', 'IN', 2),
+(192, '2016-04-01 20:16:00', '00:00:00', 'OUT', 2),
+(193, '2016-02-05 20:10:00', '00:00:00', 'IN', 3),
+(194, '2016-02-05 20:16:00', '00:00:00', 'OUT', 3),
+(195, '2016-10-11 20:10:00', '00:00:00', 'IN', 1),
+(196, '2016-10-11 20:16:00', '00:00:00', 'OUT', 1),
+(197, '2016-03-31 20:10:00', '00:00:00', 'IN', 3),
+(198, '2016-03-31 20:16:00', '00:00:00', 'OUT', 3),
+(199, '2016-04-12 20:10:00', '00:00:00', 'IN', 2),
+(200, '2016-04-12 20:16:00', '00:00:00', 'OUT', 2),
+(201, '2016-06-29 20:10:00', '00:00:00', 'IN', 1),
+(202, '2016-06-29 20:16:00', '00:00:00', 'OUT', 1),
+(203, '2016-01-07 20:10:00', '00:00:00', 'IN', 1),
+(204, '2016-01-07 20:16:00', '00:00:00', 'OUT', 1),
+(205, '2016-09-16 20:10:00', '00:00:00', 'IN', 2),
+(206, '2016-09-16 20:16:00', '00:00:00', 'OUT', 2),
+(207, '2016-09-08 20:10:00', '00:00:00', 'IN', 2),
+(208, '2016-09-08 20:16:00', '00:00:00', 'OUT', 2),
+(209, '2016-01-10 20:10:00', '00:00:00', 'IN', 3),
+(210, '2016-01-10 20:16:00', '00:00:00', 'OUT', 3),
+(211, '2016-10-13 20:10:00', '00:00:00', 'IN', 3),
+(212, '2016-10-13 20:16:00', '00:00:00', 'OUT', 3),
+(213, '2016-05-22 20:10:00', '00:00:00', 'IN', 1),
+(214, '2016-05-22 20:16:00', '00:00:00', 'OUT', 1),
+(215, '2016-01-23 20:10:00', '00:00:00', 'IN', 1),
+(216, '2016-01-23 20:16:00', '00:00:00', 'OUT', 1),
+(217, '2016-08-23 20:10:00', '00:00:00', 'IN', 3),
+(218, '2016-08-23 20:16:00', '00:00:00', 'OUT', 3),
+(219, '2016-05-24 20:10:00', '00:00:00', 'IN', 1),
+(220, '2016-05-24 20:16:00', '00:00:00', 'OUT', 1),
+(221, '2016-01-10 20:10:00', '00:00:00', 'IN', 3),
+(222, '2016-01-10 20:16:00', '00:00:00', 'OUT', 3),
+(223, '2016-08-25 20:10:00', '00:00:00', 'IN', 1),
+(224, '2016-08-25 20:16:00', '00:00:00', 'OUT', 1),
+(225, '2016-05-10 20:10:00', '00:00:00', 'IN', 2),
+(226, '2016-05-10 20:16:00', '00:00:00', 'OUT', 2),
+(227, '2016-02-02 20:10:00', '00:00:00', 'IN', 3),
+(228, '2016-02-02 20:16:00', '00:00:00', 'OUT', 3),
+(229, '2016-10-03 20:10:00', '00:00:00', 'IN', 2),
+(230, '2016-10-03 20:16:00', '00:00:00', 'OUT', 2),
+(231, '2016-06-27 20:10:00', '00:00:00', 'IN', 1),
+(232, '2016-06-27 20:16:00', '00:00:00', 'OUT', 1),
+(233, '2016-11-16 20:10:00', '00:00:00', 'IN', 2),
+(234, '2016-11-16 20:16:00', '00:00:00', 'OUT', 2),
+(235, '2016-09-09 20:10:00', '00:00:00', 'IN', 1),
+(236, '2016-09-09 20:16:00', '00:00:00', 'OUT', 1),
+(237, '2016-12-11 20:10:00', '00:00:00', 'IN', 3),
+(238, '2016-12-11 20:16:00', '00:00:00', 'OUT', 3),
+(239, '2016-03-26 20:10:00', '00:00:00', 'IN', 3),
+(240, '2016-03-26 20:16:00', '00:00:00', 'OUT', 3),
+(241, '2016-04-13 20:10:00', '00:00:00', 'IN', 2),
+(242, '2016-04-13 20:16:00', '00:00:00', 'OUT', 2),
+(243, '2016-06-07 20:10:00', '00:00:00', 'IN', 2),
+(244, '2016-06-07 20:16:00', '00:00:00', 'OUT', 2),
+(245, '2016-07-27 20:10:00', '00:00:00', 'IN', 1),
+(246, '2016-07-27 20:16:00', '00:00:00', 'OUT', 1),
+(247, '2016-10-05 20:10:00', '00:00:00', 'IN', 1),
+(248, '2016-10-05 20:16:00', '00:00:00', 'OUT', 1),
+(249, '2016-05-16 20:10:00', '00:00:00', 'IN', 1),
+(250, '2016-05-16 20:16:00', '00:00:00', 'OUT', 1),
+(251, '0000-00-00 00:00:00', '00:00:00', 'IN', 1),
+(252, '0000-00-00 00:00:00', '00:00:00', 'OUT', 1),
+(253, '2016-10-29 20:10:00', '00:00:00', 'IN', 1),
+(254, '2016-10-29 20:16:00', '00:00:00', 'OUT', 1),
+(255, '2016-10-20 20:10:00', '00:00:00', 'IN', 3),
+(256, '2016-10-20 20:16:00', '00:00:00', 'OUT', 3),
+(257, '2016-03-26 20:10:00', '00:00:00', 'IN', 1),
+(258, '2016-03-26 20:16:00', '00:00:00', 'OUT', 1),
+(259, '2016-01-06 20:10:00', '00:00:00', 'IN', 3),
+(260, '2016-01-06 20:16:00', '00:00:00', 'OUT', 3),
+(261, '2016-09-10 20:10:00', '00:00:00', 'IN', 2),
+(262, '2016-09-10 20:16:00', '00:00:00', 'OUT', 2),
+(263, '2016-03-24 20:10:00', '00:00:00', 'IN', 3),
+(264, '2016-03-24 20:16:00', '00:00:00', 'OUT', 3),
+(265, '2016-05-31 20:10:00', '00:00:00', 'IN', 1),
+(266, '2016-05-31 20:16:00', '00:00:00', 'OUT', 1),
+(267, '2016-12-02 20:10:00', '00:00:00', 'IN', 2),
+(268, '2016-12-02 20:16:00', '00:00:00', 'OUT', 2),
+(269, '2016-09-09 20:10:00', '00:00:00', 'IN', 2),
+(270, '2016-09-09 20:16:00', '00:00:00', 'OUT', 2),
+(271, '2016-07-14 20:10:00', '00:00:00', 'IN', 2),
+(272, '2016-07-14 20:16:00', '00:00:00', 'OUT', 2),
+(273, '2016-04-27 20:10:00', '00:00:00', 'IN', 2),
+(274, '2016-04-27 20:16:00', '00:00:00', 'OUT', 2),
+(275, '2016-02-07 20:10:00', '00:00:00', 'IN', 2),
+(276, '2016-02-07 20:16:00', '00:00:00', 'OUT', 2),
+(277, '2016-09-20 20:10:00', '00:00:00', 'IN', 3),
+(278, '2016-09-20 20:16:00', '00:00:00', 'OUT', 3),
+(279, '2016-11-01 20:10:00', '00:00:00', 'IN', 3),
+(280, '2016-11-01 20:16:00', '00:00:00', 'OUT', 3),
+(281, '2016-05-04 20:10:00', '00:00:00', 'IN', 2),
+(282, '2016-05-04 20:16:00', '00:00:00', 'OUT', 2),
+(283, '2016-05-26 20:10:00', '00:00:00', 'IN', 1),
+(284, '2016-05-26 20:16:00', '00:00:00', 'OUT', 1),
+(285, '2016-12-21 20:10:00', '00:00:00', 'IN', 2),
+(286, '2016-12-21 20:16:00', '00:00:00', 'OUT', 2),
+(287, '2016-10-14 20:10:00', '00:00:00', 'IN', 1),
+(288, '2016-10-14 20:16:00', '00:00:00', 'OUT', 1),
+(289, '2016-10-23 20:10:00', '00:00:00', 'IN', 1),
+(290, '2016-10-23 20:16:00', '00:00:00', 'OUT', 1),
+(291, '2016-01-18 20:10:00', '00:00:00', 'IN', 3),
+(292, '2016-01-18 20:16:00', '00:00:00', 'OUT', 3),
+(293, '2016-08-05 20:10:00', '00:00:00', 'IN', 2),
+(294, '2016-08-05 20:16:00', '00:00:00', 'OUT', 2),
+(295, '2016-03-05 20:10:00', '00:00:00', 'IN', 2),
+(296, '2016-03-05 20:16:00', '00:00:00', 'OUT', 2),
+(297, '2016-04-08 20:10:00', '00:00:00', 'IN', 2),
+(298, '2016-04-08 20:16:00', '00:00:00', 'OUT', 2),
+(299, '2016-10-17 20:10:00', '00:00:00', 'IN', 1),
+(300, '2016-10-17 20:16:00', '00:00:00', 'OUT', 1),
+(301, '2016-11-10 20:10:00', '00:00:00', 'IN', 2),
+(302, '2016-11-10 20:16:00', '00:00:00', 'OUT', 2),
+(303, '2016-08-31 20:10:00', '00:00:00', 'IN', 3),
+(304, '2016-08-31 20:16:00', '00:00:00', 'OUT', 3),
+(305, '2016-12-21 20:10:00', '00:00:00', 'IN', 1),
+(306, '2016-12-21 20:16:00', '00:00:00', 'OUT', 1),
+(307, '2016-11-15 20:10:00', '00:00:00', 'IN', 3),
+(308, '2016-11-15 20:16:00', '00:00:00', 'OUT', 3),
+(309, '2016-10-01 20:10:00', '00:00:00', 'IN', 2),
+(310, '2016-10-01 20:16:00', '00:00:00', 'OUT', 2),
+(311, '2016-04-11 20:10:00', '00:00:00', 'IN', 1),
+(312, '2016-04-11 20:16:00', '00:00:00', 'OUT', 1),
+(313, '2016-07-18 20:10:00', '00:00:00', 'IN', 2),
+(314, '2016-07-18 20:16:00', '00:00:00', 'OUT', 2),
+(315, '2016-04-14 20:10:00', '00:00:00', 'IN', 3),
+(316, '2016-04-14 20:16:00', '00:00:00', 'OUT', 3),
+(317, '2016-09-15 20:10:00', '00:00:00', 'IN', 1),
+(318, '2016-09-15 20:16:00', '00:00:00', 'OUT', 1),
+(319, '2016-08-07 20:10:00', '00:00:00', 'IN', 1),
+(320, '2016-08-07 20:16:00', '00:00:00', 'OUT', 1),
+(321, '2016-01-31 20:10:00', '00:00:00', 'IN', 2),
+(322, '2016-01-31 20:16:00', '00:00:00', 'OUT', 2),
+(323, '2016-02-06 20:10:00', '00:00:00', 'IN', 2),
+(324, '2016-02-06 20:16:00', '00:00:00', 'OUT', 2),
+(325, '2016-06-17 20:10:00', '00:00:00', 'IN', 3),
+(326, '2016-06-17 20:16:00', '00:00:00', 'OUT', 3),
+(327, '2016-07-29 20:10:00', '00:00:00', 'IN', 2),
+(328, '2016-07-29 20:16:00', '00:00:00', 'OUT', 2),
+(329, '2016-05-12 20:10:00', '00:00:00', 'IN', 3),
+(330, '2016-05-12 20:16:00', '00:00:00', 'OUT', 3),
+(331, '2016-03-24 20:10:00', '00:00:00', 'IN', 1),
+(332, '2016-03-24 20:16:00', '00:00:00', 'OUT', 1),
+(333, '2016-07-14 20:10:00', '00:00:00', 'IN', 2),
+(334, '2016-07-14 20:16:00', '00:00:00', 'OUT', 2),
+(335, '2016-09-15 20:10:00', '00:00:00', 'IN', 3),
+(336, '2016-09-15 20:16:00', '00:00:00', 'OUT', 3),
+(337, '2016-05-26 20:10:00', '00:00:00', 'IN', 1),
+(338, '2016-05-26 20:16:00', '00:00:00', 'OUT', 1),
+(339, '2016-10-28 20:10:00', '00:00:00', 'IN', 1),
+(340, '2016-10-28 20:16:00', '00:00:00', 'OUT', 1),
+(341, '2016-10-31 20:10:00', '00:00:00', 'IN', 2),
+(342, '2016-10-31 20:16:00', '00:00:00', 'OUT', 2),
+(343, '2016-02-06 20:10:00', '00:00:00', 'IN', 1),
+(344, '2016-02-06 20:16:00', '00:00:00', 'OUT', 1),
+(345, '2016-12-27 20:10:00', '00:00:00', 'IN', 3),
+(346, '2016-12-27 20:16:00', '00:00:00', 'OUT', 3),
+(347, '2016-09-24 20:10:00', '00:00:00', 'IN', 3),
+(348, '2016-09-24 20:16:00', '00:00:00', 'OUT', 3),
+(349, '2016-10-13 20:10:00', '00:00:00', 'IN', 1),
+(350, '2016-10-13 20:16:00', '00:00:00', 'OUT', 1),
+(351, '2016-03-31 20:10:00', '00:00:00', 'IN', 3),
+(352, '2016-03-31 20:16:00', '00:00:00', 'OUT', 3),
+(353, '2016-02-17 20:10:00', '00:00:00', 'IN', 2),
+(354, '2016-02-17 20:16:00', '00:00:00', 'OUT', 2),
+(355, '2016-03-31 20:10:00', '00:00:00', 'IN', 1),
+(356, '2016-03-31 20:16:00', '00:00:00', 'OUT', 1),
+(357, '2016-04-17 20:10:00', '00:00:00', 'IN', 1),
+(358, '2016-04-17 20:16:00', '00:00:00', 'OUT', 1),
+(359, '2016-04-08 20:10:00', '00:00:00', 'IN', 2),
+(360, '2016-04-08 20:16:00', '00:00:00', 'OUT', 2),
+(361, '2016-08-11 20:10:00', '00:00:00', 'IN', 2),
+(362, '2016-08-11 20:16:00', '00:00:00', 'OUT', 2),
+(363, '2016-03-22 20:10:00', '00:00:00', 'IN', 2),
+(364, '2016-03-22 20:16:00', '00:00:00', 'OUT', 2),
+(365, '2016-09-20 20:10:00', '00:00:00', 'IN', 2),
+(366, '2016-09-20 20:16:00', '00:00:00', 'OUT', 2),
+(367, '2016-07-29 20:10:00', '00:00:00', 'IN', 1),
+(368, '2016-07-29 20:16:00', '00:00:00', 'OUT', 1),
+(369, '2016-07-10 20:10:00', '00:00:00', 'IN', 2),
+(370, '2016-07-10 20:16:00', '00:00:00', 'OUT', 2),
+(371, '2016-10-18 20:10:00', '00:00:00', 'IN', 2),
+(372, '2016-10-18 20:16:00', '00:00:00', 'OUT', 2),
+(373, '2016-12-16 20:10:00', '00:00:00', 'IN', 1),
+(374, '2016-12-16 20:16:00', '00:00:00', 'OUT', 1),
+(375, '2016-04-14 20:10:00', '00:00:00', 'IN', 2),
+(376, '2016-04-14 20:16:00', '00:00:00', 'OUT', 2),
+(377, '2016-07-01 20:10:00', '00:00:00', 'IN', 3),
+(378, '2016-07-01 20:16:00', '00:00:00', 'OUT', 3),
+(379, '2016-10-25 20:10:00', '00:00:00', 'IN', 1),
+(380, '2016-10-25 20:16:00', '00:00:00', 'OUT', 1),
+(381, '2016-05-13 20:10:00', '00:00:00', 'IN', 1),
+(382, '2016-05-13 20:16:00', '00:00:00', 'OUT', 1),
+(383, '2016-10-21 20:10:00', '00:00:00', 'IN', 3),
+(384, '2016-10-21 20:16:00', '00:00:00', 'OUT', 3),
+(385, '2016-11-14 20:10:00', '00:00:00', 'IN', 1),
+(386, '2016-11-14 20:16:00', '00:00:00', 'OUT', 1),
+(387, '2016-07-01 20:10:00', '00:00:00', 'IN', 2),
+(388, '2016-07-01 20:16:00', '00:00:00', 'OUT', 2),
+(389, '2016-01-05 20:10:00', '00:00:00', 'IN', 1),
+(390, '2016-01-05 20:16:00', '00:00:00', 'OUT', 1),
+(391, '2016-04-01 20:10:00', '00:00:00', 'IN', 2),
+(392, '2016-04-01 20:16:00', '00:00:00', 'OUT', 2),
+(393, '2016-02-05 20:10:00', '00:00:00', 'IN', 3),
+(394, '2016-02-05 20:16:00', '00:00:00', 'OUT', 3),
+(395, '2016-10-11 20:10:00', '00:00:00', 'IN', 1),
+(396, '2016-10-11 20:16:00', '00:00:00', 'OUT', 1),
+(397, '2016-03-31 20:10:00', '00:00:00', 'IN', 3),
+(398, '2016-03-31 20:16:00', '00:00:00', 'OUT', 3),
+(399, '2016-04-12 20:10:00', '00:00:00', 'IN', 2),
+(400, '2016-04-12 20:16:00', '00:00:00', 'OUT', 2),
+(401, '2016-07-21 20:10:00', '00:00:00', 'IN', 1),
+(402, '2016-07-21 20:16:00', '00:00:00', 'OUT', 1),
+(403, '2016-01-15 20:10:00', '00:00:00', 'IN', 1),
+(404, '2016-01-15 20:16:00', '00:00:00', 'OUT', 1),
+(405, '2016-01-19 20:10:00', '00:00:00', 'IN', 3),
+(406, '2016-01-19 20:16:00', '00:00:00', 'OUT', 3),
+(407, '2016-07-23 20:10:00', '00:00:00', 'IN', 2),
+(408, '2016-07-23 20:16:00', '00:00:00', 'OUT', 2),
+(409, '2016-09-16 20:10:00', '00:00:00', 'IN', 3),
+(410, '2016-09-16 20:16:00', '00:00:00', 'OUT', 3),
+(411, '2016-04-21 20:10:00', '00:00:00', 'IN', 2),
+(412, '2016-04-21 20:16:00', '00:00:00', 'OUT', 2),
+(413, '2016-10-21 20:10:00', '00:00:00', 'IN', 1),
+(414, '2016-10-21 20:16:00', '00:00:00', 'OUT', 1),
+(415, '2016-09-05 20:10:00', '00:00:00', 'IN', 2),
+(416, '2016-09-05 20:16:00', '00:00:00', 'OUT', 2),
+(417, '2016-05-23 20:10:00', '00:00:00', 'IN', 3),
+(418, '2016-05-23 20:16:00', '00:00:00', 'OUT', 3),
+(419, '2016-03-21 20:10:00', '00:00:00', 'IN', 2),
+(420, '2016-03-21 20:16:00', '00:00:00', 'OUT', 2),
+(421, '2016-01-22 20:10:00', '00:00:00', 'IN', 2),
+(422, '2016-01-22 20:16:00', '00:00:00', 'OUT', 2),
+(423, '2016-09-21 20:10:00', '00:00:00', 'IN', 3),
+(424, '2016-09-21 20:16:00', '00:00:00', 'OUT', 3),
+(425, '2016-01-11 20:10:00', '00:00:00', 'IN', 1),
+(426, '2016-01-11 20:16:00', '00:00:00', 'OUT', 1),
+(427, '2016-02-18 20:10:00', '00:00:00', 'IN', 3),
+(428, '2016-02-18 20:16:00', '00:00:00', 'OUT', 3),
+(429, '2016-03-11 20:10:00', '00:00:00', 'IN', 3),
+(430, '2016-03-11 20:16:00', '00:00:00', 'OUT', 3),
+(431, '2016-06-06 20:10:00', '00:00:00', 'IN', 1),
+(432, '2016-06-06 20:16:00', '00:00:00', 'OUT', 1),
+(433, '2016-09-21 20:10:00', '00:00:00', 'IN', 1),
+(434, '2016-09-21 20:16:00', '00:00:00', 'OUT', 1),
+(435, '2016-07-27 20:10:00', '00:00:00', 'IN', 1),
+(436, '2016-07-27 20:16:00', '00:00:00', 'OUT', 1),
+(437, '2016-12-23 20:10:00', '00:00:00', 'IN', 2),
+(438, '2016-12-23 20:16:00', '00:00:00', 'OUT', 2),
+(439, '2016-05-28 20:10:00', '00:00:00', 'IN', 3),
+(440, '2016-05-28 20:16:00', '00:00:00', 'OUT', 3),
+(441, '2016-01-21 20:10:00', '00:00:00', 'IN', 1),
+(442, '2016-01-21 20:16:00', '00:00:00', 'OUT', 1),
+(443, '2016-08-18 20:10:00', '00:00:00', 'IN', 2),
+(444, '2016-08-18 20:16:00', '00:00:00', 'OUT', 2),
+(445, '2016-09-17 20:10:00', '00:00:00', 'IN', 3),
+(446, '2016-09-17 20:16:00', '00:00:00', 'OUT', 3),
+(447, '2016-06-19 20:10:00', '00:00:00', 'IN', 2),
+(448, '2016-06-19 20:16:00', '00:00:00', 'OUT', 2),
+(449, '2016-12-22 20:10:00', '00:00:00', 'IN', 1),
+(450, '2016-12-22 20:16:00', '00:00:00', 'OUT', 1),
+(451, '2016-01-09 20:10:00', '00:00:00', 'IN', 1),
+(452, '2016-01-09 20:16:00', '00:00:00', 'OUT', 1),
+(453, '2016-01-29 20:10:00', '00:00:00', 'IN', 1),
+(454, '2016-01-29 20:16:00', '00:00:00', 'OUT', 1),
+(455, '2016-12-20 20:10:00', '00:00:00', 'IN', 1),
+(456, '2016-12-20 20:16:00', '00:00:00', 'OUT', 1),
+(457, '2016-12-23 20:10:00', '00:00:00', 'IN', 1),
+(458, '2016-12-23 20:16:00', '00:00:00', 'OUT', 1),
+(459, '2016-01-29 20:10:00', '00:00:00', 'IN', 3),
+(460, '2016-01-29 20:16:00', '00:00:00', 'OUT', 3),
+(461, '2016-06-18 20:10:00', '00:00:00', 'IN', 3),
+(462, '2016-06-18 20:16:00', '00:00:00', 'OUT', 3),
+(463, '2016-11-22 20:10:00', '00:00:00', 'IN', 1),
+(464, '2016-11-22 20:16:00', '00:00:00', 'OUT', 1),
+(465, '2016-03-05 20:10:00', '00:00:00', 'IN', 1),
+(466, '2016-03-05 20:16:00', '00:00:00', 'OUT', 1),
+(467, '2016-03-04 20:10:00', '00:00:00', 'IN', 2),
+(468, '2016-03-04 20:16:00', '00:00:00', 'OUT', 2),
+(469, '2016-07-18 20:10:00', '00:00:00', 'IN', 2),
+(470, '2016-07-18 20:16:00', '00:00:00', 'OUT', 2),
+(471, '2016-08-05 20:10:00', '00:00:00', 'IN', 2),
+(472, '2016-08-05 20:16:00', '00:00:00', 'OUT', 2),
+(473, '2016-02-25 20:10:00', '00:00:00', 'IN', 1),
+(474, '2016-02-25 20:16:00', '00:00:00', 'OUT', 1),
+(475, '2016-08-27 20:10:00', '00:00:00', 'IN', 1),
+(476, '2016-08-27 20:16:00', '00:00:00', 'OUT', 1),
+(477, '2016-09-20 20:10:00', '00:00:00', 'IN', 2),
+(478, '2016-09-20 20:16:00', '00:00:00', 'OUT', 2),
+(479, '2016-02-22 20:10:00', '00:00:00', 'IN', 1),
+(480, '2016-02-22 20:16:00', '00:00:00', 'OUT', 1),
+(481, '2016-11-05 20:10:00', '00:00:00', 'IN', 1),
+(482, '2016-11-05 20:16:00', '00:00:00', 'OUT', 1),
+(483, '2016-02-21 20:10:00', '00:00:00', 'IN', 3),
+(484, '2016-02-21 20:16:00', '00:00:00', 'OUT', 3),
+(485, '2016-09-27 20:10:00', '00:00:00', 'IN', 1),
+(486, '2016-09-27 20:16:00', '00:00:00', 'OUT', 1),
+(487, '2016-09-21 20:10:00', '00:00:00', 'IN', 2),
+(488, '2016-09-21 20:16:00', '00:00:00', 'OUT', 2),
+(489, '2016-10-04 20:10:00', '00:00:00', 'IN', 3),
+(490, '2016-10-04 20:16:00', '00:00:00', 'OUT', 3),
+(491, '2016-09-20 20:10:00', '00:00:00', 'IN', 2),
+(492, '2016-09-20 20:16:00', '00:00:00', 'OUT', 2),
+(493, '2016-09-01 20:10:00', '00:00:00', 'IN', 2),
+(494, '2016-09-01 20:16:00', '00:00:00', 'OUT', 2),
+(495, '2016-05-26 20:10:00', '00:00:00', 'IN', 1),
+(496, '2016-05-26 20:16:00', '00:00:00', 'OUT', 1),
+(497, '2016-01-02 20:10:00', '00:00:00', 'IN', 1),
+(498, '2016-01-02 20:16:00', '00:00:00', 'OUT', 1),
+(499, '2016-01-07 20:10:00', '00:00:00', 'IN', 2),
+(500, '2016-01-07 20:16:00', '00:00:00', 'OUT', 2),
+(501, '2016-09-05 20:10:00', '00:00:00', 'IN', 1),
+(502, '2016-09-05 20:16:00', '00:00:00', 'OUT', 1),
+(503, '2016-05-15 20:10:00', '00:00:00', 'IN', 2),
+(504, '2016-05-15 20:16:00', '00:00:00', 'OUT', 2),
+(505, '2016-02-28 20:10:00', '00:00:00', 'IN', 3),
+(506, '2016-02-28 20:16:00', '00:00:00', 'OUT', 3),
+(507, '2016-05-15 20:10:00', '00:00:00', 'IN', 1),
+(508, '2016-05-15 20:16:00', '00:00:00', 'OUT', 1),
+(509, '2016-10-29 20:10:00', '00:00:00', 'IN', 3),
+(510, '2016-10-29 20:16:00', '00:00:00', 'OUT', 3),
+(511, '2016-10-12 20:10:00', '00:00:00', 'IN', 2),
+(512, '2016-10-12 20:16:00', '00:00:00', 'OUT', 2),
+(513, '2016-02-02 20:10:00', '00:00:00', 'IN', 2),
+(514, '2016-02-02 20:16:00', '00:00:00', 'OUT', 2),
+(515, '2016-05-29 20:10:00', '00:00:00', 'IN', 3),
+(516, '2016-05-29 20:16:00', '00:00:00', 'OUT', 3),
+(517, '2016-11-17 20:10:00', '00:00:00', 'IN', 2),
+(518, '2016-11-17 20:16:00', '00:00:00', 'OUT', 2),
+(519, '2016-12-25 20:10:00', '00:00:00', 'IN', 2),
+(520, '2016-12-25 20:16:00', '00:00:00', 'OUT', 2),
+(521, '2016-06-14 20:10:00', '00:00:00', 'IN', 1),
+(522, '2016-06-14 20:16:00', '00:00:00', 'OUT', 1),
+(523, '2016-01-21 20:10:00', '00:00:00', 'IN', 2),
+(524, '2016-01-21 20:16:00', '00:00:00', 'OUT', 2),
+(525, '2016-02-21 20:10:00', '00:00:00', 'IN', 3),
+(526, '2016-02-21 20:16:00', '00:00:00', 'OUT', 3),
+(527, '2016-10-18 20:10:00', '00:00:00', 'IN', 3),
+(528, '2016-10-18 20:16:00', '00:00:00', 'OUT', 3),
+(529, '2016-03-14 20:10:00', '00:00:00', 'IN', 1),
+(530, '2016-03-14 20:16:00', '00:00:00', 'OUT', 1),
+(531, '2016-03-05 20:10:00', '00:00:00', 'IN', 2),
+(532, '2016-03-05 20:16:00', '00:00:00', 'OUT', 2),
+(533, '2016-06-13 20:10:00', '00:00:00', 'IN', 3),
+(534, '2016-06-13 20:16:00', '00:00:00', 'OUT', 3),
+(535, '2016-08-28 20:10:00', '00:00:00', 'IN', 2),
+(536, '2016-08-28 20:16:00', '00:00:00', 'OUT', 2),
+(537, '2016-11-30 20:10:00', '00:00:00', 'IN', 1),
+(538, '2016-11-30 20:16:00', '00:00:00', 'OUT', 1),
+(539, '2016-11-14 20:10:00', '00:00:00', 'IN', 3),
+(540, '2016-11-14 20:16:00', '00:00:00', 'OUT', 3),
+(541, '2016-01-14 20:10:00', '00:00:00', 'IN', 1),
+(542, '2016-01-14 20:16:00', '00:00:00', 'OUT', 1),
+(543, '2016-06-20 20:10:00', '00:00:00', 'IN', 3),
+(544, '2016-06-20 20:16:00', '00:00:00', 'OUT', 3),
+(545, '2016-09-14 20:10:00', '00:00:00', 'IN', 1),
+(546, '2016-09-14 20:16:00', '00:00:00', 'OUT', 1),
+(547, '2016-10-03 20:10:00', '00:00:00', 'IN', 2),
+(548, '2016-10-03 20:16:00', '00:00:00', 'OUT', 2),
+(549, '2016-08-29 20:10:00', '00:00:00', 'IN', 1),
+(550, '2016-08-29 20:16:00', '00:00:00', 'OUT', 1),
+(551, '2016-08-02 20:10:00', '00:00:00', 'IN', 1),
+(552, '2016-08-02 20:16:00', '00:00:00', 'OUT', 1),
+(553, '2016-12-23 20:10:00', '00:00:00', 'IN', 3),
+(554, '2016-12-23 20:16:00', '00:00:00', 'OUT', 3),
+(555, '2016-02-02 20:10:00', '00:00:00', 'IN', 1),
+(556, '2016-02-02 20:16:00', '00:00:00', 'OUT', 1),
+(557, '2016-08-17 20:10:00', '00:00:00', 'IN', 1),
+(558, '2016-08-17 20:16:00', '00:00:00', 'OUT', 1),
+(559, '2016-02-27 20:10:00', '00:00:00', 'IN', 1),
+(560, '2016-02-27 20:16:00', '00:00:00', 'OUT', 1),
+(561, '2016-10-10 20:10:00', '00:00:00', 'IN', 2),
+(562, '2016-10-10 20:16:00', '00:00:00', 'OUT', 2),
+(563, '2016-07-29 20:10:00', '00:00:00', 'IN', 1),
+(564, '2016-07-29 20:16:00', '00:00:00', 'OUT', 1),
+(565, '2016-10-13 20:10:00', '00:00:00', 'IN', 1),
+(566, '2016-10-13 20:16:00', '00:00:00', 'OUT', 1),
+(567, '2016-04-14 20:10:00', '00:00:00', 'IN', 3),
+(568, '2016-04-14 20:16:00', '00:00:00', 'OUT', 3),
+(569, '2016-08-01 20:10:00', '00:00:00', 'IN', 1),
+(570, '2016-08-01 20:16:00', '00:00:00', 'OUT', 1),
+(571, '2016-02-23 20:10:00', '00:00:00', 'IN', 3),
+(572, '2016-02-23 20:16:00', '00:00:00', 'OUT', 3),
+(573, '2016-04-06 20:10:00', '00:00:00', 'IN', 1),
+(574, '2016-04-06 20:16:00', '00:00:00', 'OUT', 1),
+(575, '2016-01-16 20:10:00', '00:00:00', 'IN', 3),
+(576, '2016-01-16 20:16:00', '00:00:00', 'OUT', 3),
+(577, '2016-08-09 20:10:00', '00:00:00', 'IN', 3),
+(578, '2016-08-09 20:16:00', '00:00:00', 'OUT', 3),
+(579, '2016-07-01 20:10:00', '00:00:00', 'IN', 1),
+(580, '2016-07-01 20:16:00', '00:00:00', 'OUT', 1),
+(581, '2016-01-02 20:10:00', '00:00:00', 'IN', 2),
+(582, '2016-01-02 20:16:00', '00:00:00', 'OUT', 2),
+(583, '2016-11-12 20:10:00', '00:00:00', 'IN', 2),
+(584, '2016-11-12 20:16:00', '00:00:00', 'OUT', 2),
+(585, '2016-04-01 20:10:00', '00:00:00', 'IN', 1),
+(586, '2016-04-01 20:16:00', '00:00:00', 'OUT', 1),
+(587, '2016-12-24 20:10:00', '00:00:00', 'IN', 1),
+(588, '2016-12-24 20:16:00', '00:00:00', 'OUT', 1),
+(589, '2016-03-20 20:10:00', '00:00:00', 'IN', 2),
+(590, '2016-03-20 20:16:00', '00:00:00', 'OUT', 2),
+(591, '2016-06-25 20:10:00', '00:00:00', 'IN', 1),
+(592, '2016-06-25 20:16:00', '00:00:00', 'OUT', 1),
+(593, '2016-08-19 20:10:00', '00:00:00', 'IN', 3),
+(594, '2016-08-19 20:16:00', '00:00:00', 'OUT', 3),
+(595, '2016-01-18 20:10:00', '00:00:00', 'IN', 1),
+(596, '2016-01-18 20:16:00', '00:00:00', 'OUT', 1),
+(597, '2016-09-04 20:10:00', '00:00:00', 'IN', 2),
+(598, '2016-09-04 20:16:00', '00:00:00', 'OUT', 2),
+(599, '2016-06-03 20:10:00', '00:00:00', 'IN', 1),
+(600, '2016-06-03 20:16:00', '00:00:00', 'OUT', 1),
+(601, '2016-09-07 20:10:00', '00:00:00', 'IN', 1),
+(602, '2016-09-07 20:16:00', '00:00:00', 'OUT', 1),
+(603, '2016-08-28 20:10:00', '00:00:00', 'IN', 1),
+(604, '2016-08-28 20:16:00', '00:00:00', 'OUT', 1),
+(605, '2016-03-05 20:10:00', '00:00:00', 'IN', 2),
+(606, '2016-03-05 20:16:00', '00:00:00', 'OUT', 2),
+(607, '2016-11-29 20:10:00', '00:00:00', 'IN', 1),
+(608, '2016-11-29 20:16:00', '00:00:00', 'OUT', 1),
+(609, '2016-07-03 20:10:00', '00:00:00', 'IN', 1),
+(610, '2016-07-03 20:16:00', '00:00:00', 'OUT', 1),
+(611, '2016-02-16 20:10:00', '00:00:00', 'IN', 2),
+(612, '2016-02-16 20:16:00', '00:00:00', 'OUT', 2),
+(613, '2016-06-29 20:10:00', '00:00:00', 'IN', 3),
+(614, '2016-06-29 20:16:00', '00:00:00', 'OUT', 3),
+(615, '2016-11-12 20:10:00', '00:00:00', 'IN', 2),
+(616, '2016-11-12 20:16:00', '00:00:00', 'OUT', 2),
+(617, '2016-08-11 20:10:00', '00:00:00', 'IN', 2),
+(618, '2016-08-11 20:16:00', '00:00:00', 'OUT', 2),
+(619, '2016-02-10 20:10:00', '00:00:00', 'IN', 1),
+(620, '2016-02-10 20:16:00', '00:00:00', 'OUT', 1),
+(621, '2016-05-27 20:10:00', '00:00:00', 'IN', 2),
+(622, '2016-05-27 20:16:00', '00:00:00', 'OUT', 2),
+(623, '2016-09-17 20:10:00', '00:00:00', 'IN', 1),
+(624, '2016-09-17 20:16:00', '00:00:00', 'OUT', 1),
+(625, '2016-02-13 20:10:00', '00:00:00', 'IN', 3),
+(626, '2016-02-13 20:16:00', '00:00:00', 'OUT', 3),
+(627, '2016-03-25 20:10:00', '00:00:00', 'IN', 1),
+(628, '2016-03-25 20:16:00', '00:00:00', 'OUT', 1),
+(629, '2016-09-06 20:10:00', '00:00:00', 'IN', 3),
+(630, '2016-09-06 20:16:00', '00:00:00', 'OUT', 3),
+(631, '2016-09-24 20:10:00', '00:00:00', 'IN', 1),
+(632, '2016-09-24 20:16:00', '00:00:00', 'OUT', 1),
+(633, '2016-07-06 20:10:00', '00:00:00', 'IN', 2),
+(634, '2016-07-06 20:16:00', '00:00:00', 'OUT', 2),
+(635, '2016-08-03 20:10:00', '00:00:00', 'IN', 3),
+(636, '2016-08-03 20:16:00', '00:00:00', 'OUT', 3),
+(637, '2016-10-14 20:10:00', '00:00:00', 'IN', 1),
+(638, '2016-10-14 20:16:00', '00:00:00', 'OUT', 1),
+(639, '2016-12-25 20:10:00', '00:00:00', 'IN', 1),
+(640, '2016-12-25 20:16:00', '00:00:00', 'OUT', 1),
+(641, '2016-10-03 20:10:00', '00:00:00', 'IN', 2),
+(642, '2016-10-03 20:16:00', '00:00:00', 'OUT', 2),
+(643, '2016-11-18 20:10:00', '00:00:00', 'IN', 3),
+(644, '2016-11-18 20:16:00', '00:00:00', 'OUT', 3),
+(645, '2016-05-26 20:10:00', '00:00:00', 'IN', 3),
+(646, '2016-05-26 20:16:00', '00:00:00', 'OUT', 3),
+(647, '2016-09-29 20:10:00', '00:00:00', 'IN', 1),
+(648, '2016-09-29 20:16:00', '00:00:00', 'OUT', 1),
+(649, '2016-08-02 20:10:00', '00:00:00', 'IN', 3),
+(650, '2016-08-02 20:16:00', '00:00:00', 'OUT', 3),
+(651, '2016-03-13 20:10:00', '00:00:00', 'IN', 1),
+(652, '2016-03-13 20:16:00', '00:00:00', 'OUT', 1),
+(653, '2016-09-02 20:10:00', '00:00:00', 'IN', 3),
+(654, '2016-09-02 20:16:00', '00:00:00', 'OUT', 3),
+(655, '2016-12-29 20:10:00', '00:00:00', 'IN', 1),
+(656, '2016-12-29 20:16:00', '00:00:00', 'OUT', 1),
+(657, '2016-11-13 20:10:00', '00:00:00', 'IN', 2),
+(658, '2016-11-13 20:16:00', '00:00:00', 'OUT', 2),
+(659, '2016-05-02 20:10:00', '00:00:00', 'IN', 2),
+(660, '2016-05-02 20:16:00', '00:00:00', 'OUT', 2),
+(661, '2016-08-06 20:10:00', '00:00:00', 'IN', 2),
+(662, '2016-08-06 20:16:00', '00:00:00', 'OUT', 2),
+(663, '2016-01-04 20:10:00', '00:00:00', 'IN', 3),
+(664, '2016-01-04 20:16:00', '00:00:00', 'OUT', 3),
+(665, '2016-02-04 20:10:00', '00:00:00', 'IN', 2),
+(666, '2016-02-04 20:16:00', '00:00:00', 'OUT', 2),
+(667, '2016-04-18 20:10:00', '00:00:00', 'IN', 3),
+(668, '2016-04-18 20:16:00', '00:00:00', 'OUT', 3),
+(669, '2016-05-29 20:10:00', '00:00:00', 'IN', 3),
+(670, '2016-05-29 20:16:00', '00:00:00', 'OUT', 3),
+(671, '2016-12-08 20:10:00', '00:00:00', 'IN', 1),
+(672, '2016-12-08 20:16:00', '00:00:00', 'OUT', 1),
+(673, '2016-06-18 20:10:00', '00:00:00', 'IN', 3),
+(674, '2016-06-18 20:16:00', '00:00:00', 'OUT', 3),
+(675, '2016-11-15 20:10:00', '00:00:00', 'IN', 2),
+(676, '2016-11-15 20:16:00', '00:00:00', 'OUT', 2),
+(677, '2016-10-14 20:10:00', '00:00:00', 'IN', 3),
+(678, '2016-10-14 20:16:00', '00:00:00', 'OUT', 3),
+(679, '2016-01-18 20:10:00', '00:00:00', 'IN', 1),
+(680, '2016-01-18 20:16:00', '00:00:00', 'OUT', 1),
+(681, '2016-05-21 20:10:00', '00:00:00', 'IN', 3),
+(682, '2016-05-21 20:16:00', '00:00:00', 'OUT', 3),
+(683, '2016-01-26 20:10:00', '00:00:00', 'IN', 3),
+(684, '2016-01-26 20:16:00', '00:00:00', 'OUT', 3),
+(685, '2016-02-12 20:10:00', '00:00:00', 'IN', 1),
+(686, '2016-02-12 20:16:00', '00:00:00', 'OUT', 1),
+(687, '2016-03-29 20:10:00', '00:00:00', 'IN', 2),
+(688, '2016-03-29 20:16:00', '00:00:00', 'OUT', 2),
+(689, '2016-12-27 20:10:00', '00:00:00', 'IN', 1),
+(690, '2016-12-27 20:16:00', '00:00:00', 'OUT', 1),
+(691, '2016-08-05 20:10:00', '00:00:00', 'IN', 3),
+(692, '2016-08-05 20:16:00', '00:00:00', 'OUT', 3),
+(693, '2016-02-28 20:10:00', '00:00:00', 'IN', 3),
+(694, '2016-02-28 20:16:00', '00:00:00', 'OUT', 3),
+(695, '2016-11-18 20:10:00', '00:00:00', 'IN', 2),
+(696, '2016-11-18 20:16:00', '00:00:00', 'OUT', 2),
+(697, '2016-08-01 20:10:00', '00:00:00', 'IN', 3),
+(698, '2016-08-01 20:16:00', '00:00:00', 'OUT', 3),
+(699, '2016-09-14 20:10:00', '00:00:00', 'IN', 2),
+(700, '2016-09-14 20:16:00', '00:00:00', 'OUT', 2),
+(701, '2016-02-20 20:10:00', '00:00:00', 'IN', 1),
+(702, '2016-02-20 20:16:00', '00:00:00', 'OUT', 1),
+(703, '2016-12-09 20:10:00', '00:00:00', 'IN', 3),
+(704, '2016-12-09 20:16:00', '00:00:00', 'OUT', 3),
+(705, '2016-06-16 20:10:00', '00:00:00', 'IN', 2),
+(706, '2016-06-16 20:16:00', '00:00:00', 'OUT', 2),
+(707, '2016-01-08 20:10:00', '00:00:00', 'IN', 1),
+(708, '2016-01-08 20:16:00', '00:00:00', 'OUT', 1),
+(709, '2016-11-24 20:10:00', '00:00:00', 'IN', 2),
+(710, '2016-11-24 20:16:00', '00:00:00', 'OUT', 2),
+(711, '2016-10-11 20:10:00', '00:00:00', 'IN', 1),
+(712, '2016-10-11 20:16:00', '00:00:00', 'OUT', 1),
+(713, '2016-01-10 20:10:00', '00:00:00', 'IN', 2),
+(714, '2016-01-10 20:16:00', '00:00:00', 'OUT', 2),
+(715, '2016-08-19 20:10:00', '00:00:00', 'IN', 3),
+(716, '2016-08-19 20:16:00', '00:00:00', 'OUT', 3),
+(717, '2016-07-31 20:10:00', '00:00:00', 'IN', 1),
+(718, '2016-07-31 20:16:00', '00:00:00', 'OUT', 1),
+(719, '2016-05-16 20:10:00', '00:00:00', 'IN', 3),
+(720, '2016-05-16 20:16:00', '00:00:00', 'OUT', 3),
+(721, '2016-05-25 20:10:00', '00:00:00', 'IN', 3),
+(722, '2016-05-25 20:16:00', '00:00:00', 'OUT', 3),
+(723, '2016-03-02 20:10:00', '00:00:00', 'IN', 1),
+(724, '2016-03-02 20:16:00', '00:00:00', 'OUT', 1),
+(725, '2016-03-11 20:10:00', '00:00:00', 'IN', 2),
+(726, '2016-03-11 20:16:00', '00:00:00', 'OUT', 2),
+(727, '2016-02-04 20:10:00', '00:00:00', 'IN', 2),
+(728, '2016-02-04 20:16:00', '00:00:00', 'OUT', 2),
+(729, '2016-12-27 20:10:00', '00:00:00', 'IN', 1),
+(730, '2016-12-27 20:16:00', '00:00:00', 'OUT', 1),
+(731, '2016-11-19 20:10:00', '00:00:00', 'IN', 2),
+(732, '2016-11-19 20:16:00', '00:00:00', 'OUT', 2),
+(733, '2016-12-18 20:10:00', '00:00:00', 'IN', 1),
+(734, '2016-12-18 20:16:00', '00:00:00', 'OUT', 1),
+(735, '2016-11-28 20:10:00', '00:00:00', 'IN', 1),
+(736, '2016-11-28 20:16:00', '00:00:00', 'OUT', 1),
+(737, '2016-10-29 20:10:00', '00:00:00', 'IN', 1),
+(738, '2016-10-29 20:16:00', '00:00:00', 'OUT', 1),
+(739, '2016-05-26 20:10:00', '00:00:00', 'IN', 2),
+(740, '2016-05-26 20:16:00', '00:00:00', 'OUT', 2),
+(741, '2016-06-26 20:10:00', '00:00:00', 'IN', 2),
+(742, '2016-06-26 20:16:00', '00:00:00', 'OUT', 2),
+(743, '2016-01-06 20:10:00', '00:00:00', 'IN', 2),
+(744, '2016-01-06 20:16:00', '00:00:00', 'OUT', 2),
+(745, '2016-07-28 20:10:00', '00:00:00', 'IN', 2),
+(746, '2016-07-28 20:16:00', '00:00:00', 'OUT', 2),
+(747, '2016-11-23 20:10:00', '00:00:00', 'IN', 2),
+(748, '2016-11-23 20:16:00', '00:00:00', 'OUT', 2),
+(749, '2016-03-24 20:10:00', '00:00:00', 'IN', 3),
+(750, '2016-03-24 20:16:00', '00:00:00', 'OUT', 3),
+(751, '2016-08-21 20:10:00', '00:00:00', 'IN', 3),
+(752, '2016-08-21 20:16:00', '00:00:00', 'OUT', 3),
+(753, '2016-02-07 20:10:00', '00:00:00', 'IN', 3),
+(754, '2016-02-07 20:16:00', '00:00:00', 'OUT', 3),
+(755, '2016-12-25 20:10:00', '00:00:00', 'IN', 1),
+(756, '2016-12-25 20:16:00', '00:00:00', 'OUT', 1),
+(757, '2016-11-16 20:10:00', '00:00:00', 'IN', 1),
+(758, '2016-11-16 20:16:00', '00:00:00', 'OUT', 1),
+(759, '2016-11-23 20:10:00', '00:00:00', 'IN', 3),
+(760, '2016-11-23 20:16:00', '00:00:00', 'OUT', 3),
+(761, '2016-01-22 20:10:00', '00:00:00', 'IN', 3),
+(762, '2016-01-22 20:16:00', '00:00:00', 'OUT', 3),
+(763, '2016-10-06 20:10:00', '00:00:00', 'IN', 1),
+(764, '2016-10-06 20:16:00', '00:00:00', 'OUT', 1),
+(765, '2016-10-23 20:10:00', '00:00:00', 'IN', 1),
+(766, '2016-10-23 20:16:00', '00:00:00', 'OUT', 1),
+(767, '2016-10-04 20:10:00', '00:00:00', 'IN', 1),
+(768, '2016-10-04 20:16:00', '00:00:00', 'OUT', 1),
+(769, '2016-06-26 20:10:00', '00:00:00', 'IN', 3),
+(770, '2016-06-26 20:16:00', '00:00:00', 'OUT', 3),
+(771, '2016-01-09 20:10:00', '00:00:00', 'IN', 1),
+(772, '2016-01-09 20:16:00', '00:00:00', 'OUT', 1),
+(773, '2016-09-19 20:10:00', '00:00:00', 'IN', 3),
+(774, '2016-09-19 20:16:00', '00:00:00', 'OUT', 3),
+(775, '2016-10-04 20:10:00', '00:00:00', 'IN', 1),
+(776, '2016-10-04 20:16:00', '00:00:00', 'OUT', 1),
+(777, '2016-11-15 20:10:00', '00:00:00', 'IN', 1),
+(778, '2016-11-15 20:16:00', '00:00:00', 'OUT', 1),
+(779, '2016-11-06 20:10:00', '00:00:00', 'IN', 2),
+(780, '2016-11-06 20:16:00', '00:00:00', 'OUT', 2),
+(781, '2016-12-24 20:10:00', '00:00:00', 'IN', 2),
+(782, '2016-12-24 20:16:00', '00:00:00', 'OUT', 2),
+(783, '2016-09-14 20:10:00', '00:00:00', 'IN', 2),
+(784, '2016-09-14 20:16:00', '00:00:00', 'OUT', 2),
+(785, '2016-03-03 20:10:00', '00:00:00', 'IN', 3),
+(786, '2016-03-03 20:16:00', '00:00:00', 'OUT', 3),
+(787, '2016-11-14 20:10:00', '00:00:00', 'IN', 2),
+(788, '2016-11-14 20:16:00', '00:00:00', 'OUT', 2),
+(789, '2016-03-13 20:10:00', '00:00:00', 'IN', 2),
+(790, '2016-03-13 20:16:00', '00:00:00', 'OUT', 2),
+(791, '2016-01-15 20:10:00', '00:00:00', 'IN', 1),
+(792, '2016-01-15 20:16:00', '00:00:00', 'OUT', 1),
+(793, '2016-01-16 20:10:00', '00:00:00', 'IN', 1),
+(794, '2016-01-16 20:16:00', '00:00:00', 'OUT', 1),
+(795, '2016-05-02 20:10:00', '00:00:00', 'IN', 1),
+(796, '2016-05-02 20:16:00', '00:00:00', 'OUT', 1),
+(797, '2016-10-05 20:10:00', '00:00:00', 'IN', 1),
+(798, '2016-10-05 20:16:00', '00:00:00', 'OUT', 1),
+(799, '2016-09-29 20:10:00', '00:00:00', 'IN', 1),
+(800, '2016-09-29 20:16:00', '00:00:00', 'OUT', 1),
+(801, '2016-02-01 20:10:00', '00:00:00', 'IN', 6),
+(802, '2016-02-01 20:16:00', '00:00:00', 'OUT', 6),
+(803, '2016-01-13 20:10:00', '00:00:00', 'IN', 6),
+(804, '2016-01-13 20:16:00', '00:00:00', 'OUT', 6),
+(805, '2016-09-05 20:10:00', '00:00:00', 'IN', 6),
+(806, '2016-09-05 20:16:00', '00:00:00', 'OUT', 6),
+(807, '2016-07-31 20:10:00', '00:00:00', 'IN', 6),
+(808, '2016-07-31 20:16:00', '00:00:00', 'OUT', 6),
+(809, '2016-12-18 20:10:00', '00:00:00', 'IN', 6),
+(810, '2016-12-18 20:16:00', '00:00:00', 'OUT', 6),
+(811, '2016-06-25 20:10:00', '00:00:00', 'IN', 7),
+(812, '2016-06-25 20:16:00', '00:00:00', 'OUT', 7),
+(813, '2016-12-27 20:10:00', '00:00:00', 'IN', 7),
+(814, '2016-12-27 20:16:00', '00:00:00', 'OUT', 7),
+(815, '2016-06-24 20:10:00', '00:00:00', 'IN', 7),
+(816, '2016-06-24 20:16:00', '00:00:00', 'OUT', 7),
+(817, '2016-06-08 20:10:00', '00:00:00', 'IN', 6),
+(818, '2016-06-08 20:16:00', '00:00:00', 'OUT', 6),
+(819, '2016-06-26 20:10:00', '00:00:00', 'IN', 6),
+(820, '2016-06-26 20:16:00', '00:00:00', 'OUT', 6),
+(821, '2016-11-29 20:10:00', '00:00:00', 'IN', 7),
+(822, '2016-11-29 20:16:00', '00:00:00', 'OUT', 7),
+(823, '2016-10-10 20:10:00', '00:00:00', 'IN', 7),
+(824, '2016-10-10 20:16:00', '00:00:00', 'OUT', 7),
+(825, '2016-11-13 20:10:00', '00:00:00', 'IN', 6),
+(826, '2016-11-13 20:16:00', '00:00:00', 'OUT', 6),
+(827, '2016-10-02 20:10:00', '00:00:00', 'IN', 6),
+(828, '2016-10-02 20:16:00', '00:00:00', 'OUT', 6),
+(829, '2016-03-17 20:10:00', '00:00:00', 'IN', 6),
+(830, '2016-03-17 20:16:00', '00:00:00', 'OUT', 6),
+(831, '2016-02-24 20:10:00', '00:00:00', 'IN', 6),
+(832, '2016-02-24 20:16:00', '00:00:00', 'OUT', 6),
+(833, '2016-06-30 20:10:00', '00:00:00', 'IN', 7),
+(834, '2016-06-30 20:16:00', '00:00:00', 'OUT', 7),
+(835, '2016-08-12 20:10:00', '00:00:00', 'IN', 6),
+(836, '2016-08-12 20:16:00', '00:00:00', 'OUT', 6),
+(837, '2016-02-10 20:10:00', '00:00:00', 'IN', 7),
+(838, '2016-02-10 20:16:00', '00:00:00', 'OUT', 7),
+(839, '2016-03-02 20:10:00', '00:00:00', 'IN', 7),
+(840, '2016-03-02 20:16:00', '00:00:00', 'OUT', 7),
+(841, '2016-07-12 20:10:00', '00:00:00', 'IN', 6),
+(842, '2016-07-12 20:16:00', '00:00:00', 'OUT', 6),
+(843, '2016-07-15 20:10:00', '00:00:00', 'IN', 6),
+(844, '2016-07-15 20:16:00', '00:00:00', 'OUT', 6),
+(845, '2016-07-13 20:10:00', '00:00:00', 'IN', 7),
+(846, '2016-07-13 20:16:00', '00:00:00', 'OUT', 7),
+(847, '2016-07-10 20:10:00', '00:00:00', 'IN', 6),
+(848, '2016-07-10 20:16:00', '00:00:00', 'OUT', 6),
+(849, '2016-07-15 20:10:00', '00:00:00', 'IN', 7),
+(850, '2016-07-15 20:16:00', '00:00:00', 'OUT', 7),
+(851, '2016-09-09 20:10:00', '00:00:00', 'IN', 6),
+(852, '2016-09-09 20:16:00', '00:00:00', 'OUT', 6),
+(853, '2016-09-15 20:10:00', '00:00:00', 'IN', 7),
+(854, '2016-09-15 20:16:00', '00:00:00', 'OUT', 7),
+(855, '2016-02-13 20:10:00', '00:00:00', 'IN', 6),
+(856, '2016-02-13 20:16:00', '00:00:00', 'OUT', 6),
+(857, '2016-05-21 20:10:00', '00:00:00', 'IN', 7),
+(858, '2016-05-21 20:16:00', '00:00:00', 'OUT', 7),
+(859, '2016-10-11 20:10:00', '00:00:00', 'IN', 6),
+(860, '2016-10-11 20:16:00', '00:00:00', 'OUT', 6),
+(861, '2016-04-22 20:10:00', '00:00:00', 'IN', 7),
+(862, '2016-04-22 20:16:00', '00:00:00', 'OUT', 7),
+(863, '2016-03-19 20:10:00', '00:00:00', 'IN', 7),
+(864, '2016-03-19 20:16:00', '00:00:00', 'OUT', 7),
+(865, '2016-09-29 20:10:00', '00:00:00', 'IN', 6),
+(866, '2016-09-29 20:16:00', '00:00:00', 'OUT', 6),
+(867, '2016-12-23 20:10:00', '00:00:00', 'IN', 7),
+(868, '2016-12-23 20:16:00', '00:00:00', 'OUT', 7),
+(869, '2016-09-22 20:10:00', '00:00:00', 'IN', 6),
+(870, '2016-09-22 20:16:00', '00:00:00', 'OUT', 6),
+(871, '2016-09-21 20:10:00', '00:00:00', 'IN', 7),
+(872, '2016-09-21 20:16:00', '00:00:00', 'OUT', 7),
+(873, '2016-07-19 20:10:00', '00:00:00', 'IN', 7),
+(874, '2016-07-19 20:16:00', '00:00:00', 'OUT', 7),
+(875, '2016-11-29 20:10:00', '00:00:00', 'IN', 6),
+(876, '2016-11-29 20:16:00', '00:00:00', 'OUT', 6),
+(877, '2016-09-21 20:10:00', '00:00:00', 'IN', 7),
+(878, '2016-09-21 20:16:00', '00:00:00', 'OUT', 7),
+(879, '2016-02-28 20:10:00', '00:00:00', 'IN', 6),
+(880, '2016-02-28 20:16:00', '00:00:00', 'OUT', 6),
+(881, '2016-05-20 20:10:00', '00:00:00', 'IN', 7),
+(882, '2016-05-20 20:16:00', '00:00:00', 'OUT', 7),
+(883, '2016-09-01 20:10:00', '00:00:00', 'IN', 7),
+(884, '2016-09-01 20:16:00', '00:00:00', 'OUT', 7),
+(885, '2016-07-08 20:10:00', '00:00:00', 'IN', 6),
+(886, '2016-07-08 20:16:00', '00:00:00', 'OUT', 6),
+(887, '2016-05-03 20:10:00', '00:00:00', 'IN', 6),
+(888, '2016-05-03 20:16:00', '00:00:00', 'OUT', 6),
+(889, '2016-04-13 20:10:00', '00:00:00', 'IN', 7),
+(890, '2016-04-13 20:16:00', '00:00:00', 'OUT', 7),
+(891, '2016-01-16 20:10:00', '00:00:00', 'IN', 7),
+(892, '2016-01-16 20:16:00', '00:00:00', 'OUT', 7),
+(893, '2016-01-18 20:10:00', '00:00:00', 'IN', 6),
+(894, '2016-01-18 20:16:00', '00:00:00', 'OUT', 6),
+(895, '2016-09-16 20:10:00', '00:00:00', 'IN', 6),
+(896, '2016-09-16 20:16:00', '00:00:00', 'OUT', 6),
+(897, '2016-10-26 20:10:00', '00:00:00', 'IN', 6),
+(898, '2016-10-26 20:16:00', '00:00:00', 'OUT', 6),
+(899, '2016-01-13 20:10:00', '00:00:00', 'IN', 6),
+(900, '2016-01-13 20:16:00', '00:00:00', 'OUT', 6),
+(901, '2016-05-10 20:10:00', '00:00:00', 'IN', 7),
+(902, '2016-05-10 20:16:00', '00:00:00', 'OUT', 7),
+(903, '2016-03-28 20:10:00', '00:00:00', 'IN', 7),
+(904, '2016-03-28 20:16:00', '00:00:00', 'OUT', 7),
+(905, '2016-11-11 20:10:00', '00:00:00', 'IN', 7),
+(906, '2016-11-11 20:16:00', '00:00:00', 'OUT', 7),
+(907, '2016-06-09 20:10:00', '00:00:00', 'IN', 7),
+(908, '2016-06-09 20:16:00', '00:00:00', 'OUT', 7),
+(909, '2016-06-20 20:10:00', '00:00:00', 'IN', 6),
+(910, '2016-06-20 20:16:00', '00:00:00', 'OUT', 6),
+(911, '2016-03-19 20:10:00', '00:00:00', 'IN', 6),
+(912, '2016-03-19 20:16:00', '00:00:00', 'OUT', 6),
+(913, '2016-02-24 20:10:00', '00:00:00', 'IN', 7),
+(914, '2016-02-24 20:16:00', '00:00:00', 'OUT', 7),
+(915, '2016-05-05 20:10:00', '00:00:00', 'IN', 7),
+(916, '2016-05-05 20:16:00', '00:00:00', 'OUT', 7),
+(917, '2016-07-07 20:10:00', '00:00:00', 'IN', 7),
+(918, '2016-07-07 20:16:00', '00:00:00', 'OUT', 7),
+(919, '2016-08-12 20:10:00', '00:00:00', 'IN', 6),
+(920, '2016-08-12 20:16:00', '00:00:00', 'OUT', 6),
+(921, '2016-07-19 20:10:00', '00:00:00', 'IN', 6),
+(922, '2016-07-19 20:16:00', '00:00:00', 'OUT', 6),
+(923, '2016-06-16 20:10:00', '00:00:00', 'IN', 7),
+(924, '2016-06-16 20:16:00', '00:00:00', 'OUT', 7),
+(925, '2016-04-05 20:10:00', '00:00:00', 'IN', 6),
+(926, '2016-04-05 20:16:00', '00:00:00', 'OUT', 6),
+(927, '2016-10-16 20:10:00', '00:00:00', 'IN', 7),
+(928, '2016-10-16 20:16:00', '00:00:00', 'OUT', 7),
+(929, '2016-09-22 20:10:00', '00:00:00', 'IN', 6),
+(930, '2016-09-22 20:16:00', '00:00:00', 'OUT', 6),
+(931, '2016-11-14 20:10:00', '00:00:00', 'IN', 7),
+(932, '2016-11-14 20:16:00', '00:00:00', 'OUT', 7),
+(933, '2016-03-05 20:10:00', '00:00:00', 'IN', 6),
+(934, '2016-03-05 20:16:00', '00:00:00', 'OUT', 6),
+(935, '2016-09-23 20:10:00', '00:00:00', 'IN', 7),
+(936, '2016-09-23 20:16:00', '00:00:00', 'OUT', 7),
+(937, '2016-07-16 20:10:00', '00:00:00', 'IN', 7),
+(938, '2016-07-16 20:16:00', '00:00:00', 'OUT', 7),
+(939, '2016-03-14 20:10:00', '00:00:00', 'IN', 6),
+(940, '2016-03-14 20:16:00', '00:00:00', 'OUT', 6),
+(941, '2016-10-11 20:10:00', '00:00:00', 'IN', 6),
+(942, '2016-10-11 20:16:00', '00:00:00', 'OUT', 6),
+(943, '2016-09-13 20:10:00', '00:00:00', 'IN', 6),
+(944, '2016-09-13 20:16:00', '00:00:00', 'OUT', 6),
+(945, '2016-09-28 20:10:00', '00:00:00', 'IN', 6),
+(946, '2016-09-28 20:16:00', '00:00:00', 'OUT', 6),
+(947, '2016-10-18 20:10:00', '00:00:00', 'IN', 6),
+(948, '2016-10-18 20:16:00', '00:00:00', 'OUT', 6),
+(949, '2016-08-13 20:10:00', '00:00:00', 'IN', 6),
+(950, '2016-08-13 20:16:00', '00:00:00', 'OUT', 6),
+(951, '2016-10-08 20:10:00', '00:00:00', 'IN', 7),
+(952, '2016-10-08 20:16:00', '00:00:00', 'OUT', 7),
+(953, '2016-02-09 20:10:00', '00:00:00', 'IN', 6),
+(954, '2016-02-09 20:16:00', '00:00:00', 'OUT', 6),
+(955, '2016-02-11 20:10:00', '00:00:00', 'IN', 6),
+(956, '2016-02-11 20:16:00', '00:00:00', 'OUT', 6),
+(957, '2016-03-15 20:10:00', '00:00:00', 'IN', 6),
+(958, '2016-03-15 20:16:00', '00:00:00', 'OUT', 6),
+(959, '2016-04-18 20:10:00', '00:00:00', 'IN', 6),
+(960, '2016-04-18 20:16:00', '00:00:00', 'OUT', 6),
+(961, '2016-05-18 20:10:00', '00:00:00', 'IN', 7),
+(962, '2016-05-18 20:16:00', '00:00:00', 'OUT', 7),
+(963, '2016-05-25 20:10:00', '00:00:00', 'IN', 7),
+(964, '2016-05-25 20:16:00', '00:00:00', 'OUT', 7),
+(965, '2016-01-07 20:10:00', '00:00:00', 'IN', 6),
+(966, '2016-01-07 20:16:00', '00:00:00', 'OUT', 6),
+(967, '2016-02-06 20:10:00', '00:00:00', 'IN', 6),
+(968, '2016-02-06 20:16:00', '00:00:00', 'OUT', 6),
+(969, '2016-07-06 20:10:00', '00:00:00', 'IN', 6),
+(970, '2016-07-06 20:16:00', '00:00:00', 'OUT', 6),
+(971, '2016-03-15 20:10:00', '00:00:00', 'IN', 7),
+(972, '2016-03-15 20:16:00', '00:00:00', 'OUT', 7),
+(973, '2016-10-24 20:10:00', '00:00:00', 'IN', 6),
+(974, '2016-10-24 20:16:00', '00:00:00', 'OUT', 6),
+(975, '2016-09-09 20:10:00', '00:00:00', 'IN', 7),
+(976, '2016-09-09 20:16:00', '00:00:00', 'OUT', 7),
+(977, '2016-01-31 20:10:00', '00:00:00', 'IN', 6),
+(978, '2016-01-31 20:16:00', '00:00:00', 'OUT', 6),
+(979, '2016-11-12 20:10:00', '00:00:00', 'IN', 7),
+(980, '2016-11-12 20:16:00', '00:00:00', 'OUT', 7),
+(981, '2016-09-25 20:10:00', '00:00:00', 'IN', 7),
+(982, '2016-09-25 20:16:00', '00:00:00', 'OUT', 7),
+(983, '2016-12-23 20:10:00', '00:00:00', 'IN', 6),
+(984, '2016-12-23 20:16:00', '00:00:00', 'OUT', 6),
+(985, '2016-01-13 20:10:00', '00:00:00', 'IN', 7),
+(986, '2016-01-13 20:16:00', '00:00:00', 'OUT', 7),
+(987, '2016-12-02 20:10:00', '00:00:00', 'IN', 6),
+(988, '2016-12-02 20:16:00', '00:00:00', 'OUT', 6),
+(989, '2016-09-15 20:10:00', '00:00:00', 'IN', 7),
+(990, '2016-09-15 20:16:00', '00:00:00', 'OUT', 7),
+(991, '2016-03-24 20:10:00', '00:00:00', 'IN', 7),
+(992, '2016-03-24 20:16:00', '00:00:00', 'OUT', 7),
+(993, '2016-12-12 20:10:00', '00:00:00', 'IN', 7),
+(994, '2016-12-12 20:16:00', '00:00:00', 'OUT', 7),
+(995, '2016-08-16 20:10:00', '00:00:00', 'IN', 7),
+(996, '2016-08-16 20:16:00', '00:00:00', 'OUT', 7),
+(997, '2016-12-15 20:10:00', '00:00:00', 'IN', 6),
+(998, '2016-12-15 20:16:00', '00:00:00', 'OUT', 6),
+(999, '2016-07-06 20:10:00', '00:00:00', 'IN', 6),
+(1000, '2016-07-06 20:16:00', '00:00:00', 'OUT', 6),
+(1001, '2016-11-10 20:10:00', '00:00:00', 'IN', 6),
+(1002, '2016-11-10 20:16:00', '00:00:00', 'OUT', 6),
+(1003, '2016-06-10 20:10:00', '00:00:00', 'IN', 6),
+(1004, '2016-06-10 20:16:00', '00:00:00', 'OUT', 6),
+(1005, '2016-04-28 20:10:00', '00:00:00', 'IN', 7),
+(1006, '2016-04-28 20:16:00', '00:00:00', 'OUT', 7),
+(1007, '2016-02-09 20:10:00', '00:00:00', 'IN', 7),
+(1008, '2016-02-09 20:16:00', '00:00:00', 'OUT', 7),
+(1009, '2016-05-02 20:10:00', '00:00:00', 'IN', 7),
+(1010, '2016-05-02 20:16:00', '00:00:00', 'OUT', 7);
+INSERT INTO `SC00001_Attendance` (`ID`, `Date`, `Time`, `IN_OUT`, `Candidate_ID`) VALUES
+(1011, '2016-09-16 20:10:00', '00:00:00', 'IN', 6),
+(1012, '2016-09-16 20:16:00', '00:00:00', 'OUT', 6),
+(1013, '2016-12-14 20:10:00', '00:00:00', 'IN', 7),
+(1014, '2016-12-14 20:16:00', '00:00:00', 'OUT', 7),
+(1015, '2016-01-25 20:10:00', '00:00:00', 'IN', 6),
+(1016, '2016-01-25 20:16:00', '00:00:00', 'OUT', 6),
+(1017, '2016-04-02 20:10:00', '00:00:00', 'IN', 7),
+(1018, '2016-04-02 20:16:00', '00:00:00', 'OUT', 7),
+(1019, '2016-01-18 20:10:00', '00:00:00', 'IN', 7),
+(1020, '2016-01-18 20:16:00', '00:00:00', 'OUT', 7),
+(1021, '2016-10-08 20:10:00', '00:00:00', 'IN', 7),
+(1022, '2016-10-08 20:16:00', '00:00:00', 'OUT', 7),
+(1023, '2016-09-02 20:10:00', '00:00:00', 'IN', 7),
+(1024, '2016-09-02 20:16:00', '00:00:00', 'OUT', 7),
+(1025, '2016-05-06 20:10:00', '00:00:00', 'IN', 6),
+(1026, '2016-05-06 20:16:00', '00:00:00', 'OUT', 6),
+(1027, '2016-07-18 20:10:00', '00:00:00', 'IN', 7),
+(1028, '2016-07-18 20:16:00', '00:00:00', 'OUT', 7),
+(1029, '2016-01-29 20:10:00', '00:00:00', 'IN', 7),
+(1030, '2016-01-29 20:16:00', '00:00:00', 'OUT', 7),
+(1031, '2016-11-25 20:10:00', '00:00:00', 'IN', 7),
+(1032, '2016-11-25 20:16:00', '00:00:00', 'OUT', 7),
+(1033, '2016-08-27 20:10:00', '00:00:00', 'IN', 7),
+(1034, '2016-08-27 20:16:00', '00:00:00', 'OUT', 7),
+(1035, '2016-11-01 20:10:00', '00:00:00', 'IN', 7),
+(1036, '2016-11-01 20:16:00', '00:00:00', 'OUT', 7),
+(1037, '2016-06-23 20:10:00', '00:00:00', 'IN', 6),
+(1038, '2016-06-23 20:16:00', '00:00:00', 'OUT', 6),
+(1039, '2016-01-11 20:10:00', '00:00:00', 'IN', 6),
+(1040, '2016-01-11 20:16:00', '00:00:00', 'OUT', 6),
+(1041, '2016-06-03 20:10:00', '00:00:00', 'IN', 7),
+(1042, '2016-06-03 20:16:00', '00:00:00', 'OUT', 7),
+(1043, '2016-03-31 20:10:00', '00:00:00', 'IN', 7),
+(1044, '2016-03-31 20:16:00', '00:00:00', 'OUT', 7),
+(1045, '2016-04-09 20:10:00', '00:00:00', 'IN', 7),
+(1046, '2016-04-09 20:16:00', '00:00:00', 'OUT', 7),
+(1047, '2016-03-14 20:10:00', '00:00:00', 'IN', 6),
+(1048, '2016-03-14 20:16:00', '00:00:00', 'OUT', 6),
+(1049, '2016-12-04 20:10:00', '00:00:00', 'IN', 6),
+(1050, '2016-12-04 20:16:00', '00:00:00', 'OUT', 6),
+(1051, '2016-04-29 20:10:00', '00:00:00', 'IN', 7),
+(1052, '2016-04-29 20:16:00', '00:00:00', 'OUT', 7),
+(1053, '2016-06-22 20:10:00', '00:00:00', 'IN', 6),
+(1054, '2016-06-22 20:16:00', '00:00:00', 'OUT', 6),
+(1055, '2016-07-13 20:10:00', '00:00:00', 'IN', 6),
+(1056, '2016-07-13 20:16:00', '00:00:00', 'OUT', 6),
+(1057, '2016-09-29 20:10:00', '00:00:00', 'IN', 6),
+(1058, '2016-09-29 20:16:00', '00:00:00', 'OUT', 6),
+(1059, '2016-02-29 20:10:00', '00:00:00', 'IN', 7),
+(1060, '2016-02-29 20:16:00', '00:00:00', 'OUT', 7),
+(1061, '2016-02-21 20:10:00', '00:00:00', 'IN', 7),
+(1062, '2016-02-21 20:16:00', '00:00:00', 'OUT', 7),
+(1063, '2016-03-01 20:10:00', '00:00:00', 'IN', 6),
+(1064, '2016-03-01 20:16:00', '00:00:00', 'OUT', 6),
+(1065, '2016-08-29 20:10:00', '00:00:00', 'IN', 7),
+(1066, '2016-08-29 20:16:00', '00:00:00', 'OUT', 7),
+(1067, '2016-07-18 20:10:00', '00:00:00', 'IN', 7),
+(1068, '2016-07-18 20:16:00', '00:00:00', 'OUT', 7),
+(1069, '2016-02-11 20:10:00', '00:00:00', 'IN', 7),
+(1070, '2016-02-11 20:16:00', '00:00:00', 'OUT', 7),
+(1071, '2016-06-16 20:10:00', '00:00:00', 'IN', 7),
+(1072, '2016-06-16 20:16:00', '00:00:00', 'OUT', 7),
+(1073, '2016-05-02 20:10:00', '00:00:00', 'IN', 6),
+(1074, '2016-05-02 20:16:00', '00:00:00', 'OUT', 6),
+(1075, '2016-07-25 20:10:00', '00:00:00', 'IN', 6),
+(1076, '2016-07-25 20:16:00', '00:00:00', 'OUT', 6),
+(1077, '2016-10-11 20:10:00', '00:00:00', 'IN', 7),
+(1078, '2016-10-11 20:16:00', '00:00:00', 'OUT', 7),
+(1079, '2016-03-22 20:10:00', '00:00:00', 'IN', 6),
+(1080, '2016-03-22 20:16:00', '00:00:00', 'OUT', 6),
+(1081, '2016-11-20 20:10:00', '00:00:00', 'IN', 6),
+(1082, '2016-11-20 20:16:00', '00:00:00', 'OUT', 6),
+(1083, '2016-11-06 20:10:00', '00:00:00', 'IN', 6),
+(1084, '2016-11-06 20:16:00', '00:00:00', 'OUT', 6),
+(1085, '2016-09-27 20:10:00', '00:00:00', 'IN', 7),
+(1086, '2016-09-27 20:16:00', '00:00:00', 'OUT', 7),
+(1087, '2016-12-27 20:10:00', '00:00:00', 'IN', 7),
+(1088, '2016-12-27 20:16:00', '00:00:00', 'OUT', 7),
+(1089, '2016-10-21 20:10:00', '00:00:00', 'IN', 6),
+(1090, '2016-10-21 20:16:00', '00:00:00', 'OUT', 6),
+(1091, '2016-08-22 20:10:00', '00:00:00', 'IN', 7),
+(1092, '2016-08-22 20:16:00', '00:00:00', 'OUT', 7),
+(1093, '2016-05-18 20:10:00', '00:00:00', 'IN', 6),
+(1094, '2016-05-18 20:16:00', '00:00:00', 'OUT', 6),
+(1095, '2016-07-25 20:10:00', '00:00:00', 'IN', 6),
+(1096, '2016-07-25 20:16:00', '00:00:00', 'OUT', 6),
+(1097, '2016-01-15 20:10:00', '00:00:00', 'IN', 6),
+(1098, '2016-01-15 20:16:00', '00:00:00', 'OUT', 6),
+(1099, '2016-05-31 20:10:00', '00:00:00', 'IN', 6),
+(1100, '2016-05-31 20:16:00', '00:00:00', 'OUT', 6),
+(1101, '2016-06-19 20:10:00', '00:00:00', 'IN', 6),
+(1102, '2016-06-19 20:16:00', '00:00:00', 'OUT', 6),
+(1103, '2016-04-24 20:10:00', '00:00:00', 'IN', 7),
+(1104, '2016-04-24 20:16:00', '00:00:00', 'OUT', 7),
+(1105, '2016-02-01 20:10:00', '00:00:00', 'IN', 7),
+(1106, '2016-02-01 20:16:00', '00:00:00', 'OUT', 7),
+(1107, '2016-07-29 20:10:00', '00:00:00', 'IN', 7),
+(1108, '2016-07-29 20:16:00', '00:00:00', 'OUT', 7),
+(1109, '2016-04-20 20:10:00', '00:00:00', 'IN', 6),
+(1110, '2016-04-20 20:16:00', '00:00:00', 'OUT', 6),
+(1111, '2016-04-18 20:10:00', '00:00:00', 'IN', 7),
+(1112, '2016-04-18 20:16:00', '00:00:00', 'OUT', 7),
+(1113, '2016-03-21 20:10:00', '00:00:00', 'IN', 7),
+(1114, '2016-03-21 20:16:00', '00:00:00', 'OUT', 7),
+(1115, '2016-08-07 20:10:00', '00:00:00', 'IN', 7),
+(1116, '2016-08-07 20:16:00', '00:00:00', 'OUT', 7),
+(1117, '2016-08-24 20:10:00', '00:00:00', 'IN', 7),
+(1118, '2016-08-24 20:16:00', '00:00:00', 'OUT', 7),
+(1119, '2016-10-14 20:10:00', '00:00:00', 'IN', 6),
+(1120, '2016-10-14 20:16:00', '00:00:00', 'OUT', 6),
+(1121, '2016-09-11 20:10:00', '00:00:00', 'IN', 7),
+(1122, '2016-09-11 20:16:00', '00:00:00', 'OUT', 7),
+(1123, '2016-09-25 20:10:00', '00:00:00', 'IN', 7),
+(1124, '2016-09-25 20:16:00', '00:00:00', 'OUT', 7),
+(1125, '2016-09-23 20:10:00', '00:00:00', 'IN', 6),
+(1126, '2016-09-23 20:16:00', '00:00:00', 'OUT', 6),
+(1127, '2016-10-07 20:10:00', '00:00:00', 'IN', 6),
+(1128, '2016-10-07 20:16:00', '00:00:00', 'OUT', 6),
+(1129, '2016-09-15 20:10:00', '00:00:00', 'IN', 6),
+(1130, '2016-09-15 20:16:00', '00:00:00', 'OUT', 6),
+(1131, '2016-07-07 20:10:00', '00:00:00', 'IN', 7),
+(1132, '2016-07-07 20:16:00', '00:00:00', 'OUT', 7),
+(1133, '2016-05-20 20:10:00', '00:00:00', 'IN', 6),
+(1134, '2016-05-20 20:16:00', '00:00:00', 'OUT', 6),
+(1135, '2016-08-05 20:10:00', '00:00:00', 'IN', 6),
+(1136, '2016-08-05 20:16:00', '00:00:00', 'OUT', 6),
+(1137, '2016-10-29 20:10:00', '00:00:00', 'IN', 7),
+(1138, '2016-10-29 20:16:00', '00:00:00', 'OUT', 7),
+(1139, '2016-04-15 20:10:00', '00:00:00', 'IN', 7),
+(1140, '2016-04-15 20:16:00', '00:00:00', 'OUT', 7),
+(1141, '2016-11-05 20:10:00', '00:00:00', 'IN', 7),
+(1142, '2016-11-05 20:16:00', '00:00:00', 'OUT', 7),
+(1143, '2016-04-01 20:10:00', '00:00:00', 'IN', 7),
+(1144, '2016-04-01 20:16:00', '00:00:00', 'OUT', 7),
+(1145, '2016-11-05 20:10:00', '00:00:00', 'IN', 7),
+(1146, '2016-11-05 20:16:00', '00:00:00', 'OUT', 7),
+(1147, '2016-07-05 20:10:00', '00:00:00', 'IN', 6),
+(1148, '2016-07-05 20:16:00', '00:00:00', 'OUT', 6),
+(1149, '2016-01-13 20:10:00', '00:00:00', 'IN', 7),
+(1150, '2016-01-13 20:16:00', '00:00:00', 'OUT', 7),
+(1151, '2016-02-04 20:10:00', '00:00:00', 'IN', 6),
+(1152, '2016-02-04 20:16:00', '00:00:00', 'OUT', 6),
+(1153, '2016-07-01 20:10:00', '00:00:00', 'IN', 7),
+(1154, '2016-07-01 20:16:00', '00:00:00', 'OUT', 7),
+(1155, '2016-07-07 20:10:00', '00:00:00', 'IN', 6),
+(1156, '2016-07-07 20:16:00', '00:00:00', 'OUT', 6),
+(1157, '2016-02-03 20:10:00', '00:00:00', 'IN', 7),
+(1158, '2016-02-03 20:16:00', '00:00:00', 'OUT', 7),
+(1159, '2016-01-07 20:10:00', '00:00:00', 'IN', 7),
+(1160, '2016-01-07 20:16:00', '00:00:00', 'OUT', 7),
+(1161, '2016-10-29 20:10:00', '00:00:00', 'IN', 7),
+(1162, '2016-10-29 20:16:00', '00:00:00', 'OUT', 7),
+(1163, '2016-11-09 20:10:00', '00:00:00', 'IN', 6),
+(1164, '2016-11-09 20:16:00', '00:00:00', 'OUT', 6),
+(1165, '2016-11-11 20:10:00', '00:00:00', 'IN', 6),
+(1166, '2016-11-11 20:16:00', '00:00:00', 'OUT', 6),
+(1167, '2016-06-18 20:10:00', '00:00:00', 'IN', 6),
+(1168, '2016-06-18 20:16:00', '00:00:00', 'OUT', 6),
+(1169, '2016-03-26 20:10:00', '00:00:00', 'IN', 6),
+(1170, '2016-03-26 20:16:00', '00:00:00', 'OUT', 6),
+(1171, '2016-09-10 20:10:00', '00:00:00', 'IN', 7),
+(1172, '2016-09-10 20:16:00', '00:00:00', 'OUT', 7),
+(1173, '2016-08-26 20:10:00', '00:00:00', 'IN', 6),
+(1174, '2016-08-26 20:16:00', '00:00:00', 'OUT', 6),
+(1175, '2016-04-02 20:10:00', '00:00:00', 'IN', 6),
+(1176, '2016-04-02 20:16:00', '00:00:00', 'OUT', 6),
+(1177, '2016-11-04 20:10:00', '00:00:00', 'IN', 6),
+(1178, '2016-11-04 20:16:00', '00:00:00', 'OUT', 6),
+(1179, '2016-09-27 20:10:00', '00:00:00', 'IN', 7),
+(1180, '2016-09-27 20:16:00', '00:00:00', 'OUT', 7),
+(1181, '2016-02-23 20:10:00', '00:00:00', 'IN', 6),
+(1182, '2016-02-23 20:16:00', '00:00:00', 'OUT', 6),
+(1183, '2016-11-26 20:10:00', '00:00:00', 'IN', 6),
+(1184, '2016-11-26 20:16:00', '00:00:00', 'OUT', 6),
+(1185, '2016-03-20 20:10:00', '00:00:00', 'IN', 6),
+(1186, '2016-03-20 20:16:00', '00:00:00', 'OUT', 6),
+(1187, '2016-01-01 20:10:00', '00:00:00', 'IN', 7),
+(1188, '2016-01-01 20:16:00', '00:00:00', 'OUT', 7),
+(1189, '2016-08-21 20:10:00', '00:00:00', 'IN', 7),
+(1190, '2016-08-21 20:16:00', '00:00:00', 'OUT', 7),
+(1191, '2016-03-24 20:10:00', '00:00:00', 'IN', 7),
+(1192, '2016-03-24 20:16:00', '00:00:00', 'OUT', 7),
+(1193, '2016-03-27 20:10:00', '00:00:00', 'IN', 6),
+(1194, '2016-03-27 20:16:00', '00:00:00', 'OUT', 6),
+(1195, '2016-05-07 20:10:00', '00:00:00', 'IN', 6),
+(1196, '2016-05-07 20:16:00', '00:00:00', 'OUT', 6),
+(1197, '2016-12-25 20:10:00', '00:00:00', 'IN', 7),
+(1198, '2016-12-25 20:16:00', '00:00:00', 'OUT', 7),
+(1199, '2016-09-05 20:10:00', '00:00:00', 'IN', 6),
+(1200, '2016-09-05 20:16:00', '00:00:00', 'OUT', 6),
+(1201, '2016-07-22 20:10:00', '00:00:00', 'IN', 6),
+(1202, '2016-07-22 20:16:00', '00:00:00', 'OUT', 6),
+(1203, '2016-11-16 20:10:00', '00:00:00', 'IN', 7),
+(1204, '2016-11-16 20:16:00', '00:00:00', 'OUT', 7),
+(1205, '2016-06-25 20:10:00', '00:00:00', 'IN', 6),
+(1206, '2016-06-25 20:16:00', '00:00:00', 'OUT', 6),
+(1207, '2016-03-21 20:10:00', '00:00:00', 'IN', 7),
+(1208, '2016-03-21 20:16:00', '00:00:00', 'OUT', 7),
+(1209, '2016-03-16 20:10:00', '00:00:00', 'IN', 6),
+(1210, '2016-03-16 20:16:00', '00:00:00', 'OUT', 6),
+(1211, '2016-02-15 20:10:00', '00:00:00', 'IN', 6),
+(1212, '2016-02-15 20:16:00', '00:00:00', 'OUT', 6),
+(1213, '2016-10-25 20:10:00', '00:00:00', 'IN', 6),
+(1214, '2016-10-25 20:16:00', '00:00:00', 'OUT', 6),
+(1215, '2016-02-21 20:10:00', '00:00:00', 'IN', 7),
+(1216, '2016-02-21 20:16:00', '00:00:00', 'OUT', 7),
+(1217, '2016-08-08 20:10:00', '00:00:00', 'IN', 6),
+(1218, '2016-08-08 20:16:00', '00:00:00', 'OUT', 6),
+(1219, '2016-04-04 20:10:00', '00:00:00', 'IN', 6),
+(1220, '2016-04-04 20:16:00', '00:00:00', 'OUT', 6),
+(1221, '2016-03-15 20:10:00', '00:00:00', 'IN', 7),
+(1222, '2016-03-15 20:16:00', '00:00:00', 'OUT', 7),
+(1223, '2016-05-29 20:10:00', '00:00:00', 'IN', 7),
+(1224, '2016-05-29 20:16:00', '00:00:00', 'OUT', 7),
+(1225, '2016-12-09 20:10:00', '00:00:00', 'IN', 6),
+(1226, '2016-12-09 20:16:00', '00:00:00', 'OUT', 6),
+(1227, '2016-01-31 20:10:00', '00:00:00', 'IN', 7),
+(1228, '2016-01-31 20:16:00', '00:00:00', 'OUT', 7),
+(1229, '2016-08-31 20:10:00', '00:00:00', 'IN', 7),
+(1230, '2016-08-31 20:16:00', '00:00:00', 'OUT', 7),
+(1231, '2016-06-24 20:10:00', '00:00:00', 'IN', 6),
+(1232, '2016-06-24 20:16:00', '00:00:00', 'OUT', 6),
+(1233, '2016-09-17 20:10:00', '00:00:00', 'IN', 6),
+(1234, '2016-09-17 20:16:00', '00:00:00', 'OUT', 6),
+(1235, '2016-09-02 20:10:00', '00:00:00', 'IN', 6),
+(1236, '2016-09-02 20:16:00', '00:00:00', 'OUT', 6),
+(1237, '2016-05-29 20:10:00', '00:00:00', 'IN', 6),
+(1238, '2016-05-29 20:16:00', '00:00:00', 'OUT', 6),
+(1239, '2016-02-27 20:10:00', '00:00:00', 'IN', 7),
+(1240, '2016-02-27 20:16:00', '00:00:00', 'OUT', 7),
+(1241, '2016-11-13 20:10:00', '00:00:00', 'IN', 7),
+(1242, '2016-11-13 20:16:00', '00:00:00', 'OUT', 7),
+(1243, '2016-09-28 20:10:00', '00:00:00', 'IN', 7),
+(1244, '2016-09-28 20:16:00', '00:00:00', 'OUT', 7),
+(1245, '2016-12-18 20:10:00', '00:00:00', 'IN', 7),
+(1246, '2016-12-18 20:16:00', '00:00:00', 'OUT', 7),
+(1247, '2016-11-19 20:10:00', '00:00:00', 'IN', 6),
+(1248, '2016-11-19 20:16:00', '00:00:00', 'OUT', 6),
+(1249, '2016-12-25 20:10:00', '00:00:00', 'IN', 6),
+(1250, '2016-12-25 20:16:00', '00:00:00', 'OUT', 6),
+(1251, '2016-04-18 20:10:00', '00:00:00', 'IN', 6),
+(1252, '2016-04-18 20:16:00', '00:00:00', 'OUT', 6),
+(1253, '2016-12-15 20:10:00', '00:00:00', 'IN', 6),
+(1254, '2016-12-15 20:16:00', '00:00:00', 'OUT', 6),
+(1255, '2016-07-22 20:10:00', '00:00:00', 'IN', 6),
+(1256, '2016-07-22 20:16:00', '00:00:00', 'OUT', 6),
+(1257, '2016-02-05 20:10:00', '00:00:00', 'IN', 6),
+(1258, '2016-02-05 20:16:00', '00:00:00', 'OUT', 6),
+(1259, '2016-02-18 20:10:00', '00:00:00', 'IN', 7),
+(1260, '2016-02-18 20:16:00', '00:00:00', 'OUT', 7),
+(1261, '2016-12-26 20:10:00', '00:00:00', 'IN', 7),
+(1262, '2016-12-26 20:16:00', '00:00:00', 'OUT', 7),
+(1263, '2016-08-16 20:10:00', '00:00:00', 'IN', 7),
+(1264, '2016-08-16 20:16:00', '00:00:00', 'OUT', 7),
+(1265, '2016-09-11 20:10:00', '00:00:00', 'IN', 6),
+(1266, '2016-09-11 20:16:00', '00:00:00', 'OUT', 6),
+(1267, '2016-04-29 20:10:00', '00:00:00', 'IN', 6),
+(1268, '2016-04-29 20:16:00', '00:00:00', 'OUT', 6),
+(1269, '2016-04-11 20:10:00', '00:00:00', 'IN', 6),
+(1270, '2016-04-11 20:16:00', '00:00:00', 'OUT', 6),
+(1271, '2016-12-22 20:10:00', '00:00:00', 'IN', 6),
+(1272, '2016-12-22 20:16:00', '00:00:00', 'OUT', 6),
+(1273, '2016-11-24 20:10:00', '00:00:00', 'IN', 6),
+(1274, '2016-11-24 20:16:00', '00:00:00', 'OUT', 6),
+(1275, '2016-07-07 20:10:00', '00:00:00', 'IN', 6),
+(1276, '2016-07-07 20:16:00', '00:00:00', 'OUT', 6),
+(1277, '2016-10-03 20:10:00', '00:00:00', 'IN', 6),
+(1278, '2016-10-03 20:16:00', '00:00:00', 'OUT', 6),
+(1279, '2016-01-20 20:10:00', '00:00:00', 'IN', 6),
+(1280, '2016-01-20 20:16:00', '00:00:00', 'OUT', 6),
+(1281, '2016-02-11 20:10:00', '00:00:00', 'IN', 6),
+(1282, '2016-02-11 20:16:00', '00:00:00', 'OUT', 6),
+(1283, '2016-12-12 20:10:00', '00:00:00', 'IN', 7),
+(1284, '2016-12-12 20:16:00', '00:00:00', 'OUT', 7),
+(1285, '2016-09-23 20:10:00', '00:00:00', 'IN', 7),
+(1286, '2016-09-23 20:16:00', '00:00:00', 'OUT', 7),
+(1287, '2016-09-03 20:10:00', '00:00:00', 'IN', 7),
+(1288, '2016-09-03 20:16:00', '00:00:00', 'OUT', 7),
+(1289, '2016-07-16 20:10:00', '00:00:00', 'IN', 6),
+(1290, '2016-07-16 20:16:00', '00:00:00', 'OUT', 6),
+(1291, '2016-04-02 20:10:00', '00:00:00', 'IN', 6),
+(1292, '2016-04-02 20:16:00', '00:00:00', 'OUT', 6),
+(1293, '2016-11-15 20:10:00', '00:00:00', 'IN', 7),
+(1294, '2016-11-15 20:16:00', '00:00:00', 'OUT', 7),
+(1295, '2016-04-10 20:10:00', '00:00:00', 'IN', 6),
+(1296, '2016-04-10 20:16:00', '00:00:00', 'OUT', 6),
+(1297, '2016-07-04 20:10:00', '00:00:00', 'IN', 6),
+(1298, '2016-07-04 20:16:00', '00:00:00', 'OUT', 6),
+(1299, '2016-08-06 20:10:00', '00:00:00', 'IN', 7),
+(1300, '2016-08-06 20:16:00', '00:00:00', 'OUT', 7),
+(1301, '2016-06-29 20:10:00', '00:00:00', 'IN', 6),
+(1302, '2016-06-29 20:16:00', '00:00:00', 'OUT', 6),
+(1303, '2016-11-04 20:10:00', '00:00:00', 'IN', 7),
+(1304, '2016-11-04 20:16:00', '00:00:00', 'OUT', 7),
+(1305, '2016-04-19 20:10:00', '00:00:00', 'IN', 6),
+(1306, '2016-04-19 20:16:00', '00:00:00', 'OUT', 6),
+(1307, '2016-08-10 20:10:00', '00:00:00', 'IN', 7),
+(1308, '2016-08-10 20:16:00', '00:00:00', 'OUT', 7),
+(1309, '2016-04-09 20:10:00', '00:00:00', 'IN', 6),
+(1310, '2016-04-09 20:16:00', '00:00:00', 'OUT', 6),
+(1311, '2016-09-24 20:10:00', '00:00:00', 'IN', 6),
+(1312, '2016-09-24 20:16:00', '00:00:00', 'OUT', 6),
+(1313, '2016-03-27 20:10:00', '00:00:00', 'IN', 6),
+(1314, '2016-03-27 20:16:00', '00:00:00', 'OUT', 6),
+(1315, '2016-05-17 20:10:00', '00:00:00', 'IN', 7),
+(1316, '2016-05-17 20:16:00', '00:00:00', 'OUT', 7),
+(1317, '2016-08-06 20:10:00', '00:00:00', 'IN', 6),
+(1318, '2016-08-06 20:16:00', '00:00:00', 'OUT', 6),
+(1319, '2016-10-02 20:10:00', '00:00:00', 'IN', 7),
+(1320, '2016-10-02 20:16:00', '00:00:00', 'OUT', 7),
+(1321, '2016-04-10 20:10:00', '00:00:00', 'IN', 7),
+(1322, '2016-04-10 20:16:00', '00:00:00', 'OUT', 7),
+(1323, '2016-09-11 20:10:00', '00:00:00', 'IN', 6),
+(1324, '2016-09-11 20:16:00', '00:00:00', 'OUT', 6),
+(1325, '2016-04-24 20:10:00', '00:00:00', 'IN', 6),
+(1326, '2016-04-24 20:16:00', '00:00:00', 'OUT', 6),
+(1327, '2016-06-08 20:10:00', '00:00:00', 'IN', 6),
+(1328, '2016-06-08 20:16:00', '00:00:00', 'OUT', 6),
+(1329, '2016-03-26 20:10:00', '00:00:00', 'IN', 7),
+(1330, '2016-03-26 20:16:00', '00:00:00', 'OUT', 7),
+(1331, '2016-08-23 20:10:00', '00:00:00', 'IN', 7),
+(1332, '2016-08-23 20:16:00', '00:00:00', 'OUT', 7),
+(1333, '2016-08-23 20:10:00', '00:00:00', 'IN', 7),
+(1334, '2016-08-23 20:16:00', '00:00:00', 'OUT', 7),
+(1335, '2016-08-04 20:10:00', '00:00:00', 'IN', 6),
+(1336, '2016-08-04 20:16:00', '00:00:00', 'OUT', 6),
+(1337, '2016-12-27 20:10:00', '00:00:00', 'IN', 6),
+(1338, '2016-12-27 20:16:00', '00:00:00', 'OUT', 6),
+(1339, '2016-11-09 20:10:00', '00:00:00', 'IN', 6),
+(1340, '2016-11-09 20:16:00', '00:00:00', 'OUT', 6),
+(1341, '2016-04-07 20:10:00', '00:00:00', 'IN', 7),
+(1342, '2016-04-07 20:16:00', '00:00:00', 'OUT', 7),
+(1343, '2016-09-30 20:10:00', '00:00:00', 'IN', 6),
+(1344, '2016-09-30 20:16:00', '00:00:00', 'OUT', 6),
+(1345, '2016-01-11 20:10:00', '00:00:00', 'IN', 7),
+(1346, '2016-01-11 20:16:00', '00:00:00', 'OUT', 7),
+(1347, '2016-07-01 20:10:00', '00:00:00', 'IN', 6),
+(1348, '2016-07-01 20:16:00', '00:00:00', 'OUT', 6),
+(1349, '2016-08-26 20:10:00', '00:00:00', 'IN', 7),
+(1350, '2016-08-26 20:16:00', '00:00:00', 'OUT', 7),
+(1351, '2016-10-19 20:10:00', '00:00:00', 'IN', 7),
+(1352, '2016-10-19 20:16:00', '00:00:00', 'OUT', 7),
+(1353, '2016-06-18 20:10:00', '00:00:00', 'IN', 7),
+(1354, '2016-06-18 20:16:00', '00:00:00', 'OUT', 7),
+(1355, '2016-05-15 20:10:00', '00:00:00', 'IN', 6),
+(1356, '2016-05-15 20:16:00', '00:00:00', 'OUT', 6),
+(1357, '2016-05-25 20:10:00', '00:00:00', 'IN', 7),
+(1358, '2016-05-25 20:16:00', '00:00:00', 'OUT', 7),
+(1359, '2016-01-08 20:10:00', '00:00:00', 'IN', 6),
+(1360, '2016-01-08 20:16:00', '00:00:00', 'OUT', 6),
+(1361, '2016-10-18 20:10:00', '00:00:00', 'IN', 7),
+(1362, '2016-10-18 20:16:00', '00:00:00', 'OUT', 7),
+(1363, '2016-05-20 20:10:00', '00:00:00', 'IN', 6),
+(1364, '2016-05-20 20:16:00', '00:00:00', 'OUT', 6),
+(1365, '2016-11-24 20:10:00', '00:00:00', 'IN', 6),
+(1366, '2016-11-24 20:16:00', '00:00:00', 'OUT', 6),
+(1367, '2016-06-22 20:10:00', '00:00:00', 'IN', 6),
+(1368, '2016-06-22 20:16:00', '00:00:00', 'OUT', 6),
+(1369, '2016-01-20 20:10:00', '00:00:00', 'IN', 6),
+(1370, '2016-01-20 20:16:00', '00:00:00', 'OUT', 6),
+(1371, '2016-05-04 20:10:00', '00:00:00', 'IN', 7),
+(1372, '2016-05-04 20:16:00', '00:00:00', 'OUT', 7),
+(1373, '2016-11-27 20:10:00', '00:00:00', 'IN', 7),
+(1374, '2016-11-27 20:16:00', '00:00:00', 'OUT', 7),
+(1375, '2016-05-09 20:10:00', '00:00:00', 'IN', 7),
+(1376, '2016-05-09 20:16:00', '00:00:00', 'OUT', 7),
+(1377, '2016-09-24 20:10:00', '00:00:00', 'IN', 7),
+(1378, '2016-09-24 20:16:00', '00:00:00', 'OUT', 7),
+(1379, '2016-05-27 20:10:00', '00:00:00', 'IN', 6),
+(1380, '2016-05-27 20:16:00', '00:00:00', 'OUT', 6),
+(1381, '2016-09-23 20:10:00', '00:00:00', 'IN', 7),
+(1382, '2016-09-23 20:16:00', '00:00:00', 'OUT', 7),
+(1383, '2016-11-23 20:10:00', '00:00:00', 'IN', 6),
+(1384, '2016-11-23 20:16:00', '00:00:00', 'OUT', 6),
+(1385, '2016-12-11 20:10:00', '00:00:00', 'IN', 6),
+(1386, '2016-12-11 20:16:00', '00:00:00', 'OUT', 6),
+(1387, '2016-03-14 20:10:00', '00:00:00', 'IN', 6),
+(1388, '2016-03-14 20:16:00', '00:00:00', 'OUT', 6),
+(1389, '2016-01-18 20:10:00', '00:00:00', 'IN', 6),
+(1390, '2016-01-18 20:16:00', '00:00:00', 'OUT', 6),
+(1391, '2016-02-11 20:10:00', '00:00:00', 'IN', 7),
+(1392, '2016-02-11 20:16:00', '00:00:00', 'OUT', 7),
+(1393, '2016-02-08 20:10:00', '00:00:00', 'IN', 7),
+(1394, '2016-02-08 20:16:00', '00:00:00', 'OUT', 7),
+(1395, '2016-11-28 20:10:00', '00:00:00', 'IN', 6),
+(1396, '2016-11-28 20:16:00', '00:00:00', 'OUT', 6),
+(1397, '2016-04-02 20:10:00', '00:00:00', 'IN', 6),
+(1398, '2016-04-02 20:16:00', '00:00:00', 'OUT', 6),
+(1399, '2016-03-28 20:10:00', '00:00:00', 'IN', 7),
+(1400, '2016-03-28 20:16:00', '00:00:00', 'OUT', 7);
 
--- -----------------------------------------------------
--- Table `educare_db`.`SC00001_Candidate`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `educare_db`.`SC00001_Candidate` ;
+-- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `educare_db`.`SC00001_Candidate` (
-  `Candidate_ID` INT(11) NOT NULL,
-  `CARD_NO` VARCHAR(20) NOT NULL,
-  `Roll_No` INT(11) NOT NULL,
-  `Candidate_Name` VARCHAR(45) NOT NULL,
-  `Address1` VARCHAR(60) NULL,
-  `Address2` VARCHAR(60) NULL,
-  `State` VARCHAR(30) NULL,
-  `Pin` VARCHAR(7) NULL,
-  `Guardian_Name` VARCHAR(45) NOT NULL,
-  `Email_ID` VARCHAR(60) NULL,
-  `Mob1` VARCHAR(15) NOT NULL,
-  `Mob2` VARCHAR(15) NULL,
-  `Blood_Group` VARCHAR(10) NULL,
-  `Gender` VARCHAR(6) NULL,
-  `Age` SMALLINT(6) NULL,
-  `Is_Admin` TINYINT(4) NULL DEFAULT 0,
-  `IN_OUT` VARCHAR(3) NULL COMMENT 'IN/OUT',
-  `School_ID` VARCHAR(7) NOT NULL,
-  `Class_ID` INT(11) NOT NULL,
-  `Candidate_Type_ID` INT(11) NOT NULL,
+--
+-- Table structure for table `SC00001_Candidate`
+--
+
+DROP TABLE IF EXISTS `SC00001_Candidate`;
+CREATE TABLE IF NOT EXISTS `SC00001_Candidate` (
+  `Candidate_ID` int(11) NOT NULL AUTO_INCREMENT,
+  `RFID_NO` varchar(20) NOT NULL,
+  `Roll_No` int(11) NOT NULL,
+  `Candidate_Name` varchar(45) NOT NULL,
+  `Address1` varchar(60) DEFAULT NULL,
+  `Address2` varchar(60) DEFAULT NULL,
+  `State` varchar(30) DEFAULT NULL,
+  `Pin` varchar(7) DEFAULT NULL,
+  `Guardian_Name` varchar(45) NOT NULL,
+  `Email_ID` varchar(60) DEFAULT NULL,
+  `Mob1` varchar(15) NOT NULL,
+  `Mob2` varchar(15) DEFAULT NULL,
+  `Blood_Group` varchar(10) DEFAULT NULL,
+  `Gender` varchar(1) DEFAULT NULL,
+  `Age` smallint(6) DEFAULT NULL,
+  `Is_Admin` tinyint(4) DEFAULT '0',
+  `IN_OUT` varchar(3) DEFAULT NULL COMMENT 'IN/OUT',
+  `School_ID` varchar(7) NOT NULL,
+  `Class_ID` int(11) NOT NULL,
+  `Candidate_Type_ID` int(11) NOT NULL,
+  `Image_Name` varchar(20) DEFAULT NULL COMMENT 'Candidate Passport Image Name',
+  `Added_On` timestamp NULL DEFAULT NULL,
+  `Updated_On` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `Updated_By` int(11) DEFAULT NULL,
+  `Is_Deleted` int(11) DEFAULT '0' COMMENT '0 = No\\n1 = Yes',
   PRIMARY KEY (`Candidate_ID`),
-  INDEX `fk_SC00001_Candidate_School1_idx` (`School_ID` ASC),
-  INDEX `fk_SC00001_Candidate_Class1_idx` (`Class_ID` ASC),
-  INDEX `fk_SC00001_Candidate_Candidate_Type1_idx` (`Candidate_Type_ID` ASC),
-  CONSTRAINT `fk_SC00001_Candidate_School1`
-    FOREIGN KEY (`School_ID`)
-    REFERENCES `educare_db`.`School` (`ID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_SC00001_Candidate_Class1`
-    FOREIGN KEY (`Class_ID`)
-    REFERENCES `educare_db`.`Class` (`ID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_SC00001_Candidate_Candidate_Type1`
-    FOREIGN KEY (`Candidate_Type_ID`)
-    REFERENCES `educare_db`.`Candidate_Type` (`ID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+  KEY `fk_SC00001_Candidate_School1_idx` (`School_ID`),
+  KEY `fk_SC00001_Candidate_Class1_idx` (`Class_ID`),
+  KEY `fk_SC00001_Candidate_Candidate_Type1_idx` (`Candidate_Type_ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
 
--- -----------------------------------------------------
--- Table `educare_db`.`SC00001_Attendance`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `educare_db`.`SC00001_Attendance` ;
+--
+-- Dumping data for table `SC00001_Candidate`
+--
 
-CREATE TABLE IF NOT EXISTS `educare_db`.`SC00001_Attendance` (
-  `ID` INT(11) NOT NULL AUTO_INCREMENT,
-  `Date` DATE NOT NULL,
-  `Time` TIME NOT NULL,
-  `IN_OUT` VARCHAR(3) NULL COMMENT 'IN/OUT',
-  `SC00001_Candidate_ID` INT(11) NOT NULL,
+INSERT INTO `SC00001_Candidate` (`Candidate_ID`, `RFID_NO`, `Roll_No`, `Candidate_Name`, `Address1`, `Address2`, `State`, `Pin`, `Guardian_Name`, `Email_ID`, `Mob1`, `Mob2`, `Blood_Group`, `Gender`, `Age`, `Is_Admin`, `IN_OUT`, `School_ID`, `Class_ID`, `Candidate_Type_ID`, `Image_Name`, `Added_On`, `Updated_On`, `Updated_By`, `Is_Deleted`) VALUES
+(1, '866512335', 1, 'Prahan', 'Add1', 'Add2', NULL, NULL, 'Partha', 'prana_chak@hotmail.com', '919051733137', '', 'O +ve', 'M', 22, 0, 'OUT', 'SC00001', 1, 1, NULL, NULL, '2016-08-31 06:21:55', NULL, 0),
+(2, '1425241197', 2, 'Rusha', 'Add1', 'Add2', NULL, NULL, 'Rahul', 'r.majum@gmail.com', '917890217074', '', 'AB +ve', 'F', 36, 0, 'OUT', 'SC00001', 3, 1, NULL, NULL, '2016-08-31 06:22:03', NULL, 0),
+(3, '16213812237', 10, 'Titli', 'Add1', 'Add2', NULL, NULL, 'Shiladitya', 's.chatterjee@gmail.com', '919051733137', '', 'AB +ve', 'F', 48, 0, 'OUT', 'SC00001', 7, 1, NULL, NULL, '2016-08-30 13:12:03', NULL, 0),
+(6, '343434', 12, 'Arghya ', 'Bhowanipore', 'Kolkata', 'West Bengal', '700025', '', NULL, '', NULL, NULL, NULL, NULL, 0, NULL, 'SC00001', 3, 1, NULL, NULL, NULL, NULL, 0),
+(7, '4545545', 13, 'Atanu', 'Dum Dum', 'Cantonment', 'West Bengal', '700028', '', NULL, '', NULL, NULL, NULL, NULL, 0, NULL, 'SC00001', 3, 1, NULL, NULL, NULL, NULL, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `School`
+--
+
+DROP TABLE IF EXISTS `School`;
+CREATE TABLE IF NOT EXISTS `School` (
+  `ID` varchar(7) NOT NULL COMMENT 'Like: ''SC00001''',
+  `School_Name` varchar(60) NOT NULL,
+  `Description` varchar(1000) CHARACTER SET utf8 DEFAULT NULL,
+  `Address1` varchar(45) DEFAULT NULL,
+  `Address2` varchar(45) DEFAULT NULL,
+  `State` varchar(30) DEFAULT NULL,
+  `Pin` varchar(7) DEFAULT NULL,
+  `No_Of_Students` int(11) DEFAULT NULL,
+  `No_Of_Machines` int(11) DEFAULT NULL,
+  `Event_Active` tinyint(4) DEFAULT '0' COMMENT '1 or 0',
+  `Added_On` timestamp NULL DEFAULT NULL,
+  `Updated_On` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `Updated_By` int(11) DEFAULT NULL,
+  `Is_Deleted` int(11) DEFAULT '0' COMMENT '0 = No\\n1 = Yes',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `School`
+--
+
+INSERT INTO `School` (`ID`, `School_Name`, `Description`, `Address1`, `Address2`, `State`, `Pin`, `No_Of_Students`, `No_Of_Machines`, `Event_Active`, `Added_On`, `Updated_On`, `Updated_By`, `Is_Deleted`) VALUES
+('SC00001', 'DPS', NULL, 'Kol1', 'WB', NULL, NULL, 1500, 5, 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `School_Days`
+--
+
+DROP TABLE IF EXISTS `School_Days`;
+CREATE TABLE IF NOT EXISTS `School_Days` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Month` varchar(10) NOT NULL,
+  `Month_Days` int(11) DEFAULT NULL,
+  `Month_Off_Days` int(11) DEFAULT NULL,
+  `Extra_Leave` int(11) DEFAULT NULL,
+  `Remarks` varchar(100) DEFAULT NULL,
+  `School_ID` varchar(7) NOT NULL,
+  `Added_On` timestamp NULL DEFAULT NULL,
+  `Updated_On` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `Updated_By` int(11) DEFAULT NULL,
   PRIMARY KEY (`ID`),
-  INDEX `fk_SC00001_Attendance_SC00001_Candidate1_idx` (`SC00001_Candidate_ID` ASC),
-  CONSTRAINT `fk_SC00001_Attendance_SC00001_Candidate1`
-    FOREIGN KEY (`SC00001_Candidate_ID`)
-    REFERENCES `educare_db`.`SC00001_Candidate` (`Candidate_ID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+  KEY `fk_School_Days_School1_idx` (`School_ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=13 ;
 
--- -----------------------------------------------------
--- Table `educare_db`.`Event`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `educare_db`.`Event` ;
+--
+-- Dumping data for table `School_Days`
+--
 
-CREATE TABLE IF NOT EXISTS `educare_db`.`Event` (
-  `ID` INT(11) NOT NULL AUTO_INCREMENT,
-  `Name` VARCHAR(60) NOT NULL,
-  `Description` VARCHAR(600) NULL,
-  `Message` VARCHAR(160) NULL,
-  `Date` DATE NULL,
-  `School_ID` VARCHAR(7) NOT NULL,
+INSERT INTO `School_Days` (`ID`, `Month`, `Month_Days`, `Month_Off_Days`, `Extra_Leave`, `Remarks`, `School_ID`, `Added_On`, `Updated_On`, `Updated_By`) VALUES
+(1, '1', 30, 6, 0, NULL, 'SC00001', '2016-08-28 16:22:46', '2016-08-28 16:22:46', 1),
+(2, '2', 30, 8, 0, NULL, 'SC00001', '2016-08-28 16:22:46', '2016-08-28 16:22:46', 1),
+(3, '3', 30, 11, 0, NULL, 'SC00001', '2016-08-28 16:22:46', '2016-08-28 16:22:46', 1),
+(4, '4', 30, 7, 0, NULL, 'SC00001', '2016-08-28 16:22:46', '2016-08-28 16:22:46', 1),
+(5, '5', 30, 6, 0, NULL, 'SC00001', '2016-08-28 16:22:46', '2016-08-28 16:22:46', 1),
+(6, '6', 30, 8, 0, NULL, 'SC00001', '2016-08-28 16:22:46', '2016-08-28 16:22:46', 1),
+(7, '7', 30, 7, 0, NULL, 'SC00001', '2016-08-28 16:22:46', '2016-08-28 16:22:46', 1),
+(8, '8', 30, 7, 0, NULL, 'SC00001', '2016-08-28 16:22:46', '2016-08-28 16:22:46', 1),
+(9, '9', 30, 12, 0, NULL, 'SC00001', '2016-08-28 16:22:46', '2016-08-28 16:22:46', 1),
+(10, '10', 30, 9, 0, NULL, 'SC00001', '2016-08-28 16:22:46', '2016-08-28 16:22:46', 1),
+(11, '11', 30, 9, 0, NULL, 'SC00001', '2016-08-28 16:22:46', '2016-08-28 16:22:46', 1),
+(12, '12', 30, 6, 0, NULL, 'SC00001', '2016-08-28 16:22:46', '2016-08-28 16:22:46', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `School_Machines`
+--
+
+DROP TABLE IF EXISTS `School_Machines`;
+CREATE TABLE IF NOT EXISTS `School_Machines` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `SIM_No` varchar(13) DEFAULT NULL,
+  `Provider` varchar(25) DEFAULT NULL,
+  `Is_Active` tinyint(4) DEFAULT NULL,
+  `School_ID` varchar(7) NOT NULL,
+  `Added_On` timestamp NULL DEFAULT NULL,
+  `Updated_On` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `Updated_By` int(11) DEFAULT NULL,
+  `Is_Deleted` int(11) DEFAULT '0' COMMENT '0 = No\n1 = Yes',
   PRIMARY KEY (`ID`),
-  INDEX `fk_Event_School1_idx` (`School_ID` ASC),
-  CONSTRAINT `fk_Event_School1`
-    FOREIGN KEY (`School_ID`)
-    REFERENCES `educare_db`.`School` (`ID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+  KEY `fk_School_Machines_School1_idx` (`School_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
--- CREATE INDEX `fk_Event_School1_idx` ON `educare_db`.`Event` (`School_ID` ASC);
+-- --------------------------------------------------------
 
--- -----------------------------------------------------
--- Table `educare_db`.`Screen_Master`
--- -----------------------------------------------------
+--
+-- Table structure for table `School_Notice`
+--
 
-CREATE TABLE IF NOT EXISTS `educare_db`.`Screen_Master` (
-  `ID` INT(11) NOT NULL AUTO_INCREMENT,
-  `Screen_Name` VARCHAR(40) NOT NULL,
+DROP TABLE IF EXISTS `School_Notice`;
+CREATE TABLE IF NOT EXISTS `School_Notice` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Title` varchar(25) DEFAULT NULL,
+  `Description` varchar(100) DEFAULT NULL,
+  `Upload_File_Name` varchar(45) DEFAULT NULL,
+  `School_ID` varchar(7) NOT NULL,
+  `Added_On` timestamp NULL DEFAULT NULL,
+  `Updated_On` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `Updated_By` int(11) DEFAULT NULL,
   PRIMARY KEY (`ID`),
-  UNIQUE INDEX `ID_UNIQUE` (`ID` ASC))
-ENGINE = InnoDB;
+  KEY `fk_School_Notice_School1_idx` (`School_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
--- -----------------------------------------------------
--- Table `educare_db`.`User_Privilege`
--- -----------------------------------------------------
+-- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `educare_db`.`User_Privilege` (
-  `ID` INT(11) NOT NULL AUTO_INCREMENT,
-  `Is_Active` TINYINT(4) NULL DEFAULT 0,
-  `Remarks` VARCHAR(45) NULL,
-  `Screen_Master_ID` INT(11) NOT NULL,
-  `User_Type_ID` INT NOT NULL,
+--
+-- Table structure for table `School_Timing`
+--
+
+DROP TABLE IF EXISTS `School_Timing`;
+CREATE TABLE IF NOT EXISTS `School_Timing` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `IN_OUT` varchar(3) NOT NULL COMMENT 'IN/OUT',
+  `Cut_Off_Time` time NOT NULL,
+  `GressTime_To_InOut` varchar(8) DEFAULT NULL,
+  `Class_ID` int(11) NOT NULL,
+  `School_ID` varchar(7) NOT NULL,
+  `Added_On` timestamp NULL DEFAULT NULL,
+  `Updated_On` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `Updated_By` int(11) DEFAULT NULL,
+  `Is_Deleted` int(11) DEFAULT '0' COMMENT '0 = No\n1 = Yes',
   PRIMARY KEY (`ID`),
-  INDEX `fk_User_Privilege_Screen_Master1_idx` (`Screen_Master_ID` ASC),
-  INDEX `fk_User_Privilege_User_Type1_idx` (`User_Type_ID` ASC),
-  CONSTRAINT `fk_User_Privilege_Screen_Master1`
-    FOREIGN KEY (`Screen_Master_ID`)
-    REFERENCES `educare_db`.`Screen_Master` (`ID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_User_Privilege_User_Type1`
-    FOREIGN KEY (`User_Type_ID`)
-    REFERENCES `educare_db`.`User_Type` (`ID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+  KEY `fk_School_Timing_Class1_idx` (`Class_ID`),
+  KEY `fk_School_Timing_School1_idx` (`School_ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
 
+--
+-- Dumping data for table `School_Timing`
+--
 
-ALTER TABLE `educare_db`.`school` 
-ADD COLUMN `School_ID` VARCHAR(7) NULL AFTER `Event_Active`;
+INSERT INTO `School_Timing` (`ID`, `IN_OUT`, `Cut_Off_Time`, `GressTime_To_InOut`, `Class_ID`, `School_ID`, `Added_On`, `Updated_On`, `Updated_By`, `Is_Deleted`) VALUES
+(1, 'IN', '11:40:00', '01:00:00', 3, 'SC00001', NULL, NULL, NULL, 0),
+(2, 'OUT', '03:30:00', '01:00:00', 3, 'SC00001', NULL, NULL, NULL, 0),
+(3, 'IN', '11:40:00', '01:00:00', 7, 'SC00001', NULL, NULL, NULL, 0),
+(4, 'OUT', '04:00:00', '00:30:00', 7, 'SC00001', NULL, NULL, NULL, 0),
+(5, 'IN', '11:40:00', '01:00:00', 1, 'SC00001', NULL, NULL, NULL, 0),
+(6, 'OUT', '03:30:00', '01:00:00', 1, 'SC00001', NULL, NULL, NULL, 0);
 
-ALTER TABLE `sc00001_candidate` CHANGE `Candidate_ID` `Candidate_ID` INT( 11 ) NOT NULL AUTO_INCREMENT;
+-- --------------------------------------------------------
 
-ALTER TABLE  `ci_sessions` ADD  `user_id` INT UNSIGNED NOT NULL AFTER  `id` ,
-ADD  `user_type_id` INT UNSIGNED NOT NULL AFTER  `user_id`;
+--
+-- Table structure for table `Screen_Master`
+--
+
+DROP TABLE IF EXISTS `Screen_Master`;
+CREATE TABLE IF NOT EXISTS `Screen_Master` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Screen_Name` varchar(40) NOT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `ID_UNIQUE` (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `SMS_Provider`
+--
+
+DROP TABLE IF EXISTS `SMS_Provider`;
+CREATE TABLE IF NOT EXISTS `SMS_Provider` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Provider_Name` varchar(60) DEFAULT NULL,
+  `SMS_Type` varchar(20) DEFAULT NULL COMMENT 'Transaction or Promotion',
+  `SMS_Count` float DEFAULT NULL,
+  `API_Key` varchar(60) DEFAULT NULL,
+  `Route` varchar(45) DEFAULT NULL,
+  `Recharge_Date` timestamp NULL DEFAULT NULL,
+  `Is_Active` int(11) NOT NULL DEFAULT '0' COMMENT '0 or 1',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `SMS_Provider`
+--
+
+INSERT INTO `SMS_Provider` (`ID`, `Provider_Name`, `SMS_Type`, `SMS_Count`, `API_Key`, `Route`, `Recharge_Date`, `Is_Active`) VALUES
+(1, 'Text Local', 'Transaction', 10, 'dfe9d88e60ed4314b3c138189368f79d2bef9671', '107.200.10.02', '2016-07-26 07:00:00', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `test`
+--
+
+DROP TABLE IF EXISTS `test`;
+CREATE TABLE IF NOT EXISTS `test` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `field1` datetime NOT NULL,
+  `field2` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+
+--
+-- Dumping data for table `test`
+--
+
+INSERT INTO `test` (`id`, `field1`, `field2`) VALUES
+(1, '2016-08-27 10:09:06', '2016-08-27 17:09:06'),
+(2, '2016-08-27 22:41:29', '2016-08-27 17:11:29');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `User_Privilege`
+--
+
+DROP TABLE IF EXISTS `User_Privilege`;
+CREATE TABLE IF NOT EXISTS `User_Privilege` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Is_Active` tinyint(4) DEFAULT '0',
+  `Remarks` varchar(45) DEFAULT NULL,
+  `Screen_Master_ID` int(11) NOT NULL,
+  `User_Type_ID` int(11) NOT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `fk_User_Privilege_Screen_Master1_idx` (`Screen_Master_ID`),
+  KEY `fk_User_Privilege_User_Type1_idx` (`User_Type_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `User_Type`
+--
+
+DROP TABLE IF EXISTS `User_Type`;
+CREATE TABLE IF NOT EXISTS `User_Type` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Type_Name` varchar(20) DEFAULT NULL COMMENT '1. School\n2. Gurdian\n3. Agent\n4. Admin\n5. Company',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+
+--
+-- Dumping data for table `User_Type`
+--
+
+INSERT INTO `User_Type` (`ID`, `Type_Name`) VALUES
+(1, 'Admin'),
+(2, 'School'),
+(3, 'Guardian'),
+(4, 'Staff');
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `Event`
+--
+ALTER TABLE `Event`
+  ADD CONSTRAINT `fk_Event_School1` FOREIGN KEY (`School_ID`) REFERENCES `School` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Constraints for table `login`
+--
+ALTER TABLE `login`
+  ADD CONSTRAINT `fk_Login_User_Type1` FOREIGN KEY (`User_Type_ID`) REFERENCES `User_Type` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Constraints for table `SC00001_Attendance`
+--
+ALTER TABLE `SC00001_Attendance`
+  ADD CONSTRAINT `fk_SC0001_Attendance_SC0001_Candidate1` FOREIGN KEY (`Candidate_ID`) REFERENCES `SC00001_Candidate` (`Candidate_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Constraints for table `SC00001_Candidate`
+--
+ALTER TABLE `SC00001_Candidate`
+  ADD CONSTRAINT `fk_SC00001_Candidate_Candidate_Type1` FOREIGN KEY (`Candidate_Type_ID`) REFERENCES `Candidate_Type` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_SC00001_Candidate_Class1` FOREIGN KEY (`Class_ID`) REFERENCES `Class` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_SC00001_Candidate_School1` FOREIGN KEY (`School_ID`) REFERENCES `School` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Constraints for table `School_Days`
+--
+ALTER TABLE `School_Days`
+  ADD CONSTRAINT `fk_School_Days_School1` FOREIGN KEY (`School_ID`) REFERENCES `School` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Constraints for table `School_Machines`
+--
+ALTER TABLE `School_Machines`
+  ADD CONSTRAINT `fk_School_Machines_School1` FOREIGN KEY (`School_ID`) REFERENCES `School` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Constraints for table `School_Notice`
+--
+ALTER TABLE `School_Notice`
+  ADD CONSTRAINT `fk_School_Notice_School1` FOREIGN KEY (`School_ID`) REFERENCES `School` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Constraints for table `School_Timing`
+--
+ALTER TABLE `School_Timing`
+  ADD CONSTRAINT `fk_School_Timing_Class1` FOREIGN KEY (`Class_ID`) REFERENCES `Class` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_School_Timing_School1` FOREIGN KEY (`School_ID`) REFERENCES `School` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Constraints for table `User_Privilege`
+--
+ALTER TABLE `User_Privilege`
+  ADD CONSTRAINT `fk_User_Privilege_Screen_Master1` FOREIGN KEY (`Screen_Master_ID`) REFERENCES `Screen_Master` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_User_Privilege_User_Type1` FOREIGN KEY (`User_Type_ID`) REFERENCES `User_Type` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

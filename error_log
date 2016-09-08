@@ -1,0 +1,7 @@
+[04-Sep-2016 20:02:11 UTC] PHP Fatal error:  Call to a member function send() on a non-object in /home/mydevloper/public_html/educare/application/controllers/User.php on line 104
+[04-Sep-2016 20:06:24 UTC] PHP Fatal error:  Call to undefined method MY_Email::reply() in /home/mydevloper/public_html/educare/application/helpers/email_template_helper.php on line 13
+[04-Sep-2016 20:07:18 UTC] PHP Fatal error:  Call to undefined method MY_Email::reply() in /home/mydevloper/public_html/educare/application/helpers/email_template_helper.php on line 13
+[04-Sep-2016 20:09:32 UTC] PHP Fatal error:  Call to undefined method MY_Email::reply() in /home/mydevloper/public_html/educare/application/helpers/email_template_helper.php on line 13
+[04-Sep-2016 20:10:48 UTC] PHP Fatal error:  Call to a member function send() on a non-object in /home/mydevloper/public_html/educare/application/controllers/User.php on line 104
+[04-Sep-2016 20:25:40 UTC] PHP Fatal error:  Call to a member function send() on a non-object in /home/mydevloper/public_html/educare/application/controllers/User.php on line 104
+[04-Sep-2016 20:26:41 UTC] PHP Fatal error:  Call to undefined method MY_Email::reply() in /home/mydevloper/public_html/educare/application/helpers/email_template_helper.php on line 13

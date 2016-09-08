@@ -86,16 +86,16 @@ class Report extends CI_Controller {
 	function generate() {
 		//print_r($_REQUEST); die;
 
-		$start_date = explode("-",$this->input->post('start_date'));
-		$end_date = explode("-",$this->input->post('end_date'));
+		$start_date = explode("/",$this->input->post('start_date'));
+		$end_date = explode("/",$this->input->post('end_date'));
 
 		$params = array(
-				'start_month' => intval($start_date[1]),
-				'end_month' => intval($end_date[1]),
-				'school_id' => 'SC00001',
-				'classes' => implode(",", $this->input->post('class')),
-				'sections' => implode(",", $this->input->post('section')),				
-            );
+			'start_month' => intval($start_date[1]),
+			'end_month' => intval($end_date[1]),
+			'school_id' => 'SC00001',
+			'classes' => implode(",", $this->input->post('class')),
+			'sections' => implode(",", $this->input->post('section')),				
+		);
 
 		$data['report'] = $this->report_model->get_attendance($params);
 		$SESSION = $data;

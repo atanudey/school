@@ -51,8 +51,7 @@ class User_model extends CI_Model {
 				->where('is_active', '1');		
 
 		$hash = $this->db->get()->row('password');
-		return $this->verify_password_hash($password, $hash);
-		return true;		
+		return $this->verify_password_hash($password, $hash);		
 	}
 	
 	/**
@@ -78,12 +77,10 @@ class User_model extends CI_Model {
 	 * @param mixed $user_id
 	 * @return object the user object
 	 */
-	public function get_user($user_id) {
-		
+	public function get_user($user_id) {		
 		$this->db->from('login');
 		$this->db->where('id', $user_id);
-		return $this->db->get()->row();
-		
+		return $this->db->get()->row();		
 	}
 	
 	/**
@@ -93,10 +90,8 @@ class User_model extends CI_Model {
 	 * @param mixed $password
 	 * @return string|bool could be a string on success, or bool false on failure
 	 */
-	private function hash_password($password) {
-		
-		return password_hash($password, PASSWORD_BCRYPT);
-		
+	private function hash_password($password) {		
+		return password_hash($password, PASSWORD_BCRYPT);		
 	}
 	
 	/**
@@ -109,6 +104,5 @@ class User_model extends CI_Model {
 	 */
 	private function verify_password_hash($password, $hash) {
 		return password_verify($password, $hash);		
-	}
-	
+	}	
 }

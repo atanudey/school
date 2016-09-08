@@ -1388,3 +1388,40 @@ color:#fff !important;
 .tblwrap {
 	padding: 40px 0;	
 }
+/**** 9.8.16 *****/
+.dateFld .well{
+	float:left;
+	padding:0px;
+	position:relative;
+}
+.dateFld .add-on {
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1;
+    color: #555;
+    text-align: center;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+	top: 7px;
+	position:relative;
+}
+.dateFld{
+ width:278px;	
+}
+.dateFld input{
+	margin:0px;
+	border:#fff solid 1px;
+}
+.dateFld .add-on{
+	border-radius: 0px;
+	border:none;
+	padding: 8px 12px;
+	background-color:none !important;
+	-webkit-box-shadow:none;
+	box-shadow:none;
+}
+
+
+

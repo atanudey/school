@@ -37,8 +37,53 @@
     });  
 </script>
 
+<!-- Bootstrap Datepicker Script -->
+<script type="text/javascript">
+    $(document).ready(function() {   
+        var d = new Date();
+        var currentmonth = function(){
+            var month = d.getMonth()+1;
+            var day = d.getDate();
+            var output = (day<10 ? '0' : '') + day + '/' +
+            (month<10 ? '0' : '') + month + '/' +
+            d.getFullYear();
+            return output;
+        };
+
+        var prevmonth = function(){
+            var month = d.getMonth();
+            var day = d.getDate();
+            var output = (day<10 ? '0' : '') + day + '/' +
+            (month<10 ? '0' : '') + month + '/' +
+            d.getFullYear();
+            return output;
+        };
+
+        $("#fromdate .datetimepicker-input").val(prevmonth);
+        $("#todate .datetimepicker-input").val(currentmonth);
+
+        var formfirstDate = new Date(d.getFullYear(), d.getMonth(0)-8, 1);
+        var lastDate = new Date(d.getFullYear(), d.getMonth(0), 9);
+        var firstDate = new Date(d.getFullYear(), d.getMonth(0)-1, 9);
+
+        $('#todate').datetimepicker({
+            format: 'dd/MM/yyyy',
+            startDate: firstDate,
+            endDate: lastDate
+        });
+
+        $('#fromdate').datetimepicker({
+            language: 'en',
+            format: 'dd/MM/yyyy',
+            startDate: formfirstDate,
+            endDate: lastDate
+        });
+    });
+</script>
+
 <!--body panel starts -->
-<?php echo form_open('report/generate'); ?>
+<?php echo form_open('report/generate');
+?>
 <div class="bodyPanel reportPanel">
     <div class="container">
         <div class="row paddingBtm40">
@@ -69,9 +114,14 @@
                                 <div class="checkbox-inline"> <label><input type="checkbox" name="select_all_class" id="select_all_class" class="select_all" value="class">Class (Select All)</label></div>
                             </div>
                             <div class="reportBlockContent">
-                                <?php foreach(range(1, 10) as $class) { ?>
-                                    <div class="fldRowInline"><input type="checkbox" name="class[]" class="checkbox_cst" value="Class <?php echo $class; ?>"> <label>Class <?php echo $class; ?></label></div>
-                                <?php } ?>                                 
+                                <?php foreach(range(1, 10) as $class) {
+	?>
+                                    <div class="fldRowInline"><input type="checkbox" name="class[]" class="checkbox_cst" value="Class <?php echo $class;
+?>"> <label>Class <?php echo $class;
+?></label></div>
+                                <?php
+}
+?>                                 
                             </div>
                         </div>
                     </div>
@@ -81,9 +131,14 @@
                                 <div class="checkbox-inline"> <label><input type="checkbox" name="select_all_section" id="select_all_section" class="select_all" value="section">Section (Select All)</label></div>
                             </div>
                             <div class="reportBlockContent">
-                                <?php foreach(range('A', 'I') as $section) { ?>
-                                    <div class="fldRowInline"><input type="checkbox" class="checkbox_cst" name="section[]" value="<?php echo $section; ?>"> <label>Section <?php echo $section; ?></label></div>
-                                <?php } ?>                                
+                                <?php foreach(range('A', 'I') as $section) {
+	?>
+                                    <div class="fldRowInline"><input type="checkbox" class="checkbox_cst" name="section[]" value="<?php echo $section;
+?>"> <label>Section <?php echo $section;
+?></label></div>
+                                <?php
+}
+?>                                
                             </div>
                         </div>
                     </div>
@@ -96,7 +151,9 @@
                             </div>
                             <div class="reportBlockContent">
                                 <div class="fldRowInline">
-                                    <!-- <input type="checkbox" name="class[]" class="checkbox_cst" value="<?php echo $class; ?>"> <label>Class <?php echo $class; ?></label></div> -->
+                                    <!-- <input type="checkbox" name="class[]" class="checkbox_cst" value="<?php echo $class;
+?>"> <label>Class <?php echo $class;
+?></label></div> -->
                                 </div>                               
                             </div>
                         </div>
@@ -165,8 +222,8 @@
                                 <div class="fldRowInline dateFld">
                                     <label>From</label>
                                     <div class="well">
-									  <div id="Fromdate" class="input-append startdatetime-from">
-										<input data-format="dd/MM/yyyy" type="text" class="datetimepicker-input"></input>
+									  <div id="fromdate" class="input-append startdatetime-from">
+										<input name="start_date" data-format="dd/MM/yyyy" type="text" class="datetimepicker-input"></input>
 										<span class="add-on">
 										 <span class="glyphicon glyphicon-calendar"></span>
 										</span>
@@ -177,7 +234,7 @@
                                     <label>To</label>
                                     <div class="well">
 									  <div id="todate" class="input-append startdatetime-from">
-										<input data-format="dd/MM/yyyy" type="text" class="datetimepicker-input"></input>
+										<input name="end_date" data-format="dd/MM/yyyy" type="text" class="datetimepicker-input"></input>
 										<span class="add-on">
 										 <span class="glyphicon glyphicon-calendar"></span>
 										</span>
@@ -202,53 +259,4 @@
     </div>
 </div>
 </form>
-<script type="text/javascript">
-/****** Form date To Date ***/
-  $(function() {
-   var d = new Date();
-	var currentmonth = function(){
-	   var month = d.getMonth()+1;
-		var day = d.getDate();
-		var output = (day<10 ? '0' : '') + day + '/' +
-		(month<10 ? '0' : '') + month + '/' +
-		 d.getFullYear();
-		 return output;
-	  };
-	  
-	  var prevmonth = function(){
-	    var month = d.getMonth();
-		var day = d.getDate();
-		var output = (day<10 ? '0' : '') + day + '/' +
-		(month<10 ? '0' : '') + month + '/' +
-		 d.getFullYear();
-		 return output;
-	  };
-	  
-	  $("#Fromdate .datetimepicker-input").val(prevmonth);
-	  $("#todate .datetimepicker-input").val(currentmonth);
-		
-       //var today= new Date();
-	   var formfirstDate = new Date(d.getFullYear(), d.getMonth(0)-8, 1);
-       var lastDate = new Date(d.getFullYear(), d.getMonth(0), 9);
-	   var firstDate = new Date(d.getFullYear(), d.getMonth(0)-1, 9);
-	   //console.log(d.getMonth(0)-7, 14);
-	   //console.log(firstDate);
-		$('#todate').datetimepicker({
-			language: 'en',
-			format: 'dd/MM/yyyy',
-			startDate: firstDate,
-            endDate: lastDate
-		});
-		
-	  
-		$('#Fromdate').datetimepicker({
-			language: 'en',
-			format: 'dd/MM/yyyy',
-			startDate: formfirstDate,
-            endDate: lastDate
-		});
-		
-  });
- /****** End Form date To Date ***/
-</script>
 <!--body panel ends -->

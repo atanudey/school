@@ -29,16 +29,13 @@
 							} 
 							?>
 						</select>
-						<span style="color:red">*This field is required</span>
 					</div>				
 				</div>
 				<div class="fldRow">					
 					<input type="text" id="username" name="username" placeholder="Username" title="Enter user name" required='required' value="<?php echo set_value("username");?>"> 
-					<span style="color:red">*This field is required</span>
 				</div>
 				<div class="fldRow">					
-					<input type="password" id="password" name="password" placeholder="Password" title="Enter the password" required='required' value="<?php echo set_value("password");?>">
-					<span style="color:red">*This field is required</span>
+					<input type="password" id="password" name="password" placeholder="Password" title="Enter the password" required='required' value="">					
 				</div>
 				<div class="fldRow">
 					<p><a href="#">Forgot  your password?</a>  |  <a href="#">Reset Password</a></p>

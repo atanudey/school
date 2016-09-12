@@ -39,45 +39,74 @@
 
 <!-- Bootstrap Datepicker Script -->
 <script type="text/javascript">
-    $(document).ready(function() {   
-        var d = new Date();
-        var currentmonth = function(){
-            var month = d.getMonth()+1;
-            var day = d.getDate();
-            var output = (day<10 ? '0' : '') + day + '/' +
-            (month<10 ? '0' : '') + month + '/' +
-            d.getFullYear();
-            return output;
-        };
+    $(document).ready(function() {
+        $.fn.changeCalendar = function(type) { 
+            var offset;
+            switch(type) {
+                case "mly":
+                    offset = 1;
+                    break;
+                case "qly":
+                    offset = 3;
+                    break;
+                case "hly":
+                    offset = 6;
+                    break;
+                case "yly":
+                    offset = 12;
+                    break;
+            }
 
-        var prevmonth = function(){
-            var month = d.getMonth();
-            var day = d.getDate();
-            var output = (day<10 ? '0' : '') + day + '/' +
-            (month<10 ? '0' : '') + month + '/' +
-            d.getFullYear();
-            return output;
-        };
+            var d = new Date();
+            var currentmonth = function(){
+                var month = d.getMonth()+1;
+                var day = d.getDate();
+                var output = (month<10 ? '0' : '') + month + '/' +
+                (day<10 ? '0' : '') + day + '/' +
+                d.getFullYear();
+                return output;
+            };
 
-        $("#fromdate .datetimepicker-input").val(prevmonth);
-        $("#todate .datetimepicker-input").val(currentmonth);
+            var prevmonth = function(){
+                var month = (d.getMonth()+1) - offset;
+                var day = d.getDate();
+                if (month < 1) {
+                    month = 1;
+                    day = 1;
+                }
+                var output = (month<10 ? '0' : '') + month + '/' +
+                (day<10 ? '0' : '') + day + '/' +
+                d.getFullYear();
+                return output;
+            };        
 
-        var formfirstDate = new Date(d.getFullYear(), d.getMonth(0)-8, 1);
-        var lastDate = new Date(d.getFullYear(), d.getMonth(0), 9);
-        var firstDate = new Date(d.getFullYear(), d.getMonth(0)-1, 9);
+            $("#fromdate .datetimepicker-input").val(prevmonth);
+            $("#todate .datetimepicker-input").val(currentmonth);
 
-        $('#todate').datetimepicker({
-            format: 'dd/MM/yyyy',
-            startDate: firstDate,
-            endDate: lastDate
+            var formfirstDate = new Date(d.getFullYear(), 0, 1);       
+            var lastDate = new Date(currentmonth());
+            var firstDate = new Date(prevmonth());
+
+            $('#todate').datetimepicker({
+                language: 'en',
+                format: 'MM/dd/yyyy',
+                startDate: firstDate,
+                endDate: lastDate
+            });
+
+            $('#fromdate').datetimepicker({
+                language: 'en',
+                format: 'MM/dd/yyyy',
+                startDate: formfirstDate,
+                endDate: lastDate
+            });
+        }
+
+        $('input[name=report_range_type]:radio').on('change', function() { 
+            $.fn.changeCalendar($(this).val());            
         });
 
-        $('#fromdate').datetimepicker({
-            language: 'en',
-            format: 'dd/MM/yyyy',
-            startDate: formfirstDate,
-            endDate: lastDate
-        });
+        $.fn.changeCalendar('mly');     
     });
 </script>
 
@@ -245,7 +274,7 @@
                                     <label><input type="radio" name="report_range_type" value="yly"> Yearly</label>             
                                     <label><input type="radio" name="report_range_type" value="hly"> Half yearly</label>             
                                     <label><input type="radio" name="report_range_type" value="qly"> Quaterly</label>             
-                                    <label><input type="radio" name="report_range_type" value="mly"> Monthly</label>
+                                    <label><input type="radio" name="report_range_type" value="mly" checked="checked"> Monthly</label>
                                 </div>
                             </div>
                         </div>

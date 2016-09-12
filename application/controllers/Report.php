@@ -89,12 +89,31 @@ class Report extends CI_Controller {
 		$start_date = explode("/",$this->input->post('start_date'));
 		$end_date = explode("/",$this->input->post('end_date'));
 
+		if ($this->input->post('student_report_type') == "all") {
+			$class = "";
+			$section = "";
+		} else if ($this->input->post('student_report_type') == "class") {
+			if (!empty($_REQUEST['class'])) {
+				$class = implode(",", $this->input->post('class'));			
+			} else {
+				$class = "";
+			}
+			if (!empty($_REQUEST['section'])) {
+				$section = implode(",", $this->input->post('section'));	
+			} else {
+				$section = "";
+			}
+		} else {
+			$class = implode(",", $this->input->post('class'));
+			$section = implode(",", $this->input->post('section'));
+		}
+
 		$params = array(
-			'start_month' => intval($start_date[1]),
-			'end_month' => intval($end_date[1]),
+			'start_month' => intval($start_date[0]),
+			'end_month' => intval($end_date[0]),
 			'school_id' => 'SC00001',
-			'classes' => implode(",", $this->input->post('class')),
-			'sections' => implode(",", $this->input->post('section')),				
+			'classes' => $class,
+			'sections' => $section,				
 		);
 
 		$data['report'] = $this->report_model->get_attendance($params);

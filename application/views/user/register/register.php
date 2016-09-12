@@ -19,7 +19,7 @@
 					<span class="selectArrow"></span>
 					<div class="select-style">
 					<select id="user_type_id" name="user_type_id" required='required'>
-						<option value="">User Type</option>
+						<option value="">* User Type</option>
 						<?php 
 						foreach($all_user_type as $user_type)
 						{
@@ -28,14 +28,13 @@
 						<?php
 						} 
 						?>
-					</select>
-					<span style="color:red">*This field is required</span>
+					</select>					
 					</div>
 				</div>
 				<div class="fldRow selectBox">
 					<div class="select-style">
 					<select name="school_id" name="school_id" required='required'>
-						<option value="">Select School</option>
+						<option value="">* Select School</option>
 						<?php 
 						foreach($all_school as $school)
 						{
@@ -44,33 +43,26 @@
 						<?php
 						} 
 						?>
-					</select>
-					<span style="color:red">*This field is required</span>
+					</select>					
 					</div>
 				</div>
 				<div class="fldRow">					
-					<input type="text" id="username" name="username" value="<?php echo set_value('username'); ?>" placeholder="Enter an username" value="<?php echo set_value("username");?>" required='required'>
-					<span style="color:red">*This field is required</span>
+					<input type="text" id="username" name="username" value="<?php echo set_value('username'); ?>" placeholder="* Enter an username" value="<?php echo set_value("username");?>" required='required'>					
 				</div>
 				<div class="fldRow">					
-					<input type="text" id="name" name="name" placeholder="Enter your name" value="<?php echo set_value("name");?>" required='required'>					
-				<span style="color:red">*This field is required</span>
+					<input type="text" id="name" name="name" placeholder="* Enter your name" value="<?php echo set_value("name");?>" required='required'>				
 				</div>
 				<div class="fldRow">					
-					<input type="text" id="mob1" name="mob1" placeholder="Enter your mobile no" value="<?php echo set_value("mob1");?>" required='required' pattern='[0-9]{10}$' title="Enter 10 digit mobile number">				
-				<span style="color:red">*This field is required</span>
+					<input type="text" id="mob1" name="mob1" placeholder="* Enter your mobile no" value="<?php echo set_value("mob1");?>" required='required' pattern='[0-9]{10}$' title="Enter 10 digit mobile number">								
 				</div>
 				<div class="fldRow">					
-					<input type="email" id="email" name="email" placeholder="Enter your email" value="<?php echo set_value("email");?>" required='required' pattern='[^@]+@[^@]+\.[a-zA-Z]{2,6}'>					
-				<span style="color:red">*This field is required</span>
+					<input type="email" id="email" name="email" placeholder="* Enter your email" value="<?php echo set_value("email");?>" required='required' pattern='[^@]+@[^@]+\.[a-zA-Z]{2,6}'>									
 				</div>
 				<div class="fldRow">					
-					<input type="password" id="password" name="password" placeholder="Enter a password" value="<?php echo set_value("password");?>" required='required'>					
-				<span style="color:red">*This field is required</span>
+					<input type="password" id="password" name="password" placeholder="* Enter a password" value="<?php echo set_value("password");?>" required='required'>									
 				</div>
 				<div class="fldRow">					
-					<input type="password" id="password_confirm" name="password_confirm" placeholder="Confirm your password" value="<?php echo set_value("password_confirm");?>" required='required'>					
-				<span style="color:red">*This field is required</span>
+					<input type="password" id="password_confirm" name="password_confirm" placeholder="* Confirm your password" value="<?php echo set_value("password_confirm");?>" required='required'>									
 				</div>
 				<div class="fldRow">					
 					<textarea id="address" name="address" placeholder="Enter your address"><?php echo set_value("address");?></textarea>					
@@ -81,7 +73,7 @@
 				<div class="fldRow">	
 					<div class="select-style">				
 						<select name="state" id="state" required='required'>
-							<option selected="" value="selected">Select a State </option>
+							<option selected="" value="selected">* Select a State </option>
 							<option value="Andaman and Nicobar Islands" <?php echo set_select('state','Andaman and Nicobar Islands'); ?>>Andaman and Nicobar Islands </option>
 							<option value="Andhra Pradesh" <?php echo set_select('state','Andhra Pradesh'); ?>>Andhra Pradesh</option>
 							<option value="Arunachal Pradesh" <?php echo set_select('state','Arunachal Pradesh'); ?>>Arunachal Pradesh </option>
@@ -124,13 +116,11 @@
 							</option>
 							<option value="West Bengal" <?php echo set_select('state','West Bengal'); ?>>West Bengal 
 							</option>
-						</select>
-					<span style="color:red">*This field is required</span>	
+						</select>					
 					</div>					
 				</div>
 				<div class="fldRow">					
-					<input type="text" id="zipcode" name="zipcode" placeholder="Enter your zipcode" value="<?php echo set_value("zipcode");?>" required='required'>					
-					<span style="color:red">*This field is required</span>
+					<input type="text" id="zipcode" name="zipcode" placeholder="* Enter your zipcode" value="<?php echo set_value("zipcode");?>" required='required'>										
 				</div>
 				<div class="btmBtns">
 					<div class="btmBtnsInner">

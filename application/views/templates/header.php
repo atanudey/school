@@ -15,6 +15,7 @@
 		<link rel="shortcut icon" href="<?= base_url('assets/images/favicon.ico') ?>" type="image/x-icon">
 		
 		<script type="text/javascript" language="javascript" src="<?= base_url('assets/js/jquery-1.12.3.js') ?>"></script>
+        <script type="text/javascript" language="javascript" src="<?= base_url('assets/js/jquery.cookie.min.js') ?>"></script>        
 		<script type="text/javascript" language="javascript" src="<?= base_url('assets/js/jquery-ui.js') ?>"></script>
 		<script type="text/javascript" language="javascript" src="<?= base_url('assets/js/jquery.dataTables.min.js') ?>"></script>
 		<script type="text/javascript" language="javascript" src="<?= base_url('assets/js/dataTables.bootstrap.min.js') ?>"></script>
@@ -22,8 +23,26 @@
 		<script type="text/javascript" language="javascript" src="<?= base_url('assets/js/bootstrap-datetimepicker.min.js') ?>"></script>
 		<script type="text/javascript" src="<?= base_url('assets/js/slider.js') ?>"></script>
         <script type="text/javascript" src="<?= base_url('assets/js/script.js') ?>"></script>
-		
-		
+
+        <script language="javascript">
+            $(document).ready(function() {
+                if ($.cookie("theme")) {
+                    setTheme($.cookie("theme"));            
+                }
+                
+                $(".themeSelect").find("li").on("click", function() {                    
+                    var theme = $(this).prop("class");
+                    setTheme(theme);
+                });
+
+                function setTheme(theme) {
+                    $("body").prop("class", theme);
+                    $("body").addClass("homePage");
+
+                    $.cookie('theme', theme, {expires:5*365, path: '/'});
+                }
+            });
+        </script>		
 	</head>
 
 	<body class="theme1 homePage">
@@ -34,9 +53,9 @@
                     <div class="col-sm-3">
                         <ul class="themeSelect">
                             <li>Choose your theme</li>
-                            <li class="theme1"><a href="#">Theme 1</a></li>
-                            <li class="theme2"><a href="#">Theme 2</a></li>
-                            <li class="theme3"><a href="#">Theme 3</a></li>
+                            <li id="theme1" class="theme1"><a href="javascript:void(0)">Theme 1</a></li>
+                            <li id="theme2" class="theme2"><a href="javascript:void(0)">Theme 2</a></li>
+                            <li id="theme3" class="theme3"><a href="javascript:void(0)">Theme 3</a></li>
                         </ul>
                     </div>
                     <div class="col-sm-9">

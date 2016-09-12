@@ -931,108 +931,74 @@ color:#fff !important;
 .themeSelect:after {
     clear: both;
 }
-.theme1.homePage .topNavPanel,
-.theme2.homePage .topNavPanel,
-.theme3.homePage .topNavPanel{
+.homePage .topNavPanel{
 	background:#c6c6c6;
 	padding:10px 0;
 	}
 
-.theme1.homePage .themeSelect li,
-.theme2.homePage .themeSelect li,
-.theme3.homePage .themeSelect li{
+.homePage .themeSelect li{
 	float:left;
 	margin-right:5px;
 	}
-.theme1.homePage .themeSelect li.theme1 a,
-.theme2.homePage .themeSelect li.theme1 a,
-.theme3.homePage .themeSelect li.theme1 a{
+.homePage .themeSelect li a{
 	width:10px;
 	height:10px;
 	display:block;
+	font-size:0;
+	line-height:0;
+	text-indent:-1000000px;
+	margin-top:5px;
+	}
+.homePage .themeSelect li.theme1 a{
 	background:#46639c;
-	font-size:0;
-	line-height:0;
-	text-indent:-1000000px;
-	margin-top:5px;
 	}
-.theme1.homePage .themeSelect li.theme2 a,
-.theme2.homePage .themeSelect li.theme2 a,
-.theme3.homePage .themeSelect li.theme2 a{
-	width:10px;
-	height:10px;
-	display:block;
+.homePage .themeSelect li.theme2 a{
 	background:#571f42;
-	font-size:0;
-	line-height:0;
-	text-indent:-1000000px;
-	margin-top:5px;
 	}
-.theme1.homePage .themeSelect li.theme3 a,
-.theme2.homePage .themeSelect li.theme3 a,
-.theme3.homePage .themeSelect li.theme3 a{
-	width:10px;
-	height:10px;
-	display:block;
+.homePage .themeSelect li.theme3 a{
 	background:#053d2c;
-	font-size:0;
-	line-height:0;
-	text-indent:-1000000px;
-	margin-top:5px;
 	}
-.theme1.homePage .topLinks,
-.theme2.homePage .topLinks,
-.theme3.homePage .topLinks{
+.homePage .topLinks{
 	text-align:right;
 	}
-.theme1.homePage .topLinks li,
-.theme2.homePage .topLinks li,
-.theme3.homePage .topLinks li{
+.homePage .topLinks > li{
+	background:url(../images/divider.png) no-repeat 100% 50%;
 	display:inline-block;
 	font-size:16px;
 	line-height:24px;
+	position:relative;
+	padding:0 12px 0 7px;
 	}
-.theme1.homePage .topLinks li span,
-.theme2.homePage .topLinks li span,
-.theme3.homePage .topLinks li span{
+.homePage .topLinks li span{
 	padding-left:10px;
 	}
-.theme1.homePage .topLinks li a,
-.theme2.homePage .topLinks li a,
-.theme3.homePage .topLinks li a{
+.homePage .topLinks li:last-child{
+	padding-right:0;
+	background:none;
+	}
+.homePage .topLinks li a{
 	color:#0b0200;
 	}
-.theme1.homePage .topLinks li a:hover,
-.theme2.homePage .topLinks li a:hover,
-.theme3.homePage .topLinks li a:hover{
+.homePage .topLinks li a:hover{
 	text-decoration:underline !important;
 	}
 
 
-.theme1.homePage .logo,
-.theme2.homePage .logo,
-.theme3.homePage .logo{
+.homePage .logo{
 	padding-top:1px;
 	}
-.theme1.homePage .logo h2 a,
-.theme2.homePage .logo h2 a,
-.theme3.homePage .logo h2 a{
+.homePage .logo h2 a{
 	color:#102e7b;
 	}
-.theme1.homePage .topPanel,
-.theme2.homePage .topPanel,
-.theme3.homePage .topPanel{
+.homePage .topPanel{
 	background:#fff;
 	padding:20px 0;
 	}
-.theme1.homePage .topPanel .container,
-.theme2.homePage .topPanel .container,
-.theme3.homePage .topPanel .container{
+.homePage .topPanel .container{
 	position:relative;
 	}
-.theme1.homePage .dropDownMenu,
-.theme2.homePage .dropDownMenu,
-.theme3.homePage .dropDownMenu{
+.homePage .dropDownMenu,
+.adminDropdown{
 	background:#fff;
 	width:240px;
 	position:absolute;
@@ -1043,49 +1009,39 @@ color:#fff !important;
 	display:none;
 	border:1px solid #bebebe;
 	}
-.theme1.homePage .dropDownMenu ul li,
-.theme2.homePage .dropDownMenu ul li,
-.theme3.homePage .dropDownMenu ul li{
+.adminDropdown{
+	width:180px;
+	padding:15px 10px !important;
+	text-align:left;
+	right:0;
+	}
+.homePage .dropDownMenu ul li{
 	padding-bottom:5px;
 	}
-.theme1.homePage .dropDownMenu ul li a,
-.theme2.homePage .dropDownMenu ul li a,
-.theme3.homePage .dropDownMenu ul li a{
+.homePage .dropDownMenu ul li a{
 	color:#646464;
 	padding:5px 20px;
 	display:block;
 	transition:all 0.5s ease-in;
 	}
-.theme1.homePage .dropDownMenu ul li a:hover,
-.theme1.homePage .dropDownMenu ul li.active > a,
-.theme2.homePage .dropDownMenu ul li a:hover,
-.theme2.homePage .dropDownMenu ul li.active > a,
-.theme3.homePage .dropDownMenu ul li a:hover,
-.theme3.homePage .dropDownMenu ul li.active > a{
+.homePage .dropDownMenu ul li a:hover,
+.homePage .dropDownMenu ul li.active > a{
 	background:#e8e8e8;
 	}
-.theme1.homePage .dropDownMenu ul li ul li a,
-.theme2.homePage .dropDownMenu ul li ul li a,
-.theme3.homePage .dropDownMenu ul li ul li a{
+.homePage .dropDownMenu ul li ul li a{
 	padding-left:30px;
 	}
-.theme1.homePage .dropDownMenu ul li ul,
-.theme2.homePage .dropDownMenu ul li ul,
-.theme3.homePage .dropDownMenu ul li ul{
+.homePage .dropDownMenu ul li ul{
 	display:none;
 	}
 
-.theme1.homePage .dropDownMenu ul li.subMenu > a,
-.theme2.homePage .dropDownMenu ul li.subMenu > a,
-.theme3.homePage .dropDownMenu ul li.subMenu > a{
+.homePage .dropDownMenu ul li.subMenu > a{
 	background-image:url(../images/submenu-arrow.png);
 	background-repeat:no-repeat;
 	background-position:98% 11px;
 	
 	}
-.theme1.homePage .navBar,
-.theme2.homePage .navBar,
-.theme3.homePage .navBar{
+.homePage .navBar{
 	background:url(../images/nav-bar.png) no-repeat 0 0;
 	width:37px;
 	height:27px;
@@ -1110,20 +1066,14 @@ color:#fff !important;
 	background:url(../images/home-theme-bg-3.jpg) no-repeat 0 0;
 	background-size: cover;
 	}
-.theme1.homePage .homeBodyPanel .container,
-.theme2.homePage .homeBodyPanel .container,
-.theme3.homePage .homeBodyPanel .container{
+.homePage .homeBodyPanel .container{
 	background:#fff;
 	padding:60px 75px 95px;
 	}
-.theme1.homePage .flex-control-nav,
-.theme2.homePage .flex-control-nav,
-.theme3.homePage .flex-control-nav{
+.homePage .flex-control-nav{
 	bottom:25px !important;
 	}
-.theme1.homePage .flexslider,
-.theme2.homePage .flexslider,
-.theme3.homePage .flexslider{
+.homePage .flexslider{
 	margin-bottom:0 !important;
 	border:none !important;
 }
@@ -1131,44 +1081,34 @@ color:#fff !important;
 	border:1px solid #cccccc;
 	margin-bottom:15px;
 	}
-.theme1.homePage .optionBox h2,
-.theme2.homePage .optionBox h2,
-.theme3.homePage .optionBox h2{
+.homePage .optionBox h2{
 	font-size:20px;
 	line-height:24px;
 	background:#e7e7e7;
 	text-align:center;
 	padding:12px 10px !important;
 	}
-.theme1.homePage .optionContent,
-.theme2.homePage .optionContent,
-.theme3.homePage .optionContent{
+.homePage .optionContent{
 	padding:20px;
 	text-align:center;
 	padding:70px 10px !important;
 	min-height:280px;
 	}
-.theme1.homePage .optionContent h3,
-.theme2.homePage .optionContent h3,
-.theme3.homePage .optionContent h3{
+.homePage .optionContent h3{
 	font-size:22px;
 	line-height:26px;
 	color:#3458a1;
 	text-transform:uppercase;
 	padding-top:15px !important;
 	}
-.theme1.homePage .optionContent h3 span,
-.theme2.homePage .optionContent h3 span,
-.theme3.homePage .optionContent h3 span{
+.homePage .optionContent h3 span{
 	display:block;
 	font-size:15px;
 	line-height:19px;
 	color:#010712;
 	padding-top:5px;
 	}
-.theme1.homePage .optionBox p,
-.theme2.homePage .optionBox p,
-.theme3.homePage .optionBox p{
+.homePage .optionBox p{
 	min-height:55px;
 	background:#ededed;
 	border-top:1px solid #ccc;
@@ -1178,49 +1118,35 @@ color:#fff !important;
 	color:#4f4f4f;
 	word-break: break-all;
 	}
-.theme1.homePage .footer,
-.theme2.homePage .footer,
-.theme3.homePage .footer{
+.homePage .footer{
 	background:#fff;
 	padding:25px 10px;
 	text-align:center;
 	}
-.theme1.homePage .footer p,
-.theme2.homePage .footer p,
-.theme3.homePage .footer p{
+.homePage .footer p{
 	font-size:13px;
 	line-height:19px;
 	color:#212121;
 	}
-.theme1.homePage .footer p span,
-.theme2.homePage .footer p span,
-.theme3.homePage .footer p span{
+.homePage .footer p span{
 	display:inline-table;
 	}
-.theme1.homePage .footer p span img,
-.theme2.homePage .footer p span img,
-.theme3.homePage .footer p span img{
+.homePage .footer p span img{
 	vertical-align:middle;
 	}
 
 
-.theme1.homePage .homeBodyPanel.noBg .container,
-.theme2.homePage .homeBodyPanel.noBg .container,
-.theme3.homePage .homeBodyPanel.noBg .container{
+.homePage .homeBodyPanel.noBg .container{
 	background:none;
 	padding:0 15px;
 	}
-.theme1.homePage .leftContent,
-.theme2.homePage .leftContent,
-.theme3.homePage .leftContent{
+.homePage .leftContent{
 	background:#fff;
 	padding:35px 45px;
 	min-height:630px;
 	margin-bottom:20px;
 	}
-.theme1.homePage .exapandBtn,
-.theme2.homePage .exapandBtn,
-.theme3.homePage .exapandBtn{
+.homePage .exapandBtn{
 	background:#102e7b;
 	padding:8px 15px;
 	display:inline-block;
@@ -1229,10 +1155,9 @@ color:#fff !important;
 	color:#fff;
 	display:none;
 	margin-top:15px;
+	cursor:pointer;
 	}
-.theme1.homePage .showAll,
-.theme2.homePage .showAll,
-.theme3.homePage .showAll{
+.homePage .showAll{
 	height:auto !important;
 	}
 .exapandBtn:hover{
@@ -1240,31 +1165,21 @@ color:#fff !important;
 	color:#fff;
 	}
 
-.theme1.homePage .mainHeading img,
-.theme2.homePage .mainHeading img,
-.theme3.homePage .mainHeading img{
+.homePage .mainHeading img{
 	float:left;
 	margin:0 20px 20px 0;
 	}
-.theme1.homePage .headingText,
-.theme2.homePage .headingText,
-.theme3.homePage .headingText{
+.homePage .headingText{
 	float:left;
 }
-.theme1.homePage .mainContent p,
-.theme2.homePage .mainContent p,
-.theme3.homePage .mainContent p{
+.homePage .mainContent p{
 	padding-bottom:20px !important;
 	}
-.theme1.homePage .rightContentBlock,
-.theme2.homePage .rightContentBlock,
-.theme3.homePage .rightContentBlock{
+.homePage .rightContentBlock{
 	background:#fff;
 	margin-bottom:25px;
 	}
-.theme1.homePage .rightContentBlock h3,
-.theme2.homePage .rightContentBlock h3,
-.theme3.homePage .rightContentBlock h3{
+.homePage .rightContentBlock h3{
 	font-size:20px;
 	line-height:26px;
 	color:#000;
@@ -1383,45 +1298,53 @@ color:#fff !important;
         width: 100% !important;
         height: 100% !important;
     }
+.homePage .topLinks li .adminDropdown ul li{
+	display:block;
+	}
+.adminDropdown .updateBtn{
+	background: #102e7b;
+    padding: 10px 20px;
+    font-size: 14px;
+    line-height: 22px;
+    color: #fff !important;
+    border: none;
+    border-radius: 4px;
+    border-bottom: 2px solid #071b50;
+    display: block;
+    width: 100%;
+    text-align: center;
+    text-transform: uppercase;
+    transition: all 0.5s ease-in;
+	text-decoration:none;
+	margin-bottom:3px;
+	}
+.adminDropdown .updateBtn:hover{
+	background:#081f5a;
+	text-decoration:none !important;
+	}
+.adminDropdown .logOutBtn{
+	background: #eb4141;
+    padding: 10px 20px;
+    font-size: 14px;
+    line-height: 22px;
+    color: #fff !important;
+    border: none;
+    border-radius: 4px;
+    border-bottom: 2px solid #be2727;
+    display: block;
+    width: 100%;
+    text-align: center;
+    text-transform: uppercase;
+    transition: all 0.5s ease-in;
+	text-decoration:none;
+	}
+.adminDropdown .logOutBtn:hover{
+	background:#ce2020;
+	text-decoration:none !important;
+	}
+
 /*-------------Theme 1 Home Style Ends----------------*/
 
 .tblwrap {
 	padding: 40px 0;	
 }
-/**** 9.8.16 *****/
-.dateFld .well{
-	float:left;
-	padding:0px;
-	position:relative;
-}
-.dateFld .add-on {
-    padding: 6px 12px;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 1;
-    color: #555;
-    text-align: center;
-    background-color: #eee;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-	top: 7px;
-	position:relative;
-}
-.dateFld{
- width:278px;	
-}
-.dateFld input{
-	margin:0px;
-	border:#fff solid 1px;
-}
-.dateFld .add-on{
-	border-radius: 0px;
-	border:none;
-	padding: 8px 12px;
-	background-color:none !important;
-	-webkit-box-shadow:none;
-	box-shadow:none;
-}
-
-
-

@@ -60,12 +60,20 @@
                     </div>
                     <div class="col-sm-9">
                         <ul class="topLinks">
-                            <li>Phone : +91 9898989898 | </li>
-                            <li>Email : <a href="mailto:info@krpsolutions.co.in">info@krpsolutions.co.in</a></li>
-							<?php if (!empty($_SESSION['user'])) { ?>
-								<li><span> | <img src="<?= base_url('assets/images/user-icon.png')?>" /></span> Welcome Admin | </li>
-								<li><a href="<?= base_url('logout') ?>">Logout</a></li>
-							<?php } ?>
+                            <li>Phone : +91 9898989898</li>        
+                            <li>Email : <a href="mailto:info@krpsolutions.co.in">info@krpsolutions.co.in</a></li>   
+                            <?php if (!empty($this->site_data["session_user"]["user"])) { ?>         
+                            <li>                                
+                                <span><img src="<?= base_url('assets/images/user-icon.png')?>" /></span>
+                                <a href="#">Welcome <?php echo $this->site_data["session_user"]["user"]->Name; ?></a>                                
+                                <div class="adminDropdown">
+                                    <ul>                                        
+                                        <li class="updateBtn"><a href="<?= base_url('#') ?>">Update Profile</a></li>
+                                        <li class="logOutBtn"><a href="<?= base_url('logout') ?>">Logout</a></li>                                        
+                                    </ul>
+                                </div>
+                            </li>
+                            <?php } ?> 
                         </ul>
                     </div>
                 </div>
@@ -82,15 +90,22 @@
                         </div>
                     </div>
                     <div class="col-xs-6">
-						<?php if (!empty($_SESSION['user'])) { ?>
+						<?php if (!empty($_SESSION['user']) && $_SESSION['logged_in'] === true) { ?>
                         <span class="navBar"></span>
                         <div class="dropDownMenu">
                             <ul>
-                                <?php if (isset($_SESSION['user']) && $_SESSION['logged_in'] === true) { ?>
-									<li><a href="<?= base_url('school') ?>">School</a><li>
-									<li><a href="<?= base_url('report') ?>">View Report</a><li>									
-								<?php } ?>
-                            </ul>
+                                <li><a href="#">School Events</a></li>
+                                <li><a href="#">School Candidates</a></li>
+                                <li><a href="#">School Point of Contact</a></li>
+                                <li><a href="#">Class Master</a></li>
+                                <li><a href="<?= base_url('school') ?>">School Master</a><li>
+                                <li class="subMenu"><a href="#">Report</a>
+                                    <ul>
+                                        <li><a href="<?= base_url('report') ?>">Attendance Report</a> </li>
+                                        <li><a href="#">Missing Report</a></li>
+                                    </ul>
+                                </li>        
+                            </ul>                            
                         </div>
 						<?php } ?>
                     </div>
@@ -108,5 +123,5 @@
                 </ul>
             </div>
         </div>
-        <!--header slider ends-->
+        <!--header slider ends-->        
 		

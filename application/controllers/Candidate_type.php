@@ -4,7 +4,7 @@
  * www.crudigniter.com
  */
  
-class Candidate_type extends CI_Controller
+class Candidate_type extends MY_Controller
 {
     function __construct()
     {

@@ -6,7 +6,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * 
  * @extends CI_Controller
  */
-class User extends CI_Controller {
+class User extends MY_Controller {
 
 	/**
 	 * __construct function.
@@ -121,7 +121,6 @@ class User extends CI_Controller {
 	 * @return void
 	 */
 	public function login() {
-		
 		if (empty($_SESSION['user'])) {
 			
 			$data = array();
@@ -149,41 +148,30 @@ class User extends CI_Controller {
 					$user_id = $this->user_model->get_user_id_from_username($username);
 					$user    = $this->user_model->get_user($user_id);
 
-					//echo $user->School_ID;
-					$school  = $this->school_model->get_school("SC" . str_pad($user->School_ID, 5, '0', STR_PAD_LEFT));
+					if (!intval($user->is_active)) {
+						$data["error"] = 'The user is not active. For any assistance contact Administrator.';						
+					} else {
+						//echo $user->School_ID;
+						$school  = $this->school_model->get_school("SC" . str_pad($user->School_ID, 5, '0', STR_PAD_LEFT));
 
-					// set session user datas
-					$_SESSION['user']      = $user;
-					$_SESSION['school']    = $school;
-					$_SESSION['logged_in'] = (bool)true;				
-					
+						// set session user datas
+						$_SESSION['user']      = $user;
+						$_SESSION['school']    = $school;
+						$_SESSION['logged_in'] = (bool)true;
+
+						redirect("home");				
+					}
 				} else {					
 					// login failed
 					$data["error"] = 'Wrong username or password. Try again.';										
 				}				
-			} 
-		} 
-		
-		$template = "admin_staff";
-		if (!empty($_SESSION['user'])) {
+			}
 
-			switch(intval($_SESSION['user']->User_Type_ID)) {
-				case 1: $template = "admin_staff";
-						break;
-				case 2: $template = "admin_staff";
-						break;
-				case 3: $template = "school_guardians";
-						break;
-				case 4: $template = "school_guardians";
-						break;				
-			}	
-
-			$this->load->template('user/home/'.$template);	
-
-		} else {			
 			// send error to the view					
 			$this->load->template('user/login/index', $data);
-		}	
+		} else {
+			redirect("home");
+		}
 	}
 	
 	/**
@@ -210,8 +198,23 @@ class User extends CI_Controller {
 		redirect('/');		
 	}
 
-	public function home() {
-		$this->load->template('user/home/index');
+	public function home() {		
+		$template = "admin_staff";
+		if (!empty($_SESSION['user'])) {
+			switch(intval($_SESSION['user']->User_Type_ID)) {
+				case 1: $template = "admin_staff";
+						break;
+				case 2: $template = "admin_staff";
+						break;
+				case 3: $template = "school_guardians";
+						break;
+				case 4: $template = "school_guardians";
+						break;				
+			}			
+			$this->load->template('user/home/'.$template);	
+		} else {
+			$this->load->template('user/home/index');
+		}
 	}
 
 	public function email() {

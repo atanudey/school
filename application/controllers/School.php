@@ -4,20 +4,11 @@
  * www.crudigniter.com
  */
  
-class School extends CI_Controller
+class School extends MY_Controller
 {
     function __construct()
     {
         parent::__construct();
-
-        if ( ! $this->session->userdata('logged_in'))
-		{			
-			$allowed = array();
-			if ( ! in_array($this->router->fetch_method(), $allowed)) {
-				redirect('login');
-			}
-		}
-
         $this->load->model('school_model');        		
     } 
 

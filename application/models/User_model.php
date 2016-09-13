@@ -47,8 +47,7 @@ class User_model extends CI_Model {
 		$this->db->select('password')
 				->from('login')
 				->where('user_id', $username)
-				->where('user_type_id', $user_type_id)
-				->where('is_active', '1');		
+				->where('user_type_id', $user_type_id);		
 
 		$hash = $this->db->get()->row('password');
 		return $this->verify_password_hash($password, $hash);		
@@ -63,7 +62,7 @@ class User_model extends CI_Model {
 	 */
 	public function get_user_id_from_username($username) {
 		
-		$this->db->select('id');
+		$this->db->select('login.id');
 		$this->db->from('login');
 		$this->db->where('user_id', $username);
 
@@ -77,9 +76,12 @@ class User_model extends CI_Model {
 	 * @param mixed $user_id
 	 * @return object the user object
 	 */
-	public function get_user($user_id) {		
+	public function get_user($user_id) {
+		$this->db->select('login.*');
+		$this->db->select('User_Type.Type_Name');		
 		$this->db->from('login');
-		$this->db->where('id', $user_id);
+		$this->db->join('User_Type', 'login.User_Type_ID = User_Type.ID'); 
+		$this->db->where('login.id', $user_id);
 		return $this->db->get()->row();		
 	}
 	

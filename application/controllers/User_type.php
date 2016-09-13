@@ -4,7 +4,7 @@
  * www.crudigniter.com
  */
  
-class User_type extends CI_Controller
+class User_type extends MY_Controller
 {
     function __construct()
     {

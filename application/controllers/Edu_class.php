@@ -4,7 +4,7 @@
  * www.crudigniter.com
  */
  
-class Edu_class extends CI_Controller
+class Edu_class extends MY_Controller
 {
     function __construct()
     {

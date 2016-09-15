@@ -1348,3 +1348,23 @@ color:#fff !important;
 .tblwrap {
 	padding: 40px 0;	
 }
+.datarange .well{
+	overflow:hidden;
+	padding:3px;
+	width:183px;
+}
+.datarange .dateFld input{
+	background: none;
+    border: none;
+}
+.datarange .add-on{
+	position: relative;
+    top: 6px;
+}
+.datarange .dateFld{
+	width:275px;
+}
+
+
+
+

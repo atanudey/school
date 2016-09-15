@@ -1,14 +1,47 @@
 
-div.pdf {
-	width:800px;
+table.attablePdf {border-spacing: 0; width:100%}
+table.attablePdf {
+	width:100%;
 	margin:0 auto;
-	background: #f7f9fb;
+	background: #FFF;
 	font-family: DejaVuSans;
 	border: 1px solid #ccc;
 	font-size: 8px;
+
+}
+table.attablePdf th.th{
+	padding:5px;
+	font-size:14px;
+	border-left: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	
+}
+table.attablePdf tr td.td{
+	padding:8px 5px;
+	font-size:12px;
+	border-bottom:1px solid #ddd;
+	border-left: 1px solid #ccc;
 }
 
-div.pdf > table {border-spacing: 0; width:100%}
+table.attablePdf th.info{
+	font-size:15px;
+	
+}
+div.pdf h1{
+	font-size:15;
+	text-align:center;
+	padding:0 0 10px 0;
+}
+
+div.pdf h2{
+	font-size:14px;
+	text-align:center;
+	padding:0 0 10px 0;
+}
+
+
+
+
 div.pdf > table td, th{padding: 0;}
 
 div.pdf table tr th {
@@ -39,7 +72,7 @@ div.pdf h1{
 	text-transform:uppercase;
 	color:#000;
 	font-weight:normal;
-	font-size:26px;
+	font-size:20px;
 	text-align:left;
 	font-weight: bold;
 	padding:8px 0;

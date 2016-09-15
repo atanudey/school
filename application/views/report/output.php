@@ -18,7 +18,7 @@
 </script>
 <div class="container tblwrap">
     <div class="pull-right">
-        <a href="<?php echo site_url('report/pdf'); ?>" class="btn btn-success">Print</a> 
+        <a href="<?php echo site_url('report/pdf'); ?>" target="__blank" class="btn btn-success">Print</a> 
         <a href="<?php echo site_url('#'); ?>" class="btn btn-success">PDF</a>
         <a href="<?php echo site_url('#'); ?>" class="btn btn-success">CSV</a>
     </div>
@@ -81,3 +81,4 @@
         </tbody> 
     </table>
 </div>
+<div align="center"><b>{PAGENO} / {nbpg}</b></div>

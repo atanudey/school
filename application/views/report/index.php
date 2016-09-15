@@ -247,7 +247,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="borderdWhiteBox">
-                            <div class="fldRowInline boxPadding inlineDateFlds">
+                            <div class="fldRowInline boxPadding inlineDateFlds datarange">
                                 <div class="fldRowInline dateFld">
                                     <label>From</label>
                                     <div class="well">

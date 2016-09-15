@@ -149,9 +149,9 @@ class Report extends MY_Controller {
 		$style = "<style>".$this->parser->parse('report/save_style', $data, true)."</style>";	
 		$content = $this->parser->parse('report/save', $data, true);
 
-		echo $style.$content;
+		//echo $style.$content;
 
-		//$this->getReport($content, $data);
+		$this->getReport($content, $data);
 	}
 
 	function getReport($content, $data, $output = 'download')

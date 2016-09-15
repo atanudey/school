@@ -5,16 +5,14 @@ class Report extends MY_Controller {
 
 	function __construct() {		
 		parent::__construct();
-
-		if ( ! $this->session->userdata('logged_in'))
-		{			
-			$allowed = array();
-			if ( ! in_array($this->router->fetch_method(), $allowed)) {
-				redirect('login');
-			}
-		}
-
 		$this->load->model('report_model');	
+		
+		// Load Third Party PDF Library MPDF
+		$this->load->library('mpdf60/mpdf');
+
+		// Load Template parsing library
+		$this->load->library('parser');
+		$this->load->library('session');
 	}
 	
 	function index() {				
@@ -23,11 +21,11 @@ class Report extends MY_Controller {
 
 	function populate_data() {
 
-		require_once(APPPATH . "../assets/reportico44/reportico.php"); 
+		/*require_once(APPPATH . "../assets/reportico44/reportico.php"); 
 		$q = new reportico();		
 		$q->embedded_report = true;
 		$q->forward_url_get_parameters = "execute_mode=EXECUTE&project=educare&project_password=guitar&xmlin=student_attendance_report.xml&target_format=HTML";
-		$q->execute();
+		$q->execute();*/
 
 		$str = "";
 		for ($i=1; $i <= 300; $i++) {
@@ -50,9 +48,7 @@ class Report extends MY_Controller {
 		//	$str .= "UPDATE  `educare_db`.`sc00001_attendance` SET  `IN_OUT` =  'OUT' WHERE  `sc00001_attendance`.`ID` = " . rand(1, 159) . "; \n";
 		//}
 
-		echo $str;
-
-		die;
+		//echo $str; die;
 
 		/*if(isset($_POST) && count($_POST) > 0)     
 		{   
@@ -86,6 +82,28 @@ class Report extends MY_Controller {
 	function generate() {
 		//print_r($_REQUEST); die;
 
+		/*
+		if ($this->input->post('student_report_type') == "all") {
+			$class = "1=1";
+			$section = "1=1";
+		} else if ($this->input->post('student_report_type') == "class") {
+			if (!empty($_REQUEST['class'])) {
+				$class = "FIND_IN_SET( CL.`Name` ,  " . implode(",", $this->input->post('class')) . " )";
+				//$class = "CL.`Name` IN (\'" . implode("\',\'", $this->input->post('class')) . "\')";			
+			} else {
+				$class = "1=1";
+			}
+			if (!empty($_REQUEST['section'])) {
+				$section = "FIND_IN_SET( CL.`Name` ,  " . implode(",", $this->input->post('section')) . " )";	
+			} else {
+				$section = "1=1";
+			}
+		} else {
+			$class = "FIND_IN_SET( CL.`Name` ,  " . implode(",", $this->input->post('class')) . " )";
+			$section = "FIND_IN_SET( CL.`Name` ,  " . implode(",", $this->input->post('section')) . " )";
+		}
+		*/
+
 		$start_date = explode("/",$this->input->post('start_date'));
 		$end_date = explode("/",$this->input->post('end_date'));
 
@@ -117,9 +135,43 @@ class Report extends MY_Controller {
 		);
 
 		$data['report'] = $this->report_model->get_attendance($params);
-		$SESSION = $data;
+		$this->session->set_userdata('report', $data['report']);
 
 		$this->load->template('report/output',$data);
+	}
+
+	function prnt() {
+
+	}
+
+	function pdf() {		
+		$data['report'] = $this->session->userdata('report');	
+		$style = "<style>".$this->parser->parse('report/save_style', $data, true)."</style>";	
+		$content = $this->parser->parse('report/save', $data, true);
+
+		echo $style.$content;
+
+		//$this->getReport($content, $data);
+	}
+
+	function getReport($content, $data, $output = 'download')
+	{
+	    $this->mpdf->SetDisplayMode('fullpage');
+
+	    $this->mpdf->list_indent_first_level = 0;	// 1 or 0 - whether to indent the first level of a list
+
+	    // LOAD a stylesheet
+	    $stylesheet = $this->parser->parse('report/save_style', $data, true);
+	    $this->mpdf->WriteHTML($stylesheet,1);	// The parameter 1 tells that this is css/style only and no body/html/text
+
+        // If download requested
+	    if ($output == 'download'){
+	       $this->mpdf->WriteHTML($content,2);
+	       $this->mpdf->Output('report.pdf','I');
+	    } elseif ($output == 'mail') { //if  mail requested
+	       $this->mpdf->WriteHTML(utf8_encode($content));
+	       return $customer;
+	    }
 	}
 }
 ?>

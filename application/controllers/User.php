@@ -183,15 +183,12 @@ class User extends MY_Controller {
 	public function logout() {
 		
 		// create the data object
-		$data = new stdClass();
-		
-		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
-			
+		$data = new stdClass();		
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {			
 			// remove session datas
 			foreach ($_SESSION as $key => $value) {
 				unset($_SESSION[$key]);
-			}
-			
+			}			
 		}
 
 		// redirect him to site root
@@ -204,11 +201,11 @@ class User extends MY_Controller {
 			switch(intval($_SESSION['user']->User_Type_ID)) {
 				case 1: $template = "admin_staff";
 						break;
-				case 2: $template = "admin_staff";
+				case 2: $template = "school_guardians";
 						break;
 				case 3: $template = "school_guardians";
 						break;
-				case 4: $template = "school_guardians";
+				case 4: $template = "admin_staff";
 						break;				
 			}			
 			$this->load->template('user/home/'.$template);	

@@ -13,7 +13,7 @@ class MY_Controller extends CI_Controller {
         parent::__construct();
         if ( ! $this->session->userdata('logged_in'))
         {			
-            $allowed = array('login');
+            $allowed = array('login', 'register');
             if ( ! in_array($this->router->fetch_method(), $allowed)) {
                 redirect('login');
             }

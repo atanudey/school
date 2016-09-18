@@ -155,9 +155,13 @@ class User extends MY_Controller {
 						$school  = $this->school_model->get_school("SC" . str_pad($user->School_ID, 5, '0', STR_PAD_LEFT));
 
 						// set session user datas
-						$_SESSION['user']      = $user;
-						$_SESSION['school']    = $school;
-						$_SESSION['logged_in'] = (bool)true;
+						$this->session->set_userdata(array(
+							"user" => $user,
+							"user_id" => $user->ID,
+							"school" => $school,
+							"school_id" => $school->ID,
+							"logged_in" => (bool)true
+						));
 
 						redirect("home");				
 					}

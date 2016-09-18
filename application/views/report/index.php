@@ -106,13 +106,17 @@
             $.fn.changeCalendar($(this).val());            
         });
 
-        $.fn.changeCalendar('mly');     
+        $.fn.changeCalendar('mly');   
+
+        $('#school_id').on("change", function(){
+            $('#report_frm').prop('action', 'report');
+            $('#report_frm').submit();
+        });
     });
 </script>
 
 <!--body panel starts -->
-<?php echo form_open('report/generate');
-?>
+<?php echo form_open('report/generate', array('name' => 'report_frm', 'id' => 'report_frm'));?>
 <div class="bodyPanel reportPanel">
     <div class="container">
         <div class="row paddingBtm40">
@@ -120,7 +124,16 @@
                 <h2>Attendence Report</h2>
             </div>
             <div class="col-sm-6 rightHeading">
-                <h3><?php echo $School_Name; ?></h3>
+                <?php if (!empty($School_Name) && is_array($School_Name)) { ?>
+                    <select name="school_id" id="school_id" required>
+                        <option value="">--- Select School ---</option>
+                    <?php foreach($School_Name as $SN)  { ?>
+                        <option value="<?php echo $SN['ID']; ?>" <?php echo set_select('school_id', $SN['ID']); ?>><?php echo $SN['School_Name']; ?></option>
+                    <?php } ?>
+                    </select>                                    
+                <?php } else {?>
+                    <h3><?php echo $School_Name; ?></h3>
+                <?php } ?>
             </div>
         </div>
 

@@ -14,8 +14,14 @@ class Report extends MY_Controller {
 		// Load Template parsing library
 		$this->load->library('parser');
 		$this->load->library('session');
+		
+		$schid = $this->input->post("school_id");
+		if (!empty($schid) && $this->uri->segment(2) == '') {
+			$this->session->set_userdata('school_id', $schid);			
+		}
 
-		$this->data["School_Name"] = $this->getSchoolName();
+		$this->school_id = $this->session->userdata('school_id');
+		echo $this->data["School_Name"] = $this->getSchoolName();
 	}
 	
 	function index() {		
@@ -23,9 +29,9 @@ class Report extends MY_Controller {
 		$this->load->template('report/index', $data);
 	}
 
-	function getSchoolName() {
-		$sess = $this->session->userdata();		
-		return $this->school_model->get_school_name($sess['user']->School_ID);
+	function getSchoolName() {	
+		echo $this->school_id;	
+		return $this->school_model->get_school_name($this->school_id);
 	}
 
 	function populate_data() {
@@ -89,30 +95,6 @@ class Report extends MY_Controller {
 	}
 
 	function generate() {
-		//print_r($_REQUEST); die;
-
-		/*
-		if ($this->input->post('student_report_type') == "all") {
-			$class = "1=1";
-			$section = "1=1";
-		} else if ($this->input->post('student_report_type') == "class") {
-			if (!empty($_REQUEST['class'])) {
-				$class = "FIND_IN_SET( CL.`Name` ,  " . implode(",", $this->input->post('class')) . " )";
-				//$class = "CL.`Name` IN (\'" . implode("\',\'", $this->input->post('class')) . "\')";			
-			} else {
-				$class = "1=1";
-			}
-			if (!empty($_REQUEST['section'])) {
-				$section = "FIND_IN_SET( CL.`Name` ,  " . implode(",", $this->input->post('section')) . " )";	
-			} else {
-				$section = "1=1";
-			}
-		} else {
-			$class = "FIND_IN_SET( CL.`Name` ,  " . implode(",", $this->input->post('class')) . " )";
-			$section = "FIND_IN_SET( CL.`Name` ,  " . implode(",", $this->input->post('section')) . " )";
-		}
-		*/
-
 		$data = $this->data;
 
 		$start_date = explode("/",$this->input->post('start_date'));
@@ -140,7 +122,7 @@ class Report extends MY_Controller {
 		$params = array(
 			'start_month' => intval($start_date[0]),
 			'end_month' => intval($end_date[0]),
-			'school_id' => 'SC00001',
+			'school_id' => $this->school_id,
 			'classes' => $class,
 			'sections' => $section,
 			'interval' => 3				

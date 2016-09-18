@@ -1,0 +1,1 @@
+ALTER TABLE  `school` ADD  `School_ID` INT NOT NULL AFTER  `ID`

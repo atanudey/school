@@ -19,6 +19,15 @@ class School_model extends CI_Model
     {
         return $this->db->get_where('School',array('ID'=>$ID))->row_array();
     }
+
+    /*
+    * Get School Name by ID
+    */
+
+    function get_school_name($ID)
+    {
+        return $this->db->select('School_Name')->get_where('School',array('ID'=>$ID))->row()->School_Name;
+    }
     
     /*
      * Get all school
@@ -40,8 +49,28 @@ class School_model extends CI_Model
         $params['School_ID'] = ++$school_id;
         $params['ID'] = "SC" . str_pad($school_id, 5, '0', STR_PAD_LEFT);
 
-        $this->db->insert('School', $params);
-        return $this->db->insert_id();
+        $finalParam = array(
+            'ID' => $params['ID'],
+            'School_ID' => $params['School_ID'],
+            "School_Name" => $params["School_Name"],
+            "Description" => $params["Description"],
+            "Address1" => $params["Address1"],
+            "Address2" => $params["Address2"],
+            "State" => $params["State"],
+            "Pin" => $params["Pin"],
+            "No_Of_Students" => $params["No_Of_Machines"],
+            "No_Of_Machines" => $params["No_Of_Machines"],
+            "Event_Active" => $params["Event_Active"],
+            "Added_On" => date('Y-m-d H:i:s'),
+            "Updated_On" => date('Y-m-d H:i:s'),
+            "Updated_By" => 0,
+            "Is_Deleted" => 0    
+        );
+
+        $this->db->query("CALL CreateSchool('".implode(",", $finalParam)."','" . $params['ID'] . "')");
+        
+        //$this->db->insert('School', $params);
+        //return $this->db->insert_id();
     }
     
     /*

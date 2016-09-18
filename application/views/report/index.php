@@ -120,7 +120,7 @@
                 <h2>Attendence Report</h2>
             </div>
             <div class="col-sm-6 rightHeading">
-                <h3>Demo School Name</h3>
+                <h3><?php echo $School_Name; ?></h3>
             </div>
         </div>
 

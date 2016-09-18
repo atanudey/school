@@ -6,6 +6,7 @@ class Report extends MY_Controller {
 	function __construct() {		
 		parent::__construct();
 		$this->load->model('report_model');	
+		$this->load->model('school_model');
 		
 		// Load Third Party PDF Library MPDF
 		$this->load->library('mpdf60/mpdf');
@@ -15,8 +16,10 @@ class Report extends MY_Controller {
 		$this->load->library('session');
 	}
 	
-	function index() {				
-		$this->load->template('report/index');
+	function index() {
+		$sess = $this->session->userdata();		
+		$data['School_Name'] = $this->school_model->get_school_name($sess['user']->School_ID);		
+		$this->load->template('report/index', $data);
 	}
 
 	function populate_data() {

@@ -19,9 +19,6 @@ html {
 html, body{
     height:100%;
 }
-body{
-	font-family: 'PT Sans', sans-serif;
-}
 article, aside, details, figcaption, figure, footer, header, hgroup, main, nav, section, summary {display: block;}
 audio, canvas, video {display: inline-block;}
 img {
@@ -287,9 +284,6 @@ body{
 
 
 /*-------------Theme 2 Style Starts----------------*/
-body{
-	font-family: 'Roboto', sans-serif;
-}
 
 .theme2 .topPanel{
 	background:#fff;
@@ -510,9 +504,6 @@ color:#fff !important;
 /*-------------Theme 2 Style Ends----------------*/
 
 /*-------------Theme 3 Style Starts----------------*/
-body{
-	font-family: 'Roboto', sans-serif;
-}
 
 .theme3 .topPanel{
 	background:#fff;
@@ -935,19 +926,21 @@ color:#fff !important;
 	background:#c6c6c6;
 	padding:10px 0;
 	}
-
+.homePage .themeSelect{
+	font-family: 'Open Sans', sans-serif;
+}
 .homePage .themeSelect li{
 	float:left;
 	margin-right:5px;
 	}
 .homePage .themeSelect li a{
-	width:10px;
-	height:10px;
+	width:18px;
+	height:18px;
 	display:block;
 	font-size:0;
 	line-height:0;
 	text-indent:-1000000px;
-	margin-top:5px;
+	border: 1px solid #dadada;
 	}
 .homePage .themeSelect li.theme1 a{
 	background:#46639c;
@@ -960,11 +953,12 @@ color:#fff !important;
 	}
 .homePage .topLinks{
 	text-align:right;
+	font-family: 'Open Sans', sans-serif;
 	}
 .homePage .topLinks > li{
 	background:url(../images/divider.png) no-repeat 100% 50%;
 	display:inline-block;
-	font-size:16px;
+	font-size:15px;
 	line-height:24px;
 	position:relative;
 	padding:0 12px 0 7px;
@@ -1364,7 +1358,3 @@ color:#fff !important;
 .datarange .dateFld{
 	width:275px;
 }
-
-
-
-

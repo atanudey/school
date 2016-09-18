@@ -11,7 +11,8 @@
 		<link href="<?= base_url('assets/css/style.css') ?>" rel="stylesheet" type="text/css" />
 		<link href="<?= base_url('assets/css/responsive-style.css') ?>" rel="stylesheet" type="text/css" />
 		<link rel="stylesheet" type="text/css" href="<?= base_url('assets/css/slider.css') ?>" />
-		<link href='https://fonts.googleapis.com/css?family=Roboto:400,300,500,700,900,900italic' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
+		<link href='https://fonts.googleapis.com/css?family=Roboto:400,300,500,700,900,900italic|Open+Sans' rel='stylesheet' type='text/css'>
 		<link rel="shortcut icon" href="<?= base_url('assets/images/favicon.ico') ?>" type="image/x-icon">
 		
 		<script type="text/javascript" language="javascript" src="<?= base_url('assets/js/jquery-1.12.3.js') ?>"></script>
@@ -60,11 +61,11 @@
                     </div>
                     <div class="col-sm-9">
                         <ul class="topLinks">
-                            <li>Phone : +91 9898989898</li>        
-                            <li>Email : <a href="mailto:info@krpsolutions.co.in">info@krpsolutions.co.in</a></li>   
+                            <li><i class="fa fa-phone" aria-hidden="true"></i> <a href="tel:+919898989898">+91 9898989898</a></li>        
+                            <li><i class="fa fa-envelope" aria-hidden="true"></i> <a href="mailto:info@krpsolutions.co.in">info@krpsolutions.co.in</a></li>   
                             <?php if (!empty($this->site_data["session_user"]["user"])) { ?>         
                             <li>                                
-                                <span><img src="<?= base_url('assets/images/user-icon.png')?>" /></span>
+                                <i class="fa fa-user" aria-hidden="true"></i>
                                 <a href="#">Welcome <?php echo $this->site_data["session_user"]["user"]->Name; ?></a>                                
                                 <div class="adminDropdown">
                                     <ul>                                        

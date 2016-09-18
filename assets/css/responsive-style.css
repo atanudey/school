@@ -95,8 +95,7 @@
 	margin-right:5px;
 	}
 .homePage .themeSelect li a{
-	width:25px;
-	height:25px;
+	margin-top: 5px;
 }
 .logo{
 	text-align:center;
@@ -108,9 +107,7 @@
 	}
 }
 @media (max-width: 630px) {
-.homePage .topLinks li:nth-child(2){
-	background:none;
-}
+
 }
 @media (max-width: 600px) {
 .adminDropdown{

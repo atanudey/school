@@ -3,31 +3,18 @@ BEGIN
 	DECLARE school VARCHAR(2000);
 	DECLARE candidate VARCHAR(2000);
 	DECLARE attendance VARCHAR(2000);
+    DECLARE insert_param VARCHAR(65535);
     
-    SET school = CONCAT('INSERT INTO `school` 
-                        (`ID`, 
-                        `School_ID`, 
-                        `School_Name`, 
-                        `Description`, 
-                        `Address1`, 
-                        `Address2`, 
-                        `State`, 
-                        `Pin`, 
-                        `No_Of_Students`, 
-                        `No_Of_Machines`, 
-                        `Event_Active`, 
-                        `Added_On`, 
-                        `Updated_On`, 
-                        `Updated_By`, 
-                        `Is_Deleted`) VALUES(', parameters , ')');
-
-    INSERT INTO log SET log = school;
+    SET insert_param = REPLACE(parameters, ",", "','");
+    
+    SET @school = CONCAT("INSERT INTO `school` 
+						(`ID`, `School_ID`, `School_Name`, `Description`, `Address1`, `Address2`, `State`, `Pin`, `No_Of_Students`, `No_Of_Machines`, `Event_Active`, `Added_On`, `Updated_On`, `Updated_By`, `Is_Deleted`) VALUES('", insert_param, "')");
     
     PREPARE stmt FROM @school;
 	EXECUTE stmt;
 	DEALLOCATE PREPARE stmt;
     
-    SET candidate = CONCAT('CREATE TABLE IF NOT EXISTS `', school_id, '_candidate` (
+    SET @candidate = CONCAT('CREATE TABLE IF NOT EXISTS `', school_id, '_candidate` (
 		`Candidate_ID` int(11) NOT NULL AUTO_INCREMENT,
 		`RFID_NO` varchar(20) NOT NULL,
 		`Roll_No` int(11) NOT NULL,
@@ -63,7 +50,7 @@ BEGIN
 	EXECUTE stmt;
 	DEALLOCATE PREPARE stmt;
     
-    SET attendance = CONCAT('CREATE TABLE IF NOT EXISTS `', school_id, '_attendance` (
+    SET @attendance = CONCAT('CREATE TABLE IF NOT EXISTS `', school_id, '_attendance` (
 		`ID` int(11) NOT NULL AUTO_INCREMENT,
 		`Date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 		`Time` time NOT NULL,

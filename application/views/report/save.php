@@ -1,9 +1,7 @@
 <link rel="stylesheet" type="text/css" href="<?= site_url('report/save_style') ?>" />
-
-
 <div class="pdf">
-    <h1>Lorem Ipsum</h1>
-	<h2>Lorem Ipsum is simply dummy text of the printing and typesetting industry. </h2>
+    <h1><?php echo $School_Name; ?></h1>
+	<h2>Monthy Attendance Report</h2>
     <table id="example" class="table table-striped table-bordered attablePdf" cellspacing="0" width="100%">
         <thead>
             <tr>
@@ -19,8 +17,7 @@
         <tbody>
         <?php foreach($report as $s): ?>	
             <?php if ($s['Type'] == "data") { ?>
-                <tr>
-                                
+                <tr>                                
                     <td align="left" class="td"><?php echo $s['Roll']; ?></td>
                     <td align="left" class="td"><?php echo $s['Name']; ?></td>
                     <td align="left" class="td"><?php echo $s['Address']; ?></td>
@@ -48,5 +45,4 @@
         <?php endforeach; ?>
         </tbody> 
     </table>
-	 
 </div>

@@ -1,0 +1,62 @@
+CREATE TEMPORARY TABLE IF NOT EXISTS `MonthWiseReportTable` (
+		`Month` varchar(20) NOT NULL,
+        `Information` varchar(255) NOT NULL,
+		`Roll` varchar(255) NOT NULL DEFAULT '',
+		`Name` varchar(255) NOT NULL DEFAULT '',
+		`Address` varchar(255) DEFAULT '',
+		`Class` varchar(255) NOT NULL DEFAULT '',
+		`Section` varchar(255) NOT NULL DEFAULT '',
+		`Present` varchar(255) DEFAULT NULL DEFAULT '',
+		`Absent` varchar(255) DEFAULT NULL DEFAULT '',
+  		`Type` enum('header','data','summary') NOT NULL DEFAULT 'data'
+	) ENGINE=MEMORY;
+
+    CREATE TEMPORARY TABLE IF NOT EXISTS `GroupTable`(
+		`Month` varchar(20) NOT NULL,
+		`StudentCount` float NOT NULL,
+        `TotalPresent` float NOT NULL,
+        `TotalAbsent` float NOT NULL
+	) ENGINE=MEMORY;
+INSERT INTO `MonthWiseReportTable` (`Month`, `Information`, `Roll`, `Name`, `Address`, `Class`, `Section`, `Present`, `Absent`) 
+        SELECT  8 `Month`,
+                '' `Information`,
+				`Roll_No`  `Roll` ,  
+			    `Candidate_Name` Name, 
+				CONCAT(  `Address1` ,  `Address2` ) Address,  
+				CL.`Name`  `Class` ,
+				CL.`Section` `Section`,
+				FLOOR(COUNT( A.IN_OUT )/2) Present,
+				(23 - FLOOR(COUNT( A.IN_OUT )/2)) Absent
+		FROM  `sc00001_candidate` C
+		JOIN  `sc00001_attendance` A ON C.`Candidate_ID` = A.`Candidate_ID` 
+		JOIN  `class` CL ON C.`class_id` = CL.`ID` 
+		WHERE FIND_IN_SET(  `School_ID` , 'SC00001') 
+		AND NOT FIND_IN_SET( CL.`Name`,'') 
+		AND NOT FIND_IN_SET( CL.`Section`,'')
+		AND MONTH( A.`Date` ) = 8 
+        GROUP BY A.`Candidate_ID`;
+
+		INSERT INTO `GroupTable` (`Month`, `StudentCount`, `TotalPresent`, `TotalAbsent`) 
+        SELECT  8 `Month`,
+				COUNT(DISTINCT A.`Candidate_ID`) StudentCount,
+				FLOOR(COUNT( A.IN_OUT )/2) Present,
+				(23 - FLOOR(COUNT( A.IN_OUT )/2)) Absent
+		FROM `sc00001_candidate` C JOIN  `sc00001_attendance` A
+		ON C.`Candidate_ID` =  A.`Candidate_ID`  
+		JOIN `class` CL 
+		ON C.`class_id` = CL.`ID` 
+		WHERE FIND_IN_SET(`School_ID`, 'SC00001')
+		AND NOT FIND_IN_SET( CL.`Name`,'') 
+		AND NOT FIND_IN_SET( CL.`Section`,'')
+		AND MONTH(A.`Date`) = 8
+		GROUP BY A.`Candidate_ID`;
+        
+		INSERT INTO `MonthWiseReportTable` (`Month`, `Information`, `Present`, `Absent`, `Type`)
+		SELECT 8 `Month`,
+			   CONCAT('Total for ', COUNT(`StudentCount`), ' Students') `Information`,
+		 	   SUM(`TotalPresent`) `Present`,
+		 	   SUM(`TotalAbsent`) `Absent`,
+		 	   'summary' `Type`
+		FROM `GroupTable` WHERE `Month` = 8;
+
+SELECT * FROM MonthWiseReportTable;

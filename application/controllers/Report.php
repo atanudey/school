@@ -14,12 +14,18 @@ class Report extends MY_Controller {
 		// Load Template parsing library
 		$this->load->library('parser');
 		$this->load->library('session');
+
+		$this->data["School_Name"] = $this->getSchoolName();
 	}
 	
-	function index() {
-		$sess = $this->session->userdata();		
-		$data['School_Name'] = $this->school_model->get_school_name($sess['user']->School_ID);		
+	function index() {		
+		$data = $this->data;
 		$this->load->template('report/index', $data);
+	}
+
+	function getSchoolName() {
+		$sess = $this->session->userdata();		
+		return $this->school_model->get_school_name($sess['user']->School_ID);
 	}
 
 	function populate_data() {
@@ -107,6 +113,8 @@ class Report extends MY_Controller {
 		}
 		*/
 
+		$data = $this->data;
+
 		$start_date = explode("/",$this->input->post('start_date'));
 		$end_date = explode("/",$this->input->post('end_date'));
 
@@ -134,7 +142,8 @@ class Report extends MY_Controller {
 			'end_month' => intval($end_date[0]),
 			'school_id' => 'SC00001',
 			'classes' => $class,
-			'sections' => $section,				
+			'sections' => $section,
+			'interval' => 3				
 		);
 
 		$data['report'] = $this->report_model->get_attendance($params);
@@ -145,9 +154,19 @@ class Report extends MY_Controller {
 
 	function prnt() {
 
+		$data = $this->data;
+
+		$data['report'] = $this->session->userdata('report');	
+		$style = "<style>".$this->parser->parse('report/save_style', $data, true)."</style>";	
+		$content = $style . $this->parser->parse('report/save', $data, true);
+		
+		print($style . $content);
 	}
 
 	function pdf() {		
+
+		$data = $this->data;
+
 		$data['report'] = $this->session->userdata('report');	
 		$style = "<style>".$this->parser->parse('report/save_style', $data, true)."</style>";	
 		$content = $this->parser->parse('report/save', $data, true);

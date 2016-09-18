@@ -17,9 +17,10 @@
 	});
 </script>
 <div class="container tblwrap">
+    <div><h3><?php echo $School_Name; ?></h3></div>
     <div class="pull-right">
-        <a href="<?php echo site_url('report/pdf'); ?>" target="__blank" class="btn btn-success">Print</a> 
-        <a href="<?php echo site_url('#'); ?>" class="btn btn-success">PDF</a>
+        <a href="<?php echo site_url('report/prnt'); ?>" target="__blank" class="btn btn-success">Print</a> 
+        <a href="<?php echo site_url('report/pdf'); ?>" target="__blank" class="btn btn-success">PDF</a>
         <a href="<?php echo site_url('#'); ?>" class="btn btn-success">CSV</a>
     </div>
 
@@ -81,4 +82,3 @@
         </tbody> 
     </table>
 </div>
-<div align="center"><b>{PAGENO} / {nbpg}</b></div>

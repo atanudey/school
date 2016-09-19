@@ -22,11 +22,27 @@ class Class_model extends CI_Model
     /*
      * Get all class
      */
-    function get_all_class()
+    function get_all_class($params = array())
     {
-        return $this->db->get('class')->result_array();
+        return $this->db->get_where('class', $params)->result_array();
     }
-    
+
+    /*
+    * Get all class by school
+    */
+    function get_all_class_by_school($School_ID) {
+        
+        $candidate = $School_ID.'_candidate';
+
+        $this->db->select('cl.Name, cl.Section');
+        $this->db->from('class cl');
+        $this->db->join($candidate . ' as cd', 'cl.ID = cd.Class_ID');
+        $this->db->where('cd.School_ID', $School_ID);
+
+        $result = $this->db->get()->result_array();
+        return $result;
+    }
+
     /*
      * function to add new class
      */

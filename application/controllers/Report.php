@@ -7,6 +7,7 @@ class Report extends MY_Controller {
 		parent::__construct();
 		$this->load->model('report_model');	
 		$this->load->model('school_model');
+		$this->load->model('class_model');
 		
 		// Load Third Party PDF Library MPDF
 		$this->load->library('mpdf60/mpdf');
@@ -21,16 +22,31 @@ class Report extends MY_Controller {
 		}
 
 		$this->school_id = $this->session->userdata('school_id');
-		echo $this->data["School_Name"] = $this->getSchoolName();
+		$this->data["School_Name"] = $this->getSchoolName();
 	}
 	
 	function index() {		
 		$data = $this->data;
+		$classes = $this->class_model->get_all_class_by_school('SC00001');
+
+		$data['classes'] = array();
+		foreach($classes as $class) {
+			if (!in_array($class['Name'], $data['classes'])) {
+				$data['classes'][] = $class['Name'];
+			}	
+		}
+
+		$data['sections'] = array();
+		foreach($classes as $class) {
+			if (!in_array($class['Section'], $data['sections'])) {
+				$data['sections'][] = $class['Section'];
+			}	
+		}
+
 		$this->load->template('report/index', $data);
 	}
 
 	function getSchoolName() {	
-		echo $this->school_id;	
 		return $this->school_model->get_school_name($this->school_id);
 	}
 
@@ -127,6 +143,8 @@ class Report extends MY_Controller {
 			'sections' => $section,
 			'interval' => 3				
 		);
+
+		//print_r($params); die;
 
 		$data['report'] = $this->report_model->get_attendance($params);
 		$this->session->set_userdata('report', $data['report']);

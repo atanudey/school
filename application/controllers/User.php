@@ -152,14 +152,14 @@ class User extends MY_Controller {
 						$data["error"] = 'The user is not active. For any assistance contact Administrator.';						
 					} else {
 						//echo $user->School_ID;
-						$school  = $this->school_model->get_school("SC" . str_pad($user->School_ID, 5, '0', STR_PAD_LEFT));
-
+						$school  = $this->school_model->get_school($user->School_ID);
+						//print_r($school); die;
 						// set session user datas
 						$this->session->set_userdata(array(
 							"user" => $user,
 							"user_id" => $user->ID,
 							"school" => $school,
-							"school_id" => $school->ID,
+							"school_id" => $school['ID'],
 							"logged_in" => (bool)true
 						));
 

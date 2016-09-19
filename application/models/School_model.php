@@ -25,8 +25,8 @@ class School_model extends CI_Model
     */
 
     function get_school_name($ID)
-    {        
-        if ($ID == 0) {
+    {         
+        if ($ID === 0) {            
             return $this->db->select('ID, School_Name')->get_where('School', array())->result_array();
         } else {
             return $this->db->select('School_Name')->get_where('School',array('ID'=>$ID))->row()->School_Name;

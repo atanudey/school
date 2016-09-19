@@ -6,16 +6,18 @@
 
         $("#report_type_all").on('click', function(){
             $(this).closest('.reportInner').find('.row').hide();
+            $(this).closest('.reportInner').find( "[type=checkbox]" ).prop('checked', false);
         });
 
         $("#report_type_class").on('click', function(){
             $(this).closest('.reportInner').find('.row').hide();
             $("#class_section_block").show();
-
+            $(this).closest('.reportInner').find( "[type=checkbox]" ).prop('checked', false);
         });
 
         $("#report_type_student").on('click', function(){
-            $(this).closest('.reportInner').find('.row').show();            
+            $(this).closest('.reportInner').find('.row').show(); 
+            $(this).closest('.reportInner').find( "[type=checkbox]" ).prop('checked', false);           
         });
 
         $(".select_all").on('change', function(){             
@@ -156,10 +158,10 @@
                                 <div class="checkbox-inline"> <label><input type="checkbox" name="select_all_class" id="select_all_class" class="select_all" value="class">Class (Select All)</label></div>
                             </div>
                             <div class="reportBlockContent">
-                                <?php foreach(range(1, 10) as $class) {
+                                <?php foreach($classes as $class) {
 	?>
-                                    <div class="fldRowInline"><input type="checkbox" name="class[]" class="checkbox_cst" value="Class <?php echo $class;
-?>"> <label>Class <?php echo $class;
+                                    <div class="fldRowInline"><input type="checkbox" name="class[]" class="checkbox_cst" value="<?php echo $class;
+?>"> <label><?php echo $class;
 ?></label></div>
                                 <?php
 }
@@ -173,7 +175,7 @@
                                 <div class="checkbox-inline"> <label><input type="checkbox" name="select_all_section" id="select_all_section" class="select_all" value="section">Section (Select All)</label></div>
                             </div>
                             <div class="reportBlockContent">
-                                <?php foreach(range('A', 'I') as $section) {
+                                <?php foreach($sections as $section) {
 	?>
                                     <div class="fldRowInline"><input type="checkbox" class="checkbox_cst" name="section[]" value="<?php echo $section;
 ?>"> <label>Section <?php echo $section;

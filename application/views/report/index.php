@@ -1,23 +1,41 @@
 <script>  
     $(document).ready(function(){
-        $(".accordion").on('click', function(){
-            $(this).next().toggle();
+        $("#student :radio").on("change", function(){
+            $(this).show();
+            $("#staff").hide();
+        });
+
+        $("#staff :radio").on("change", function(){
+            $(this).show();
+            $("#student").hide();
         });
 
         $("#report_type_all").on('click', function(){
-            $(this).closest('.reportInner').find('.row').hide();
+            //$(this).closest('.reportInner').find('.row').hide();
             $(this).closest('.reportInner').find( "[type=checkbox]" ).prop('checked', false);
+
+            $("#class_section_block").find('input').each(function () {
+                $(this).prop('disabled', true);
+            });
         });
 
         $("#report_type_class").on('click', function(){
             $(this).closest('.reportInner').find('.row').hide();
             $("#class_section_block").show();
             $(this).closest('.reportInner').find( "[type=checkbox]" ).prop('checked', false);
+
+            $("#class_section_block").find('input').each(function () {
+                $(this).prop('disabled', false);
+            });
         });
 
         $("#report_type_student").on('click', function(){
             $(this).closest('.reportInner').find('.row').show(); 
-            $(this).closest('.reportInner').find( "[type=checkbox]" ).prop('checked', false);           
+            $(this).closest('.reportInner').find( "[type=checkbox]" ).prop('checked', false); 
+
+            $("#class_section_block").find('input').each(function () {
+                $(this).prop('disabled', false);
+            });          
         });
 
         $(".select_all").on('change', function(){             
@@ -114,6 +132,11 @@
             $('#report_frm').prop('action', 'report');
             $('#report_frm').submit();
         });
+
+        // Initially when all selected user should not be able to select any options for class and section
+        $("#class_section_block").find('input').each(function () {
+            $(this).prop('disabled', true);
+        });
     });
 </script>
 
@@ -140,10 +163,10 @@
         </div>
 
         <div class="reportWhiteBox">
-            <div class="reportHeading accordion">
+            <div class="reportHeading">
                 <div class="fldRowInline"><input type="radio" name="report_type" value="student" checked="checked"> <h4>Students Report</h4></div>
             </div>
-            <div class="reportInner panel">
+            <div class="reportInner panel" id="student">
                 <div class="paddingBtm20">
                     <div class="fldRowInline">
                         <label><input type="radio" name="student_report_type" id="report_type_all" value="all" checked="checked"> All</label>
@@ -151,7 +174,7 @@
                         <label><input type="radio" name="student_report_type" id="report_type_student" value="student"> Student</label>
                     </div>
                 </div>
-                <div class="row" id="class_section_block" style="display:none">
+                <div class="row" id="class_section_block">
                     <div class="col-sm-6">
                         <div class="borderdWhiteBox">
                             <div class="reportHeading">
@@ -207,10 +230,10 @@
         </div>
         
         <div class="reportWhiteBox">
-            <div class="reportHeading accordion">
+            <div class="reportHeading">
                 <div class="fldRowInline"><input type="radio" name="report_type" value="staff"> <h4>Staff Attendence Report</h4></div>
             </div>
-            <div class="reportInner panel" style="display:none">
+            <div class="reportInner panel" id="staff" style="display: none">
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="borderdWhiteBox">

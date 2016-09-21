@@ -3,6 +3,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Report extends MY_Controller {
 
+	private $school_id;
+
 	function __construct() {		
 		parent::__construct();
 		$this->load->model('report_model');	
@@ -44,6 +46,13 @@ class Report extends MY_Controller {
 		}
 
 		$this->load->template('report/index', $data);
+	}
+
+	function get_candidate() {
+		$params = array(
+			
+		);
+		$result = $this->candidate_model->get_candidate_filter($params);
 	}
 
 	function getSchoolName() {	
@@ -152,28 +161,47 @@ class Report extends MY_Controller {
 		$this->load->template('report/output',$data);
 	}
 
-	function prnt() {
-
+	function getReportContent($type = ""){
 		$data = $this->data;
 
 		$data['report'] = $this->session->userdata('report');	
-		$style = "<style>".$this->parser->parse('report/save_style', $data, true)."</style>";	
 		$content = $style . $this->parser->parse('report/save', $data, true);
-		
-		print($style . $content);
+
+		if ($type == "print") {
+			$style = "<style>".$this->parser->parse('report/save_style', $data, true)."</style>";
+			$content = $style . $content;
+		}
+	}
+
+	function prnt() {
+		echo $this->getReportContent($type);
 	}
 
 	function pdf() {		
-
-		$data = $this->data;
-
-		$data['report'] = $this->session->userdata('report');	
-		$style = "<style>".$this->parser->parse('report/save_style', $data, true)."</style>";	
-		$content = $this->parser->parse('report/save', $data, true);
-
-		//echo $style.$content;
-
+		$content = $this->getReportContent();
 		$this->getReport($content, $data);
+	}
+
+	function excel() {
+
+		$content = $this->getReportContent();
+		$inputFileName = tempnam(sys_get_temp_dir(), "excel_report");
+		$outputFileName = REPORT_PATH . "excel_report_".time().".xlsx";
+		$handle = fopen($inputFileName, 'w');
+		fwrite($handle, $content);
+		fclose($handle);
+
+		$objPHPExcelReader = PHPExcel_IOFactory::createReader('HTML');
+		$objPHPExcel = $objPHPExcelReader->load($inputFileName);
+
+		$objPHPExcelWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+		$objPHPExcel = $objPHPExcelWriter->save($outputFileName);
+
+		unlink($inputFileName);
+
+		/*header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		header("Content-Disposition: attachment;filename=\"" . $outputFileName . """);
+		header("Cache-Control: max-age=0");*/
 	}
 
 	function getReport($content, $data, $output = 'download')

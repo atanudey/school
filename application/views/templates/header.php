@@ -96,9 +96,9 @@
                         <div class="dropDownMenu">
                             <ul>
                                 <li><a href="#">School Events</a></li>
-                                <li><a href="#">School Candidates</a></li>
+                                <li><a href="<?= base_url('candidate') ?>">School Candidates</a></li>
                                 <li><a href="#">School Point of Contact</a></li>
-                                <li><a href="#">Class Master</a></li>
+                                <li><a href="<?= base_url('edu_class') ?>">Class Master</a></li>
                                 <li><a href="<?= base_url('school') ?>">School Master</a><li>
                                 <li class="subMenu"><a href="#">Report</a>
                                     <ul>

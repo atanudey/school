@@ -1,4 +1,7 @@
-
+<div class="bodyPanel">
+  <div class="container tblwrap">
+    <div class="innerPanel">
+	<div class="errorBox"><?php echo validation_errors(); ?></div>
 <?php echo form_open('edu_class/edit/'.$educlass['ID'],array("class"=>"form-horizontal")); ?>
 
 	<div class="form-group">
@@ -21,3 +24,6 @@
 	</div>
 	
 <?php echo form_close(); ?>
+</div>
+  </div>
+</div>

@@ -1,5 +1,8 @@
-
-<?php echo form_open('edu_class/add',array("class"=>"form-horizontal")); ?>
+<div class="bodyPanel">
+  <div class="container tblwrap">
+    <div class="innerPanel">
+	<div class="errorBox"><?php echo validation_errors(); ?></div>
+<?php echo form_open('edu_class/add',array("class"=>"form-horizontal")); ?></div>
 
 	<div class="form-group">
 		<label for="Name" class="col-md-4 control-label">Name</label>
@@ -21,3 +24,6 @@
 	</div>
 
 <?php echo form_close(); ?>
+</div>
+  </div>
+</div>

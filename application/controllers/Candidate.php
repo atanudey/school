@@ -4,26 +4,30 @@
  * www.crudigniter.com
  */
  
-class Sc00001_candidate extends MY_Controller
+class Candidate extends MY_Controller
 {
+	private $school_id;
+
     function __construct()
     {
         parent::__construct();
-        $this->load->model('Sc00001_candidate_model');
+        $this->load->model('candidate_model');
+
+		$this->load->library('session');
+		$this->school_id = $this->session->userdata('school_id');
     } 
 
     /*
-     * Listing of sc00001_candidate
+     * Listing of candidate
      */
     function index()
     {
-        $data['sc00001_candidate'] = $this->Sc00001_candidate_model->get_all_sc00001_candidate();
-
-        $this->load->template('sc00001_candidate/index',$data);
+        $data['candidate'] = $this->candidate_model->get_all_candidate();
+        $this->load->template('candidate/index',$data);
     }
 
     /*
-     * Adding a new sc00001_candidate
+     * Adding a new candidate
      */
     function add()
     {   
@@ -67,8 +71,8 @@ class Sc00001_candidate extends MY_Controller
 				'Candidate_Type_ID' => $this->input->post('Candidate_Type_ID'),
             );
             
-            $sc00001_candidate_id = $this->Sc00001_candidate_model->add_sc00001_candidate($params);
-            redirect('sc00001_candidate/index');
+            $candidate_id = $this->candidate_model->add_candidate($params);
+            redirect('candidate/index');
         }
         else
         {
@@ -82,19 +86,19 @@ class Sc00001_candidate extends MY_Controller
 			$this->load->model('Candidate_type_model');
 			$data['all_candidate_type'] = $this->Candidate_type_model->get_all_candidate_type();
                 
-            $this->load->template('sc00001_candidate/add',$data);
+            $this->load->template('candidate/add',$data);
         }
     }  
 
     /*
-     * Editing a sc00001_candidate
+     * Editing a candidate
      */
     function edit($Candidate_ID)
     {   
-        // check if the sc00001_candidate exists before trying to edit it
-        $sc00001_candidate = $this->Sc00001_candidate_model->get_sc00001_candidate($Candidate_ID);
+        // check if the candidate exists before trying to edit it
+        $candidate = $this->candidate_model->get_candidate($Candidate_ID);
         
-        if(isset($sc00001_candidate['Candidate_ID']))
+        if(isset($candidate['Candidate_ID']))
         {
             $this->load->library('form_validation');
 
@@ -136,12 +140,12 @@ class Sc00001_candidate extends MY_Controller
 					'Candidate_Type_ID' => $this->input->post('Candidate_Type_ID'),
                 );
 
-                $this->Sc00001_candidate_model->update_sc00001_candidate($Candidate_ID,$params);            
-                redirect('sc00001_candidate/index');
+                $this->candidate_model->update_candidate($Candidate_ID,$params);            
+                redirect('candidate/index');
             }
             else
             {   
-                $data['sc00001_candidate'] = $this->Sc00001_candidate_model->get_sc00001_candidate($Candidate_ID);
+                $data['candidate'] = $this->candidate_model->get_candidate($Candidate_ID);
     
 				$this->load->model('School_model');
 				$data['all_school'] = $this->School_model->get_all_school();
@@ -152,28 +156,28 @@ class Sc00001_candidate extends MY_Controller
 				$this->load->model('Candidate_type_model');
 				$data['all_candidate_type'] = $this->Candidate_type_model->get_all_candidate_type();
 
-                $this->load->template('sc00001_candidate/edit',$data);
+                $this->load->template('candidate/edit',$data);
             }
         }
         else
-            show_error('The sc00001_candidate you are trying to edit does not exist.');
+            show_error('The candidate you are trying to edit does not exist.');
     } 
 
     /*
-     * Deleting sc00001_candidate
+     * Deleting candidate
      */
     function remove($Candidate_ID)
     {
-        $sc00001_candidate = $this->Sc00001_candidate_model->get_sc00001_candidate($Candidate_ID);
+        $candidate = $this->candidate_model->get_candidate($Candidate_ID);
 
-        // check if the sc00001_candidate exists before trying to delete it
-        if(isset($sc00001_candidate['Candidate_ID']))
+        // check if the candidate exists before trying to delete it
+        if(isset($candidate['Candidate_ID']))
         {
-            $this->Sc00001_candidate_model->delete_sc00001_candidate($Candidate_ID);
-            redirect('sc00001_candidate/index');
+            $this->candidate_model->delete_candidate($Candidate_ID);
+            redirect('candidate/index');
         }
         else
-            show_error('The sc00001_candidate you are trying to delete does not exist.');
+            show_error('The candidate you are trying to delete does not exist.');
     }
     
 }

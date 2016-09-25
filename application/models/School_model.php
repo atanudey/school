@@ -10,6 +10,7 @@ class School_model extends CI_Model
     {
         parent::__construct();
         $this->load->database();
+        $this->load->dbforge();
     }
     
     /*
@@ -25,12 +26,8 @@ class School_model extends CI_Model
     */
 
     function get_school_name($ID)
-    {         
-        if ($ID === 0) {            
-            return $this->db->select('ID, School_Name')->get_where('School', array())->result_array();
-        } else {
-            return $this->db->select('School_Name')->get_where('School',array('ID'=>$ID))->row()->School_Name;
-        }
+    {    
+        return $this->db->select('School_Name')->get_where('School',array('ID'=>$ID))->row()->School_Name;
     }
     
     /*
@@ -46,16 +43,20 @@ class School_model extends CI_Model
      */
     function add_school($params)
     {
-        $this->db->select_max('School_ID');
+        /*$this->db->select_max('School_ID');
         $result = $this->db->get('School')->row();  
         $school_id = intval($result->School_ID);
 
         $params['School_ID'] = ++$school_id;
-        $params['ID'] = "SC" . str_pad($school_id, 5, '0', STR_PAD_LEFT);
+        $params['ID'] = "SC" . str_pad($school_id, 5, '0', STR_PAD_LEFT);*/
+
+        foreach($params as $key => $value) {
+            $params[$key] = $this->db->escape_str($value);
+        }
 
         $finalParam = array(
-            'ID' => $params['ID'],
-            'School_ID' => $params['School_ID'],
+            //'ID' => $params['ID'],
+            //'School_ID' => $params['School_ID'],
             "School_Name" => $params["School_Name"],
             "Description" => $params["Description"],
             "Address1" => $params["Address1"],
@@ -71,7 +72,9 @@ class School_model extends CI_Model
             "Is_Deleted" => 0    
         );
 
-        $this->db->query("CALL CreateSchool('".implode(",", $finalParam)."','" . $params['ID'] . "')");
+        //$this->db->query("CALL CreateSchool('".implode(",", $finalParam)."','" . $params['ID'] . "')");
+        $command = "CALL CreateSchool(\"".implode(",", $finalParam)."\")";
+        $this->db->query($command);
         
         //$this->db->insert('School', $params);
         //return $this->db->insert_id();
@@ -92,5 +95,7 @@ class School_model extends CI_Model
     function delete_school($ID)
     {
         $this->db->delete('School',array('ID'=>$ID));
+        $this->dbforge->drop_table($ID . "_Candidate");
+        $this->dbforge->drop_table($ID . "_Attendance");
     }
 }

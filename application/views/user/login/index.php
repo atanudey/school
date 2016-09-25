@@ -49,7 +49,6 @@
 				<div class="btmBtns">
 					<div class="btmBtnsInner">
 						<a href="<?= base_url('register') ?>" class="signUpBtn">SIGN UP</a>
-						<a href="#" class="updateProfileBtn">UPDATE PROFILE</a>
 					</div>
 				</div>
 			</form>

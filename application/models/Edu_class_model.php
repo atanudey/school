@@ -16,7 +16,7 @@ class Edu_class_model extends CI_Model
      */
     function get_educlass($ID)
     {
-        return $this->db->get_where('class',array('ID'=>$ID))->row_array();
+        return $this->db->get_where('Class',array('ID'=>$ID))->row_array();
     }
     
     /*
@@ -24,7 +24,7 @@ class Edu_class_model extends CI_Model
      */
     function get_all_educlasses()
     {
-        return $this->db->get('class')->result_array();
+        return $this->db->get('Class')->result_array();
     }
     
     /*
@@ -32,7 +32,7 @@ class Edu_class_model extends CI_Model
      */
     function add_educlass($params)
     {
-        $this->db->insert('class',$params);
+        $this->db->insert('Class',$params);
         return $this->db->insert_id();
     }
     
@@ -42,7 +42,7 @@ class Edu_class_model extends CI_Model
     function update_educlass($ID,$params)
     {
         $this->db->where('ID',$ID);
-        $this->db->update('class',$params);
+        $this->db->update('Class',$params);
     }
     
     /*
@@ -50,6 +50,6 @@ class Edu_class_model extends CI_Model
      */
     function delete_educlass($ID)
     {
-        $this->db->delete('class',array('ID'=>$ID));
+        $this->db->delete('Class',array('ID'=>$ID));
     }
 }

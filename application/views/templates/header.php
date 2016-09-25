@@ -42,6 +42,10 @@
 
                     $.cookie('theme', theme, {expires:5*365, path: '/'});
                 }
+
+                $('#school_id').on("change", function(){                    
+                    $('#school_choose').submit();
+                });
             });
         </script>		
 	</head>
@@ -63,10 +67,10 @@
                         <ul class="topLinks">
                             <li><i class="fa fa-phone" aria-hidden="true"></i> <a href="tel:+919898989898">+91 9898989898</a></li>        
                             <li><i class="fa fa-envelope" aria-hidden="true"></i> <a href="mailto:info@krpsolutions.co.in">info@krpsolutions.co.in</a></li>   
-                            <?php if (!empty($this->site_data["session_user"]["user"])) { ?>         
+                            <?php if (!empty($session_user["user"])) { ?>         
                             <li>                                
                                 <i class="fa fa-user" aria-hidden="true"></i>
-                                <a href="#">Welcome <?php echo $this->site_data["session_user"]["user"]->Name; ?></a>                                
+                                <a href="#">Welcome <?php echo $session_user["user"]->Name; ?></a>                                
                                 <div class="adminDropdown">
                                     <ul>                                        
                                         <li class="updateBtn"><a href="<?= base_url('#') ?>">Update Profile</a></li>
@@ -91,7 +95,7 @@
                         </div>
                     </div>
                     <div class="col-xs-6">
-						<?php if (!empty($_SESSION['user']) && $_SESSION['logged_in'] === true) { ?>
+						<?php if (!empty($session_user['logged_in']) && $session_user['logged_in'] === true) { ?>
                         <span class="navBar"></span>
                         <div class="dropDownMenu">
                             <ul>
@@ -124,5 +128,23 @@
                 </ul>
             </div>
         </div>
-        <!--header slider ends-->        
+        <!--header slider ends-->    
+        <?php
+            //print_r($session_user);
+            if (!empty($session_user['user']) && $session_user['user']->User_Type_ID == "1") {
+        ?>
+        <div>
+            <form id="school_choose" name="school_choose" method="post">
+            <select name="school_id" id="school_id" required>
+                <option value="">--- Select School ---</option>
+                <?php foreach($school_list as $SN)  { ?>
+                    <?php
+                        $selected = ($this->input->post('school_id')) ? $this->input->post('school_id') : $session_user["school_id"];  
+                    ?>
+                    <option value="<?php echo $SN['ID']; ?>" <?php echo ($selected == $SN['ID']) ? "selected" : ""; ?>><?php echo $SN['School_Name']; ?></option>
+                <?php } ?>
+            </select>
+            </form>
+        </div>
+        <?php } ?>
 		

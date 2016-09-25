@@ -4,8 +4,7 @@
 	});
 </script>
 <div class="container tblwrap">
-	<a href="<?php echo site_url('candidate/add'); ?>" class="btn btn-success add"><i class="fa fa-plus" aria-hidden="true"></i>
- Add</a>
+	<a href="<?php echo site_url('candidate/addedit'); ?>" class="btn btn-success add"><i class="fa fa-plus" aria-hidden="true"></i>Add</a>
 	<table id="candidate_list" class="table table-striped table-bordered">
 		<thead>
 			<tr>
@@ -36,7 +35,7 @@
 				<td><?php echo $s['Age']; ?></td>
 				<td><?php echo $s['IN_OUT']; ?></td>
 				<td>
-					<a href="<?php echo site_url('candidate/edit/'.$s['Candidate_ID']); ?>" class="btn btn-info">Edit</a> 
+					<a href="<?php echo site_url('candidate/addedit/edit/'.$s['Candidate_ID']); ?>" class="btn btn-info">Edit</a> 
 					<a href="<?php echo site_url('candidate/remove/'.$s['Candidate_ID']); ?>" class="btn btn-danger">Delete</a>
 				</td>
 			</tr>

@@ -17,19 +17,14 @@ class Report extends MY_Controller {
 		// Load Template parsing library
 		$this->load->library('parser');
 		$this->load->library('session');
-		
-		$schid = $this->input->post("school_id");
-		if (!empty($schid) && $this->uri->segment(2) == '') {
-			$this->session->set_userdata('school_id', $schid);			
-		}
 
 		$this->school_id = $this->session->userdata('school_id');
-		$this->data["School_Name"] = $this->getSchoolName();
 	}
 	
 	function index() {		
+
 		$data = $this->data;
-		$classes = $this->class_model->get_all_class_by_school('SC00001');
+		$classes = $this->class_model->get_all_class_by_school($this->school_id);
 
 		$data['classes'] = array();
 		foreach($classes as $class) {
@@ -53,11 +48,7 @@ class Report extends MY_Controller {
 			
 		);
 		$result = $this->candidate_model->get_candidate_filter($params);
-	}
-
-	function getSchoolName() {	
-		return $this->school_model->get_school_name($this->school_id);
-	}
+	}	
 
 	function populate_data() {
 
@@ -167,7 +158,7 @@ class Report extends MY_Controller {
 		$data['report'] = $this->session->userdata('report');	
 		$content = $style . $this->parser->parse('report/save', $data, true);
 
-		if ($type == "print") {
+		if ($type == "prnt") {
 			$style = "<style>".$this->parser->parse('report/save_style', $data, true)."</style>";
 			$content = $style . $content;
 		}

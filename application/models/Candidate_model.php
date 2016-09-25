@@ -19,7 +19,7 @@ class Candidate_model extends CI_Model
      */
     function get_candidate($Candidate_ID)
     {
-        return $this->db->get_where($this->school_id . '_candidate',array('Candidate_ID'=>$Candidate_ID))->row_array();
+        return $this->db->get_where($this->school_id . '_Candidate',array('Candidate_ID'=>$Candidate_ID))->row_array();
     }
 
     /*
@@ -27,7 +27,7 @@ class Candidate_model extends CI_Model
      */
     function get_candidate_filter($param = array())
     {
-        return $this->db->get_where($this->school_id . '_candidate', $param)->row_array();
+        return $this->db->get_where($this->school_id . '_Candidate', $param)->row_array();
     }
     
     /*
@@ -35,7 +35,7 @@ class Candidate_model extends CI_Model
      */
     function get_all_candidate()
     {
-        return $this->db->get($this->school_id . '_candidate')->result_array();
+        return $this->db->get($this->school_id . '_Candidate')->result_array();
     }
     
     /*
@@ -43,7 +43,7 @@ class Candidate_model extends CI_Model
      */
     function add_candidate($params)
     {
-        $this->db->insert($this->school_id . '_candidate',$params);
+        $this->db->insert($this->school_id . '_Candidate',$params);
         return $this->db->insert_id();
     }
     
@@ -53,7 +53,7 @@ class Candidate_model extends CI_Model
     function update_candidate($Candidate_ID,$params)
     {
         $this->db->where('Candidate_ID',$Candidate_ID);
-        $this->db->update($this->school_id . '_candidate',$params);
+        $this->db->update($this->school_id . '_Candidate',$params);
     }
     
     /*
@@ -61,6 +61,6 @@ class Candidate_model extends CI_Model
      */
     function delete_candidate($Candidate_ID)
     {
-        $this->db->delete($this->school_id . '_candidate',array('Candidate_ID'=>$Candidate_ID));
+        $this->db->delete($this->school_id . '_Candidate',array('Candidate_ID'=>$Candidate_ID));
     }
 }

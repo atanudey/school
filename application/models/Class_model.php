@@ -12,30 +12,30 @@ class Class_model extends CI_Model
     }
     
     /*
-     * Get class by ID
+     * Get Class by ID
      */
     function get_class($ID)
     {
-        return $this->db->get_where('class',array('ID'=>$ID))->row_array();
+        return $this->db->get_where('Class',array('ID'=>$ID))->row_array();
     }
     
     /*
-     * Get all class
+     * Get all Class
      */
     function get_all_class($params = array())
     {
-        return $this->db->get_where('class', $params)->result_array();
+        return $this->db->get_where('Class', $params)->result_array();
     }
 
     /*
-    * Get all class by school
+    * Get all Class by school
     */
     function get_all_class_by_school($School_ID) {
         
-        $candidate = $School_ID.'_candidate';
+        $candidate = $School_ID.'_Candidate';
 
         $this->db->select('cl.Name, cl.Section');
-        $this->db->from('class cl');
+        $this->db->from('Class cl');
         $this->db->join($candidate . ' as cd', 'cl.ID = cd.Class_ID');
         $this->db->where('cd.School_ID', $School_ID);
 
@@ -44,28 +44,28 @@ class Class_model extends CI_Model
     }
 
     /*
-     * function to add new class
+     * function to add new Class
      */
     function add_class($params)
     {
-        $this->db->insert('class',$params);
+        $this->db->insert('Class',$params);
         return $this->db->insert_id();
     }
     
     /*
-     * function to update class
+     * function to update Class
      */
     function update_class($ID,$params)
     {
         $this->db->where('ID',$ID);
-        $this->db->update('class',$params);
+        $this->db->update('Class',$params);
     }
     
     /*
-     * function to delete class
+     * function to delete Class
      */
     function delete_class($ID)
     {
-        $this->db->delete('class',array('ID'=>$ID));
+        $this->db->delete('Class',array('ID'=>$ID));
     }
 }

@@ -1,12 +1,12 @@
 <script>  
     $(document).ready(function(){
-        $("#student :radio").on("change", function(){
-            $(this).show();
+        $("#student_select").on("change", function(){
+            $("#student").show();
             $("#staff").hide();
         });
 
-        $("#staff :radio").on("change", function(){
-            $(this).show();
+        $("#staff_select").on("change", function(){
+            $("#staff").show();
             $("#student").hide();
         });
 
@@ -126,12 +126,7 @@
             $.fn.changeCalendar($(this).val());            
         });
 
-        $.fn.changeCalendar('mly');   
-
-        $('#school_id').on("change", function(){
-            $('#report_frm').prop('action', 'report');
-            $('#report_frm').submit();
-        });
+        $.fn.changeCalendar('mly');  
 
         // Initially when all selected user should not be able to select any options for class and section
         $("#class_section_block").find('input').each(function () {
@@ -148,23 +143,14 @@
             <div class="col-sm-6">
                 <h2>Attendence Report</h2>
             </div>
-            <div class="col-sm-6 rightHeading">
-                <?php if (!empty($School_Name) && is_array($School_Name)) { ?>
-                    <select name="school_id" id="school_id" required>
-                        <option value="">--- Select School ---</option>
-                    <?php foreach($School_Name as $SN)  { ?>
-                        <option value="<?php echo $SN['ID']; ?>" <?php echo set_select('school_id', $SN['ID']); ?>><?php echo $SN['School_Name']; ?></option>
-                    <?php } ?>
-                    </select>                                    
-                <?php } else {?>
-                    <h3><?php echo $School_Name; ?></h3>
-                <?php } ?>
+            <div class="col-sm-6 rightHeading">                
+                <h3><?php echo $session_user['school']['School_Name']; ?></h3>                
             </div>
         </div>
 
         <div class="reportWhiteBox">
             <div class="reportHeading">
-                <div class="fldRowInline"><input type="radio" name="report_type" value="student" checked="checked"> <h4>Students Report</h4></div>
+                <div class="fldRowInline"><input id="student_select" type="radio" name="report_type" value="student" checked="checked"> <h4>Students Report</h4></div>
             </div>
             <div class="reportInner panel" id="student">
                 <div class="paddingBtm20">
@@ -231,7 +217,7 @@
         
         <div class="reportWhiteBox">
             <div class="reportHeading">
-                <div class="fldRowInline"><input type="radio" name="report_type" value="staff"> <h4>Staff Attendence Report</h4></div>
+                <div class="fldRowInline"><input id="staff_select" type="radio" name="report_type" value="staff"> <h4>Staff Attendence Report</h4></div>
             </div>
             <div class="reportInner panel" id="staff" style="display: none">
                 <div class="row">

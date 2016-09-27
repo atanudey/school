@@ -942,13 +942,13 @@ color:#fff !important;
 	border: 1px solid #dadada;
 	}
 .homePage .themeSelect li.theme1 a{
-	background:#46639c;
+	background:#20a276;
 	}
 .homePage .themeSelect li.theme2 a{
-	background:#571f42;
+	background:#8b467d;
 	}
 .homePage .themeSelect li.theme3 a{
-	background:#053d2c;
+	background:#956a52;
 	}
 .homePage .topLinks{
 	text-align:right;
@@ -1003,19 +1003,37 @@ color:#fff !important;
 	border:1px solid #bebebe;
 	}
 .adminDropdown{
-	width:180px;
-	padding:15px 10px !important;
+	width: 280px;
+	padding: 10px 10px !important;
 	text-align:left;
 	right:0;
+	overflow: hidden;
 	}
+.adminDropdown ul .updateBtn{
+	float: left;
+	width: 60%;
+}
+.adminDropdown ul .updateBtn a{
+	color: #FFF;
+	text-decoration: none!important;
+}
+.adminDropdown ul .logOutBtn{
+	border: 0;
+}
+.theme1 .adminDropdown .updateBtn{
+	background: #069b99;
+}
+.theme1 .adminDropdown .updateBtn:hover{
+	background: #0b7a78;
+}
 .homePage .dropDownMenu ul li{
 	padding-bottom:5px;
 	}
 .homePage .dropDownMenu ul li a{
-	color:#646464;
+	color: #646464;
 	padding:5px 20px;
 	display:block;
-	transition:all 0.5s ease-in;
+	transition: all 0.5s ease-in;
 	}
 .homePage .dropDownMenu ul li a:hover,
 .homePage .dropDownMenu ul li.active > a{

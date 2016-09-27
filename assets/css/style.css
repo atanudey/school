@@ -154,6 +154,8 @@ body{
 	background:rgba(0,0,0,0.5);
 }	
 
+
+
 .theme1 .fldRow input{
 	background:none;
 	border:1px solid #fff;
@@ -209,7 +211,6 @@ body{
 	display:block;
 	width:100%;
 	box-shadow:0 2px 2px rgba(0,0,0,0.5);
-	width:155px;
 	text-align:center;
 	float:left;
 	text-transform:uppercase;
@@ -429,7 +430,6 @@ color:#fff !important;
 	display:block;
 	width:100%;
 	box-shadow:0 2px 2px rgba(0,0,0,0.5);
-	width:155px;
 	text-align:center;
 	float:left;
 	text-transform:uppercase;
@@ -649,7 +649,6 @@ color:#fff !important;
 	display:block;
 	width:100%;
 	box-shadow:0 2px 2px rgba(0,0,0,0.5);
-	width:155px;
 	text-align:center;
 	float:left;
 	text-transform:uppercase;

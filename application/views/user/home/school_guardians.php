@@ -1,3 +1,6 @@
+<?php  
+$school = $this->session->userdata('school'); 
+?>
 <!--home bodyPanel starts-->
     <div class="homeBodyPanel noBg">
     	<div class="container">
@@ -6,19 +9,16 @@
                 	<div class="leftContent">
                     	<div class="leftContentInner">
                         	<div class="mainHeading floatHolder">
-                            	<img src="<?php echo base_url('assets/images/techno-logo.png'); ?>" />
+                            	<img src="<?php echo base_url('assets/images/no-logo.png'); ?>" width="65" />
                                 <div class="headingText">
-                                	<h1>Techno India</h1>
-                                    <p>Sector V Kolkata-700000<br />Tel - (033) 200-4567/1234</p>
+                                	<h1><?php echo $school['School_Name']; ?></h1>
+                                    <p><?php echo $school['Address1'] . ", " . $school['Address2'] . " - ". $school['Pin']; ?></p>
                                 </div>
                             </div>
                             <div class="mainContent">
                                 <div class="mainContentInner">
-                                    <p>Donec eu libero sapien. Cras in euismod urna, eu sodales arcu. Quisque porttitor neque diam, vitae elementum turpis mollis in. Praesent vitae sem sollicitudin, volutpat turpis quis, facilisis neque. In vestibulum luctus condimentum. Nulla odio ex, posuere in magna eget, dapibus ornare nulla. Aliquam erat volutpat. In a ullamcorper lorem. Proin vitae feugiat massa. Praesent eu ipsum sit amet urna sagittis luctus in non sem. Phasellus tortor risus, pulvinar sed bibendum non, vehicula nec nunc. Nullam in elit metus. Fusce ut imperdiet nisi, eget aliquet ante. Phasellus dui nibh, egestas eu volutpat sit amet, efficitur vel risus. Etiam id sem est.</p>
-                                    <p>Praesent vitae sem sollicitudin, volutpat turpis quis, facilisis neque. In vestibulum luctus condimentum. Nulla odio ex, posuere in magna eget, dapibus ornare nulla. Aliquam erat volutpat. In a ullamcorper lorem. Proin vitae feugiat massa. Praesent eu ipsum sit amet urna sagittis luctus in non sem. Phasellus tortor risus, pulvinar sed bibendum.</p>
-                                    <p>Donec eu libero sapien. Cras in euismod urna, eu sodales arcu. Quisque porttitor neque diam, vitae elementum turpis mollis in. Praesent vitae sem sollicitudin, volutpat turpis quis, facilisis neque. In vestibulum luctus condimentum. Nulla odio ex, posuere in magna eget, dapibus ornare nulla. Aliquam erat volutpat. In a ullamcorper lorem. Proin vitae feugiat massa. Praesent eu ipsum sit amet urna sagittis luctus in non sem. Phasellus tortor risus, pulvinar sed bibendum non, vehicula nec nunc. Nullam in elit metus. Fusce ut imperdiet nisi, eget aliquet ante. Phasellus dui nibh, egestas eu volutpat sit amet, efficitur vel risus. Etiam id sem est.</p>
-                                </div>
-                                
+                                    <p><?php echo $school['Description']; ?></p>
+                                </div>                                
                             </div>
                             <a href="#" class="exapandBtn">+ Expand</a>	
                         </div>

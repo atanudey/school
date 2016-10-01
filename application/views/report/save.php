@@ -28,15 +28,15 @@
                 </tr>
             <?php } else if ($s['Type'] == "header") { ?>
                 <tr class="header info">
-                    <td colspan="7" align="center" class="td info" style="background-color: #d9edf7; color: #333;"><strong><?php echo $s['Information']; ?></strong></td>
+                    <td colspan="7" align="center" class="td info" style="background-color: #d9edf7; color: #333; font-weight:bold"><?php echo $s['Information']; ?></td>
                 </tr>            
             <?php
             } else {
             ?>
                 <tr>
-                    <td colspan="5" align="left" class="td" style="background-color:#f1f1f1;color:#333;"><strong><?php echo $s['Information']; ?></strong></td>
-                    <td align="left" class="td" style="background-color:#f1f1f1; color:#333;"><strong><?php echo $s['Present']; ?></strong></td>
-                    <td align="left" class="td" style="background-color:#f1f1f1; color:#333;"><strong><?php echo $s['Absent']; ?></strong></td>                
+                    <td colspan="5" align="left" class="td" style="background-color:#f1f1f1;color:#333; font-weight:bold"><?php echo $s['Information']; ?></td>
+                    <td align="left" class="td" style="background-color:#f1f1f1; color:#333; font-weight:bold"><?php echo $s['Present']; ?></td>
+                    <td align="left" class="td" style="background-color:#f1f1f1; color:#333; font-weight:bold"><?php echo $s['Absent']; ?></td>                
                 </tr>
             <?php
             }

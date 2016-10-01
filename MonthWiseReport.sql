@@ -24,56 +24,40 @@ BEGIN
     
     SET @diffMonth = (SELECT PERIOD_DIFF( end_month, start_month) as diffMonth);
     
-    IF (@diffMonth >= month_interval) THEN
+    WHILE (@diffMonth >= month_interval) DO
+		SET @lastMonth = start_month + month_interval - 1;
+		
 		SET @query_sch_days = CONCAT("INSERT INTO Month_Days (`Month`, `total_school_days`)
-		SELECT GROUP_CONCAT(`Month`), SUM((`Month_Days` - (`Month_Off_Days` + `Extra_Leave`))) `total_school_days` FROM `school_days` 
+		SELECT GROUP_CONCAT(`Month`) Month, SUM((`Month_Days` - (`Month_Off_Days` + `Extra_Leave`))) `total_school_days` FROM `School_Days` 
 		WHERE School_ID = '", school_id, "'
 		AND `Month` BETWEEN ", start_month ,"
-		AND ", end_month);
-        
-        -- INSERT INTO `log` SET `log` = @query_sch_days;
-        
-        PREPARE stmt FROM @query_sch_days;
-        EXECUTE stmt;
-        DEALLOCATE PREPARE stmt;
+		AND ", @lastMonth);
 		
-    ELSE
-		WHILE (@diffMonth >= month_interval) DO
-			SET @lastMonth = start_month + month_interval - 1;
-            
-			SET @query_sch_days = CONCAT("INSERT INTO Month_Days (`Month`, `total_school_days`)
-			SELECT `Month`, (`Month_Days` - (`Month_Off_Days` + `Extra_Leave`)) `total_school_days` FROM `school_days` 
-			WHERE School_ID = '", school_id, "'
-			AND `Month` BETWEEN ", start_month ,"
-			AND ", @lastMonth);
-            
-            -- INSERT INTO `log` SET `log` = @query_sch_days;
-        
-			PREPARE stmt FROM @query_sch_days;
-			EXECUTE stmt;
-			DEALLOCATE PREPARE stmt;
-				
-			SET @diffMonth = @diffMonth - month_interval;
-            SET start_month = start_month + month_interval;
-		END WHILE;
-        
-        IF ( @diffMonth > 0 ) THEN
-			SET @lastMonth = start_month + @diffMonth;
-            
-			SET @query_sch_days = CONCAT("INSERT INTO Month_Days (`Month`, `total_school_days`)
-			SELECT `Month`, (`Month_Days` - (`Month_Off_Days` + `Extra_Leave`)) `total_school_days` FROM `school_days` 
-			WHERE School_ID = '", school_id, "'
-			AND `Month` BETWEEN ", start_month ,"
-			AND ", @lastMonth);
-            
-            -- INSERT INTO `log` SET `log` = @query_sch_days;
+		INSERT INTO `log` SET `log` = CONCAT("INTERVAL - ", month_interval, " START - ", start_month, " END - ", @lastMonth);
+	
+		PREPARE stmt FROM @query_sch_days;
+		EXECUTE stmt;
+		DEALLOCATE PREPARE stmt;
 			
-			PREPARE stmt FROM @query_sch_days;
-			EXECUTE stmt;
-			DEALLOCATE PREPARE stmt;
-            
-        END IF;
-    END IF;
+		SET @diffMonth = @diffMonth - month_interval;
+		SET start_month = start_month + month_interval;
+	END WHILE;
+	
+	IF ( @diffMonth > 0) THEN
+		SET @lastMonth = start_month + @diffMonth;
+		
+		SET @query_sch_days = CONCAT("INSERT INTO Month_Days (`Month`, `total_school_days`)
+		SELECT GROUP_CONCAT(`Month`) Month, SUM((`Month_Days` - (`Month_Off_Days` + `Extra_Leave`))) `total_school_days` FROM `School_Days` 
+		WHERE School_ID = '", school_id, "'
+		AND `Month` BETWEEN ", start_month ,"
+		AND ", @lastMonth);
+		
+		INSERT INTO `log` SET `log` = @query_sch_days;
+		
+		PREPARE stmt FROM @query_sch_days;
+		EXECUTE stmt;
+		DEALLOCATE PREPARE stmt;
+	END IF;
     
 	OPEN curs;    
     CREATE TEMPORARY TABLE IF NOT EXISTS `MonthWiseReportTable` (
@@ -127,8 +111,8 @@ BEGIN
                     CL.`Section` `Section`,
                     FLOOR(COUNT( A.IN_OUT )/2) Present,
                     (", sch_days, " - FLOOR(COUNT( A.IN_OUT )/2)) Absent
-            FROM  `", school_id, "_candidate` C
-            JOIN  `", school_id, "_attendance` A ON C.`Candidate_ID` = A.`Candidate_ID` 
+            FROM  `", school_id, "_Candidate` C
+            JOIN  `", school_id, "_Attendance` A ON C.`Candidate_ID` = A.`Candidate_ID` 
             JOIN  `class` CL ON C.`class_id` = CL.`ID` 
             WHERE FIND_IN_SET(  `School_ID` , '", school_id ,"') 
             AND ", @class_not, " 
@@ -136,7 +120,7 @@ BEGIN
             AND FIND_IN_SET(MONTH(A.`Date`),'", mnth, "')
             GROUP BY A.`Candidate_ID`");
             
-            -- INSERT INTO `log` SET `log` = @query_month;
+            INSERT INTO `log` SET `log` = @query_month;
 
             PREPARE stmt FROM @query_month;
             EXECUTE stmt;
@@ -147,7 +131,7 @@ BEGIN
                     COUNT(DISTINCT A.`Candidate_ID`) StudentCount,
                     FLOOR(COUNT( A.IN_OUT )/2) Present,
                     (", sch_days, " - FLOOR(COUNT( A.IN_OUT )/2)) Absent
-            FROM `", school_id, "_candidate` C JOIN  `", school_id, "_attendance` A
+            FROM `", school_id, "_Candidate` C JOIN  `", school_id, "_Attendance` A
             ON C.`Candidate_ID` =  A.`Candidate_ID`  
             JOIN `class` CL 
             ON C.`class_id` = CL.`ID` 
@@ -157,22 +141,23 @@ BEGIN
             AND FIND_IN_SET(MONTH(A.`Date`),'", mnth, "')
             GROUP BY A.`Candidate_ID`");
             
-            -- INSERT INTO `log` SET `log` = @query_group;
+            INSERT INTO `log` SET `log` = @query_group;
 
             PREPARE stmt FROM @query_group;
             EXECUTE stmt;
             DEALLOCATE PREPARE stmt;
             
             SET @query_agg = CONCAT("INSERT INTO `MonthWiseReportTable` (`Month`, `Information`, `Present`, `Absent`, `Type`)
-            SELECT '", mnth ,"' `Month`,
-                CONCAT('Total for ', COUNT(`StudentCount`), ' Students') `Information`,
+            SELECT `Month`,
+                CONCAT('Total for ', CAST(SUM(`StudentCount`) AS CHAR), ' Students') `Information`,
                 SUM(`TotalPresent`) `Present`,
                 SUM(`TotalAbsent`) `Absent`,
                 'summary' `Type`
-            FROM `GroupTable` WHERE 
-            FIND_IN_SET(`Month`,'", mnth, "')");
+            FROM `GroupTable` 
+            WHERE `Month` = '", mnth, "'  
+            GROUP BY `Month`");
             
-            -- INSERT INTO `log` SET `log` = @query_agg;
+            INSERT INTO `log` SET `log` = @query_agg;
 
             PREPARE stmt FROM @query_agg;
             EXECUTE stmt;

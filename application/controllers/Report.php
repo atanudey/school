@@ -14,6 +14,9 @@ class Report extends MY_Controller {
 		// Load Third Party PDF Library MPDF
 		$this->load->library('mpdf60/mpdf');
 
+		// Load Third Party Excel Library PHPExcel
+		$this->load->library('PhpExcelLib');
+
 		// Load Template parsing library
 		$this->load->library('parser');
 		$this->load->library('session');
@@ -129,13 +132,15 @@ class Report extends MY_Controller {
 			$section = implode(",", $this->input->post('section'));
 		}
 
+		$interval = array('yly' => 12, 'hly' => 6, 'qly' => 3, 'mly' => 1);
+
 		$params = array(
 			'start_month' => intval($start_date[0]),
 			'end_month' => intval($end_date[0]),
 			'school_id' => $this->school_id,
 			'classes' => $class,
 			'sections' => $section,
-			'interval' => 3				
+			'interval' => $interval[$this->input->post('report_range_type')]		
 		);
 
 		//print_r($params); die;
@@ -175,7 +180,7 @@ class Report extends MY_Controller {
 		$outputFileName = REPORT_PATH . "excel_report_".time().".xlsx";
 		$handle = fopen($inputFileName, 'w');
 		fwrite($handle, $content);
-		fclose($handle);
+		fclose($handle);		
 
 		$objPHPExcelReader = PHPExcel_IOFactory::createReader('HTML');
 		$objPHPExcel = $objPHPExcelReader->load($inputFileName);
@@ -183,11 +188,18 @@ class Report extends MY_Controller {
 		$objPHPExcelWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
 		$objPHPExcel = $objPHPExcelWriter->save($outputFileName);
 
-		unlink($inputFileName);
+		unlink($inputFileName); 
 
-		/*header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-		header("Content-Disposition: attachment;filename=\"" . $outputFileName . """);
-		header("Cache-Control: max-age=0");*/
+		header('Content-Description: File Transfer');
+    	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		header("Content-Disposition: attachment; filename=" . basename($outputFileName));
+		header('Expires: 0');
+		header('Cache-Control: must-revalidate');
+		header('Pragma: public');
+		header('Content-Length: ' . filesize($outputFileName));
+
+		readfile($outputFileName);
+		unlink($outputFileName);
 	}
 
 	function get_candidate() {

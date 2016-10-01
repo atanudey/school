@@ -201,7 +201,7 @@ class User extends MY_Controller {
 
 	public function home() {		
 		$template = "admin_staff";
-		if (!empty($_SESSION['user'])) {
+		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 			switch(intval($_SESSION['user']->User_Type_ID)) {
 				case 1: $template = "admin_staff";
 						break;

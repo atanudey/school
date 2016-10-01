@@ -11,7 +11,7 @@
 		<link href="<?= base_url('assets/css/style.css') ?>" rel="stylesheet" type="text/css" />
 		<link href="<?= base_url('assets/css/responsive-style.css') ?>" rel="stylesheet" type="text/css" />
 		<link rel="stylesheet" type="text/css" href="<?= base_url('assets/css/slider.css') ?>" />
-        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="<?= base_url('assets/css/font-awesome.min.css') ?>" />
 		<link href='https://fonts.googleapis.com/css?family=Roboto:400,300,500,700,900,900italic|Open+Sans' rel='stylesheet' type='text/css'>
 		<link rel="shortcut icon" href="<?= base_url('assets/images/favicon.ico') ?>" type="image/x-icon">
 		
@@ -122,9 +122,9 @@
         <div class="sliderPanel">
             <div class="flexslider">
                 <ul class="slides">
-                    <li><img src="<?= base_url('assets/images/slide-1.jpg'); ?>" /></li>
-                    <li><img src="<?= base_url('assets/images/slide-2.jpg'); ?>" /></li>
-                    <li><img src="<?= base_url('assets/images/slide-3.jpg'); ?>" /></li>
+                    <li><img src="<?= base_url('assets/images/banner1.jpg'); ?>" /></li>
+                    <li><img src="<?= base_url('assets/images/banner2.jpg'); ?>" /></li>
+                    <li><img src="<?= base_url('assets/images/banner3.jpg'); ?>" /></li>
                 </ul>
             </div>
         </div>

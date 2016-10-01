@@ -20,6 +20,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $config['base_url'] = 'http://localhost/school/';
 $config['site_email'] = "info@krpsolutions.co.in";
 $config['site_emaiL_name'] = "Educare";
+
+$config['password_min_length'] = 6;
+
 /*
 |--------------------------------------------------------------------------
 | Index File

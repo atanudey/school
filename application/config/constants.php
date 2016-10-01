@@ -91,3 +91,5 @@ define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
 
 define('DS', DIRECTORY_SEPARATOR);
 define('REPORT_PATH', FCPATH . 'assets/reports/'); 
+define('WEBADMIN_NAME', 'Educare Admin');
+define('WEBADMIN_EMAIL', 'a2plcpnl0033.prod.iad2.secureserver.net');

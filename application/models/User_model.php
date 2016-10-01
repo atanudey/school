@@ -73,16 +73,19 @@ class User_model extends CI_Model {
 	 * get_user function.
 	 * 
 	 * @access public
-	 * @param mixed $user_id
+	 * @param mixed array()
 	 * @return object the user object
 	 */
-	public function get_user($user_id) {
+	public function get_user($params = array()) {
 		$this->db->select('login.*');
 		$this->db->select('User_Type.Type_Name');		
 		$this->db->from('login');
 		$this->db->join('User_Type', 'login.User_Type_ID = User_Type.ID'); 
-		$this->db->where('login.id', $user_id);
-		return $this->db->get()->row();		
+		
+		$this->db->where($params);
+		$result = $this->db->get()->row();
+
+		return $result;		
 	}
 	
 	/**
@@ -107,4 +110,13 @@ class User_model extends CI_Model {
 	private function verify_password_hash($password, $hash) {
 		return password_verify($password, $hash);		
 	}	
+
+	/*
+     * function to update user
+     */
+    function update_user($ID, $params)
+    {
+        $this->db->where('ID', $ID);
+        $this->db->update('login', $params);
+    }
 }

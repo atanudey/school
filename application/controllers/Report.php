@@ -19,6 +19,7 @@ class Report extends MY_Controller {
 		$this->load->library('session');
 
 		$this->school_id = $this->session->userdata('school_id');
+		$this->data = $this->session->userdata('report');
 	}
 	
 	function index() {		
@@ -42,13 +43,6 @@ class Report extends MY_Controller {
 
 		$this->load->template('report/index', $data);
 	}
-
-	function get_candidate() {
-		$params = array(
-			
-		);
-		$result = $this->candidate_model->get_candidate_filter($params);
-	}	
 
 	function populate_data() {
 
@@ -153,19 +147,20 @@ class Report extends MY_Controller {
 	}
 
 	function getReportContent($type = ""){
-		$data = $this->data;
-
+		
 		$data['report'] = $this->session->userdata('report');	
-		$content = $style . $this->parser->parse('report/save', $data, true);
+		$content = $this->parser->parse('report/save', $data, true);
 
 		if ($type == "prnt") {
 			$style = "<style>".$this->parser->parse('report/save_style', $data, true)."</style>";
 			$content = $style . $content;
 		}
+
+		return $content;
 	}
 
 	function prnt() {
-		echo $this->getReportContent($type);
+		echo $this->getReportContent('prnt');
 	}
 
 	function pdf() {		
@@ -193,6 +188,21 @@ class Report extends MY_Controller {
 		/*header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 		header("Content-Disposition: attachment;filename=\"" . $outputFileName . """);
 		header("Cache-Control: max-age=0");*/
+	}
+
+	function get_candidate() {
+		$classes = array();
+		$sections = array();
+
+		if (!empty($this->input->get('classes')))
+			$classes = explode(",", $this->input->get('classes'));
+		if (!empty($this->input->get('sections')))
+			$sections = explode(",", $this->input->get('sections'));
+
+		$this->load->model("candidate_model");
+		$data = $this->candidate_model->get_candidate_by_class_section($classes, $sections);
+
+		echo json_encode($data);
 	}
 
 	function getReport($content, $data, $output = 'download')

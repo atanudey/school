@@ -49,7 +49,7 @@ class User extends MY_Controller {
 		$this->form_validation->set_rules('name','Name','trim|required');
 		$this->form_validation->set_rules('mob1','Mobile','trim|required|numeric');
 		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[login.email]');
-		$this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
+		$this->form_validation->set_rules('password', 'Password', 'trim|required|min_length['. $this->config->item('password_min_length') .']');
 		$this->form_validation->set_rules('password_confirm', 'Confirm Password', 'trim|required|min_length[6]|matches[password]');				
 		$this->form_validation->set_rules('zipcode','Zip','trim|required|integer');	
 		
@@ -88,7 +88,7 @@ class User extends MY_Controller {
 				// user creation ok								
     			$this->load->template('user/register/register_success', $data);
 
-				/*$SITE_EMAIL = $this->config->item('site_email');
+				$SITE_EMAIL = $this->config->item('site_email');
 				$SITE_EMAIL_NAME = $this->config->item('site_email_name');
 
 				$email_params = array(			
@@ -101,7 +101,7 @@ class User extends MY_Controller {
 					"subject" => "Welcome to Educare",			
 				);
 				
-				send_email();*/
+				send_email($email_params);
 
 			} else {				
 				// user creation failed, this should never happen
@@ -146,7 +146,7 @@ class User extends MY_Controller {
 				if ($this->user_model->resolve_user_login($user_type_id, $username, $password)) {
 
 					$user_id = $this->user_model->get_user_id_from_username($username);
-					$user    = $this->user_model->get_user($user_id);
+					$user    = $this->user_model->get_user(array('login.ID' => $user_id));
 
 					if (!intval($user->is_active)) {
 						$data["error"] = 'The user is not active. For any assistance contact Administrator.';						
@@ -220,6 +220,8 @@ class User extends MY_Controller {
 
 	public function email() {
 
+		$this->load->helper('email_template_helper');
+
 		$email_params = array(			
 			"template_path" => 'templates/registration_email',
 			"template_data" => array(),
@@ -233,5 +235,99 @@ class User extends MY_Controller {
 		if (!send_email($email_params)) {
 			echo "Failed to send email";
 		}
+	}
+
+	/**
+	 * Forgot password page
+	 */
+	public function forgot()
+	{
+		// Redirect to your logged in landing page here
+		if($this->session->userdata('logged_in')) $this->load->template('home');
+		 
+		$this->load->library('form_validation');
+		$this->load->helper('form');
+		$data['success'] = false;
+		 
+		$this->form_validation->set_rules('email', 'Email', 'required|valid_email|callback_email_exists');
+		
+		if($this->form_validation->run()){
+			$email = $this->input->post('email');			
+			$user = $this->user_model->get_user(array('Email' => $email));
+			$slug = md5($user->ID . $user->Email . date('Ymd'));
+
+			$this->load->helper('email_template_helper');
+
+			$email_params = array(			
+				"template_path" => 'templates/forgot_email',
+				"template_data" => array('name' => $user->Name, 'user_id' => $user->ID, 'slug' => $slug),				
+				"to" => $user->Email,
+				"to_name" => $user->Name,
+				"subject" => "Reset your Password",			
+			);
+
+			if (!send_email($email_params)) {
+				echo "Failed to send email";
+			}
+			
+			$data['success'] = true;
+		}
+		
+		$this->load->template('user/login/forgot_password', $data);
+	}
+
+	/**
+	 * CI Form Validation callback that checks a given email exists in the db
+	 *
+	 * @param string $email the submitted email
+	 * @return boolean returns false on error
+	 */
+	public function email_exists($email)
+	{
+		if($this->user_model->get_user(array('Email' => $email))){
+			return true;
+		} else {
+			$this->form_validation->set_message('email_exists', 'We couldn\'t find that email address in our system.');
+			return false;
+		}
 	}	
+
+	/**
+	 * Reset password page
+	 */
+	public function reset()
+	{
+		// Redirect to your logged in landing page here
+		if($this->session->userdata('logged_in')) redirect('home');
+		 
+		$this->load->library('form_validation');
+		$this->load->helper('form');
+		$data['success'] = false;
+		 
+		$user_id = $this->uri->segment(3);
+		if(!$user_id) show_error('Invalid reset code.');
+		$hash = $this->uri->segment(4);
+		if(!$hash) show_error('Invalid reset code.');
+				
+		$user = $this->user_model->get_user(array('login.ID' => $user_id));
+		if(!$user) show_error('Invalid reset code.');
+		$slug = md5($user->ID . $user->Email . date('Ymd'));
+		if($hash != $slug) show_error('Invalid reset code.');
+	 
+		$this->form_validation->set_rules('password', 'Password', 'required|min_length['. $this->config->item('password_min_length') .']');
+		$this->form_validation->set_rules('password_conf', 'Confirm Password', 'required|matches[password]');
+		
+		if($this->form_validation->run()){
+			$this->reset_password($user->ID, $this->input->post('password'));
+			$data['success'] = true;
+		}
+		
+		$this->load->template('user/login/reset_password', $data);
+	}
+
+	public function reset_password($user_id, $new_password)
+	{
+		$new_password = password_hash($new_password, PASSWORD_BCRYPT);
+		$this->user_model->update_user($user_id, array('password' => $new_password));
+	}
 }

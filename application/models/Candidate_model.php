@@ -29,6 +29,30 @@ class Candidate_model extends CI_Model
     {
         return $this->db->get_where($this->school_id . '_Candidate', $param)->row_array();
     }
+
+    function get_candidate_by_class_section($class, $section) {
+        
+        $candidate = $this->school_id.'_Candidate';
+
+        $this->db->select('cd.Candidate_Name, cd.Candidate_ID');
+        $this->db->from('Class cl');
+        $this->db->join($candidate . ' as cd', 'cl.ID = cd.Class_ID');
+
+        if (!empty($class) && !empty($section)) {
+            $this->db->where_in('cl.Name', $class);
+            $this->db->where_in('cl.Section', $section);
+        } else if (!empty($class)) {
+            $this->db->where_in('cl.Name', $class);
+        } else if (!empty($section)) {
+            $this->db->where_in('cl.Section', $section);
+        } else {
+            return array();
+        }
+
+        $result = $this->db->get()->result_array();
+
+        return $result;
+    }
     
     /*
      * Get all candidate

@@ -38,7 +38,7 @@
 					<input type="password" id="password" name="password" placeholder="Password" title="Enter the password" required='required' value="">					
 				</div>
 				<div class="fldRow">
-					<p><a href="#">Forgot  your password?</a>  |  <a href="#">Reset Password</a></p>
+					<p><a href="<?php echo base_url("user/forgot"); ?>">Forgot  your password?</a>  |  <a href="#">Reset Password</a></p>
 				</div>
 				<div class="fldRow">
 					<button class="signInBtn">SIGN IN</button>

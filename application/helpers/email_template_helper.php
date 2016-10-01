@@ -3,16 +3,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 if (!function_exists('send_email'))
 {
-    function send_email($params) {        
+    function send_email($params) {     
+
+        //print_r($params); 
+
         $ci =& get_instance();
         $ci->load->library('email');
 
-        $message = $ci->load->view($params["template_path"], $params["template_data"], TRUE);
+        $message = $ci->load->view($params["template_path"], $params["template_data"], TRUE);        
         
         $ci->email->to($params["to"], $params["to_name"]);        
-        $ci->email->from($params["from"], $params["from_name"]);
+        //$ci->email->from($params["from"], $params["from_name"]);
         $ci->email->subject($params["subject"]);
         $ci->email->message($message);
+
+        //print_r($ci->email); die;
 
         $result = $ci->email->send();
 

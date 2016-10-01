@@ -16,7 +16,7 @@ class MY_Controller extends CI_Controller {
         parent::__construct();
         if ( ! $this->session->userdata('logged_in'))
         {			
-            $allowed = array('login', 'register');
+            $allowed = array('login', 'register', 'email', 'forgot', 'reset');
             if ( ! in_array($this->router->fetch_method(), $allowed)) {
                 redirect('login');
             }
@@ -34,9 +34,9 @@ class MY_Controller extends CI_Controller {
         }
 
         $this->load->vars(  array(
-                    'school_list' => $this->getSchools(),
-                    'session_user' => $this->session->userdata()
-                )
+                'school_list' => $this->getSchools(),
+                'session_user' => $this->session->userdata()
+            )
         );        
     }
 

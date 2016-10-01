@@ -1,3 +1,10 @@
+<style>
+    .wait {
+        height: 100%;
+        width:100%;
+        text-align: center;
+    }
+</style>
 <script>  
     $(document).ready(function(){
         $("#student_select").on("change", function(){
@@ -27,6 +34,10 @@
             $("#class_section_block").find('input').each(function () {
                 $(this).prop('disabled', false);
             });
+
+            $(".select_all").find('input').each(function () {
+                $(this).prop('disabled', false);
+            });
         });
 
         $("#report_type_student").on('click', function(){
@@ -35,14 +46,26 @@
 
             $("#class_section_block").find('input').each(function () {
                 $(this).prop('disabled', false);
-            });          
+            }); 
+
+            $('#select_all_class').prop('disabled', true);
+            $('#select_all_section').prop('disabled', true);  
+
+            $('.dateOption').find('input').each(function(){
+                if ($(this).val() != 'mly')
+                    $(this).prop('disabled', true);
+            });
         });
 
-        $(".select_all").on('change', function(){             
+        $("#class_section_block").find(".select_all").on('change', function(){             
             $(this).closest('.reportHeading').next().find(".checkbox_cst").prop('checked', $(this).prop("checked"));
             $("#student_block").find('input').each(function () {
                 $(this).prop('disabled', true);
             });
+        });
+
+        $("#student_block").find(".select_all").on('change', function(){             
+            $(this).closest('.reportHeading').next().find(".checkbox_cst").prop('checked', $(this).prop("checked"));
         });
 
         $('.checkbox_cst').on('change', function(){         
@@ -132,6 +155,30 @@
         $("#class_section_block").find('input').each(function () {
             $(this).prop('disabled', true);
         });
+                
+        $('.checkbox_cst').on('change', function() {
+            if ($('#report_type_student').prop('checked')) {            
+                var classes = [], sections = [];
+
+                $.each($('input[name=class\\[\\]]:checked'), function(){
+                    classes.push($(this).val());
+                });
+
+                $.each($('input[name=section\\[\\]]:checked'), function(){
+                    sections.push($(this).val());
+                });
+
+                $("#student_container").empty();
+                $("#student_container").append("<div class='wait'> Getting list of students. Be Patient! </div>");
+
+                $.get( "report/get_candidate", {"classes": classes.join(","), "sections": sections.join(",")}).done(function( data ) {                
+                    $("#student_container").empty();
+                    $.each(JSON.parse(data), function(item, user) {
+                        $("#student_container").append('<input type="checkbox" name="student[]" class="checkbox_cst" value="' + user.Candidate_ID + '"><label>' + user.Candidate_Name + '</label></div>')
+                    });
+                });            
+            }
+        });
     });
 </script>
 
@@ -169,7 +216,7 @@
                             <div class="reportBlockContent">
                                 <?php foreach($classes as $class) {
 	?>
-                                    <div class="fldRowInline"><input type="checkbox" name="class[]" class="checkbox_cst" value="<?php echo $class;
+                                    <div class="fldRowInline"><input type="checkbox" name="class[]" rel="class" class="checkbox_cst" value="<?php echo $class;
 ?>"> <label><?php echo $class;
 ?></label></div>
                                 <?php
@@ -186,7 +233,7 @@
                             <div class="reportBlockContent">
                                 <?php foreach($sections as $section) {
 	?>
-                                    <div class="fldRowInline"><input type="checkbox" class="checkbox_cst" name="section[]" value="<?php echo $section;
+                                    <div class="fldRowInline"><input type="checkbox" class="checkbox_cst" rel="section" name="section[]" value="<?php echo $section;
 ?>"> <label>Section <?php echo $section;
 ?></label></div>
                                 <?php
@@ -203,10 +250,8 @@
                                 <div class="checkbox-inline"> <label><input type="checkbox" name="select_all_student" id="select_all_student" class="select_all" value="student">Student</label></div>
                             </div>
                             <div class="reportBlockContent">
-                                <div class="fldRowInline">
-                                    <!-- <input type="checkbox" name="class[]" class="checkbox_cst" value="<?php echo $class;
-?>"> <label>Class <?php echo $class;
-?></label></div> -->
+                                <div id="student_container" class="fldRowInline" style="position:relative; height:100%; margin:0; padding:0;">
+                                    
                                 </div>                               
                             </div>
                         </div>

@@ -1,7 +1,16 @@
 <link rel="stylesheet" type="text/css" href="<?= site_url('report/save_style') ?>" />
 <div class="pdf">
-    <h1><?php echo $School_Name; ?></h1>
-	<h2>Monthy Attendance Report</h2>
+    <div class="headingText">
+        <?php //print_r($report); ?>
+        <h3><?php echo $school["School_Name"]; ?></h3>
+        <p><?php echo $school['Address1'] . ", " . $school['Address2'] . " - ". $school['Pin']; ?></p>
+        <p>Date Range: <?php echo $report['parameters']['start_date']; ?> - <?php echo $report['parameters']['end_date']; ?></p>
+        <p>Date: <?php echo date('m/d/Y H:i:s'); ?> </p>        
+    </div>
+
+    <?php $array_attendance_type = array('1' => 'Monthly', '3' => 'Quarterly', '6' => 'Half Yearly', '12' => 'Yearly'); ?>
+
+	<h2><?php echo $array_attendance_type[$report['parameters']['interval']] ?> Attendance Report</h2>
     <table id="example" class="table table-striped table-bordered attablePdf" cellspacing="0" width="100%">
         <thead>
             <tr>

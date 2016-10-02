@@ -1,19 +1,29 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+
+<?php if (!empty($error) || validation_errors()) { ?>
+<script language="javascript">
+	$(document).ready(function() {
+		$('html, body').animate({
+			scrollTop: $("#alert").offset().top
+		}, 2000);
+	});
+</script>
+<?php } ?>
+
 <!--body panel starts -->
 <div class="bodyPanel">
 	<div class="loginPanelOuter">
 		<h1>Login</h1>
-		<div class="loginPanelInner">
-			<?php if (validation_errors()) : ?>
-					<div class="alert alert-danger" role="alert">
+		<div id="login" class="loginPanelInner">
+			<?php if (validation_errors()) { ?>
+					<div id="alert" class="alert alert-danger" role="alert">
 						<?= validation_errors() ?>
 					</div>
-			<?php endif; ?>
-			<?php if (isset($error)) : ?>
-					<div class="alert alert-danger" role="alert">
+			<?php } else if (isset($error)) { ?>			
+					<div id="alert" class="alert alert-danger" role="alert">
 						<?= $error ?>
 					</div>
-			<?php endif; ?>
+			<?php } ?>
 			<?= form_open() ?>
 				<div class="fldRow selectbox">
 					<div class="select-style">
@@ -38,7 +48,7 @@
 					<input type="password" id="password" name="password" placeholder="Password" title="Enter the password" required='required' value="">					
 				</div>
 				<div class="fldRow">
-					<p><a href="<?php echo base_url("user/forgot"); ?>">Forgot  your password?</a>  |  <a href="#">Reset Password</a></p>
+					<p><a href="<?php echo base_url("user/forgot"); ?>">Forgot  your password?</a></p>
 				</div>
 				<div class="fldRow">
 					<button class="signInBtn">SIGN IN</button>

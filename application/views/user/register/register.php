@@ -1,19 +1,27 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+<?php if (!empty($error) || validation_errors()) { ?>
+<script language="javascript">
+	$(document).ready(function() {
+		$('html, body').animate({
+			scrollTop: $("#alert").offset().top
+		}, 2000);
+	});
+</script>
+<?php } ?>
 <!--body panel starts -->
 <div class="bodyPanel">
 	<div class="loginPanelOuter">
 		<h1>Sign Up</h1>
 		<div class="loginPanelInner">
-			<?php if (validation_errors()) : ?>
-				<div class="alert alert-danger" role="alert">
-					<?= validation_errors() ?>
-				</div>
-			<?php endif; ?>
-			<?php if (isset($error)) : ?>
-				<div class="alert alert-danger" role="alert">
-					<?= $error ?>
-				</div>
-			<?php endif; ?>
+			<?php if (validation_errors()) { ?>
+					<div id="alert" class="alert alert-danger" role="alert">
+						<?= validation_errors() ?>
+					</div>
+			<?php } else if (isset($error)) { ?>			
+					<div id="alert" class="alert alert-danger" role="alert">
+						<?= $error ?>
+					</div>
+			<?php } ?>
 			<?= form_open() ?>
 				<div class="fldRow selectBox">
 					<span class="selectArrow"></span>

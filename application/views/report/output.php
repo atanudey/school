@@ -16,8 +16,11 @@
         });
 	});
 </script>
-<div class="container tblwrap">
-    <div><h3><?php echo $School_Name; ?></h3></div>
+<div class="headingText">
+    <h3><?php echo $school["School_Name"]; ?></h3>
+    <p><?php echo $school['Address1'] . ", " . $school['Address2'] . " - ". $school['Pin']; ?></p>
+</div>
+<div class="container tblwrap">    
     <div class="pull-right">
         <a href="<?php echo site_url('report/prnt'); ?>" target="__blank" class="btn btn-success">Print</a> 
         <a href="<?php echo site_url('report/pdf'); ?>" target="__blank" class="btn btn-success">PDF</a>

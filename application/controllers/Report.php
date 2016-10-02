@@ -21,8 +21,9 @@ class Report extends MY_Controller {
 		$this->load->library('parser');
 		$this->load->library('session');
 
-		$this->school_id = $this->session->userdata('school_id');
-		$this->data = $this->session->userdata('report');
+		$this->school_id = $this->session->userdata('school_id');		
+		$this->data['report'] = $this->session->userdata('report');
+		$this->data['school'] = $this->session->userdata('school');
 	}
 	
 	function index() {		
@@ -146,18 +147,20 @@ class Report extends MY_Controller {
 		//print_r($params); die;
 
 		$data['report'] = $this->report_model->get_attendance($params);
-		$this->session->set_userdata('report', $data['report']);
+		
+		$data['report']['parameters'] = $params;
+		$data['report']['parameters']['start_date'] = $this->input->post('start_date');
+		$data['report']['parameters']['end_date'] = $this->input->post('end_date');
 
-		$this->load->template('report/output',$data);
+		$this->session->set_userdata('report', $data['report']);
+		$this->load->template('report/output', $data);
 	}
 
 	function getReportContent($type = ""){
-		
-		$data['report'] = $this->session->userdata('report');	
-		$content = $this->parser->parse('report/save', $data, true);
+		$content = $this->parser->parse('report/save', $this->data, true);
 
 		if ($type == "prnt") {
-			$style = "<style>".$this->parser->parse('report/save_style', $data, true)."</style>";
+			$style = "<style>".$this->parser->parse('report/save_style', $this->data, true)."</style>";
 			$content = $style . $content;
 		}
 
@@ -170,7 +173,7 @@ class Report extends MY_Controller {
 
 	function pdf() {		
 		$content = $this->getReportContent();
-		$this->getReport($content, $data);
+		$this->getReport($content);
 	}
 
 	function excel() {
@@ -217,14 +220,14 @@ class Report extends MY_Controller {
 		echo json_encode($data);
 	}
 
-	function getReport($content, $data, $output = 'download')
+	function getReport($content, $output = 'download')
 	{
 	    $this->mpdf->SetDisplayMode('fullpage');
 
 	    $this->mpdf->list_indent_first_level = 0;	// 1 or 0 - whether to indent the first level of a list
 
 	    // LOAD a stylesheet
-	    $stylesheet = $this->parser->parse('report/save_style', $data, true);
+	    $stylesheet = $this->parser->parse('report/save_style', $this->data, true);
 	    $this->mpdf->WriteHTML($stylesheet,1);	// The parameter 1 tells that this is css/style only and no body/html/text
 
         // If download requested

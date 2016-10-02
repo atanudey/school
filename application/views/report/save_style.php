@@ -39,9 +39,6 @@ div.pdf h2{
 	padding:0 0 10px 0;
 }
 
-
-
-
 div.pdf > table td, th{padding: 0;}
 
 div.pdf table tr th {

@@ -1,3 +1,4 @@
+<?php if ($report['parameters']['type'] != "student") { ?>
 <script type="text/javascript" language="javascript">
 	$(document).ready(function(){
 		$('#example').DataTable({
@@ -85,3 +86,74 @@
         </tbody> 
     </table>
 </div>
+<?php } else { ?>
+<script type="text/javascript" language="javascript">
+	$(document).ready(function(){
+		$('#example').DataTable({
+            "ordering": false,
+            "columns": [
+                { "width": "16%" },
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+            ],
+            "searching": false
+        });
+	});
+</script>
+<div class="headingText">
+    <h3><?php echo $school["School_Name"]; ?></h3>
+    <p><?php echo $school['Address1'] . ", " . $school['Address2'] . " - ". $school['Pin']; ?></p>
+</div>
+<div class="container tblwrap">    
+    <div class="pull-right">
+        <a href="<?php echo site_url('report/prnt'); ?>" target="__blank" class="btn btn-success">Print</a> 
+        <a href="<?php echo site_url('report/pdf'); ?>" target="__blank" class="btn btn-success">PDF</a>
+        <a href="<?php echo site_url('report/excel'); ?>" class="btn btn-success">Excel</a>
+    </div>
+
+    <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Information</th>		
+                <th>Date</th>			
+                <th>Guardian</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>IN Time</th>
+                <th>OUT Time</th>                
+            </tr>
+        </thead>
+        <tbody>
+        <?php foreach($report as $s): ?>	
+            <?php if ($s['Type'] == "data") { ?>
+                <tr>
+                    <td></td>               
+                    <td><?php echo $s['Date']; ?></td>
+                    <td><?php echo $s['Guardian']; ?></td>
+                    <td><?php echo $s['Phone']; ?></td>                    
+                    <td><?php echo $s['Address']; ?></td>                    
+                    <td><?php echo $s['IN']; ?></td>
+                    <td><?php echo $s['OUT']; ?></td>
+                </tr>
+            <?php } else if ($s['Type'] == "header") { ?>
+                <tr class="header info">
+                    <td><strong><?php echo $s['Name']; ?>&nbsp;<?php echo $s['Class']; ?></strong></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>                    
+                    <td></td>
+                    <td></td>
+                    <td></td>                
+                </tr>            
+            <?php
+            } 
+            ?>               
+        <?php endforeach; ?>
+        </tbody> 
+    </table>
+</div>
+<?php } ?>

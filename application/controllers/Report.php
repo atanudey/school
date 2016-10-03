@@ -56,17 +56,24 @@ class Report extends MY_Controller {
 		$q->forward_url_get_parameters = "execute_mode=EXECUTE&project=educare&project_password=guitar&xmlin=student_attendance_report.xml&target_format=HTML";
 		$q->execute();*/
 
+		$date_arr = array();
 		$str = "";
-		for ($i=1; $i <= 300; $i++) {
+		for ($i=1; $i <= 1000; $i++) {
 			//for  ($j=1; $j < 11; $j++) {
 				$date = "2016-".rand(1, 12)."-".rand(1,30);
-				$time_in = "00:10:00";
-				$time_out = "00:16:00";
+				$time_in = "10:00:00";
+				$time_out = "16:00:00";
 
-				$ci = rand(6,7);
+				if (!in_array($date, $date_arr)) {
+					$date_arr[] = $date;					 
+				} else {
+					continue;
+				}
 
-				$str .= "INSERT INTO `educare_db`.`sc00001_attendance` (`ID`, `DateTime`, `IN_OUT`, `SC00001_Candidate_ID`) VALUES (NULL, '".$date." ".$time_in."', 'IN', '".$ci."');" . "\n";
-				$str .= "INSERT INTO `educare_db`.`sc00001_attendance` (`ID`, `DateTime`, `IN_OUT`, `SC00001_Candidate_ID`) VALUES (NULL, '".$date." ".$time_out."', 'OUT', '".$ci."');" . "\n";
+				$ci = rand(1,7);
+				
+				$str .= "INSERT INTO `educare_db`.`sc00001_attendance` (`ID`, `Date_Attendance`, `IN_Time`, `OUT_Time`, `Candidate_ID`) VALUES (NULL, '".$date."', '".$time_in."', '".$time_out."', '".$ci."');" . "\n";
+				//$str .= "INSERT INTO `educare_db`.`sc00001_attendance` (`ID`, `DateTime`, `IN_OUT`, `SC00001_Candidate_ID`) VALUES (NULL, '".$date." ".$time_out."', 'OUT', '".$ci."');" . "\n";
 				//$str .= "INSERT INTO `educare_db`.`school_days` (`School_ID`, `Month`, `Year`, `school_days`) VALUES ('SC00001', ". $i .", '2016', " . rand(18, 25) ."); \n";
 			//}
 
@@ -77,7 +84,7 @@ class Report extends MY_Controller {
 		//	$str .= "UPDATE  `educare_db`.`sc00001_attendance` SET  `IN_OUT` =  'OUT' WHERE  `sc00001_attendance`.`ID` = " . rand(1, 159) . "; \n";
 		//}
 
-		//echo $str; die;
+		echo $str; die;
 
 		/*if(isset($_POST) && count($_POST) > 0)     
 		{   
@@ -135,14 +142,25 @@ class Report extends MY_Controller {
 
 		$interval = array('yly' => 12, 'hly' => 6, 'qly' => 3, 'mly' => 1);
 
-		$params = array(
-			'start_month' => intval($start_date[0]),
-			'end_month' => intval($end_date[0]),
-			'school_id' => $this->school_id,
-			'classes' => $class,
-			'sections' => $section,
-			'interval' => $interval[$this->input->post('report_range_type')]		
-		);
+		if ($this->input->post('report_type') != "student") {
+			$params = array(
+				'type' => 'other',
+				'start_month' => intval($start_date[0]),
+				'end_month' => intval($end_date[0]),
+				'school_id' => $this->school_id,
+				'classes' => $class,
+				'sections' => $section,
+				'interval' => $interval[$this->input->post('report_range_type')]		
+			);
+		} else {
+			$params = array(
+				'type' => 'student',
+				'start_date' => $start_date[2]."-".$start_date[1]."-".$start_date[0],
+				'end_date' => $end_date[2]."-".$end_date[1]."-".$end_date[0],
+				'school_id' => $this->school_id,
+				'student_id_list' => implode(",", $this->input->post('student'))		
+			);
+		}
 
 		//print_r($params); die;
 

@@ -24,6 +24,10 @@
 .logo{
 	text-align:center;
 	}
+
+
+
+
 }
 @media (max-width: 640px) {
 .dateFld{
@@ -111,8 +115,8 @@
 }
 @media (max-width: 600px) {
 .adminDropdown{
-	right:auto;
-	left:0;
+	left: -55px!important;
+	right: auto;
 	}
 }
 @media (max-width: 470px) {

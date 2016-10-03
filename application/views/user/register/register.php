@@ -132,7 +132,7 @@
 				</div>
 				<div class="btmBtns">
 					<div class="btmBtnsInner">
-						<input type="submit" class="signUpBtn" name="signup" value="Signup">						
+						<input type="submit" class="signUpBtn signupSm" name="signup" value="Signup">						
 						<a href="<?= base_url("/")?>" class="updateProfileBtn">Cancel</a>
 					</div>
 				</div>

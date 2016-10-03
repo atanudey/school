@@ -1,6 +1,7 @@
 $(function(){
 	$('.navBar').click(function(event){
 		$('.dropDownMenu').stop().slideToggle(500);
+		$('.adminDropdown').hide(200);
 		event.stopPropagation();
 	});
 	$('.homePage').click(function(){
@@ -21,10 +22,13 @@ $(function(){
 	});
 	$('.topLinks li').click(function(event){
 		$(this).children('.adminDropdown').stop().slideToggle(500);
+		$('.dropDownMenu').hide(200);
 		event.stopPropagation();
 	});
 	$('.homePage').click(function(){
 		$('.adminDropdown').slideUp(500);
 			
 	});
+
+
 });

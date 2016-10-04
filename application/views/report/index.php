@@ -171,13 +171,20 @@
                 $("#student_container").empty();
                 $("#student_container").append("<div class='wait'> Getting list of students. Be Patient! </div>");
 
-                $.get( "report/get_candidate", {"classes": classes.join(","), "sections": sections.join(",")}).done(function( data ) {                
+                $.get("<?php echo base_url(); ?>report/get_candidate", {"classes": classes.join(","), "sections": sections.join(",")}).done(function( data ) {                
                     $("#student_container").empty();
                     $.each(JSON.parse(data), function(item, user) {
                         $("#student_container").append('<input type="checkbox" name="student[]" class="checkbox_cst" value="' + user.Candidate_ID + '"><label>' + user.Candidate_Name + '</label></div>')
                     });
                 });            
             }
+        });
+
+        $('#report_frm').on('submit', function() {
+            if ($('#student_report_type').is(":checked") && $('input[name=student\\[\\]]:checked').length == 0) {
+                alert("Please select atleast one student.");
+                return false;
+            }            
         });
     });
 </script>
@@ -352,7 +359,7 @@
             </div>
         </div>
         <div class="reportBtnsBtm">
-                <input type="submit" name="process" value="Process" class="processBtn">
+            <input type="submit" name="process" value="Process" class="processBtn">
         </div>
     </div>
 </div>

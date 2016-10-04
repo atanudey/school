@@ -118,6 +118,8 @@ class Report extends MY_Controller {
 	function generate() {
 		$data = $this->data;
 
+		//print_r($_REQUEST);
+
 		$start_date = explode("/",$this->input->post('start_date'));
 		$end_date = explode("/",$this->input->post('end_date'));
 
@@ -135,9 +137,6 @@ class Report extends MY_Controller {
 			} else {
 				$section = "";
 			}
-		} else {
-			$class = implode(",", $this->input->post('class'));
-			$section = implode(",", $this->input->post('section'));
 		}
 
 		$interval = array('yly' => 12, 'hly' => 6, 'qly' => 3, 'mly' => 1);

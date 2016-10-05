@@ -104,8 +104,8 @@
             var currentmonth = function(){
                 var month = d.getMonth()+1;
                 var day = d.getDate();
-                var output = (month<10 ? '0' : '') + month + '/' +
-                (day<10 ? '0' : '') + day + '/' +
+                var output = (day<10 ? '0' : '') + day + '/' + 
+                (month<10 ? '0' : '') + month + '/' +
                 d.getFullYear();
                 return output;
             };
@@ -117,8 +117,8 @@
                     month = 1;
                     day = 1;
                 }
-                var output = (month<10 ? '0' : '') + month + '/' +
-                (day<10 ? '0' : '') + day + '/' +
+                var output = (day<10 ? '0' : '') + day + '/' + 
+                (month<10 ? '0' : '') + month + '/' +
                 d.getFullYear();
                 return output;
             };        
@@ -132,14 +132,14 @@
 
             $('#todate').datetimepicker({
                 language: 'en',
-                format: 'MM/dd/yyyy',
+                format: 'dd/MM/yyyy',
                 startDate: firstDate,
                 endDate: lastDate
             });
 
             $('#fromdate').datetimepicker({
                 language: 'en',
-                format: 'MM/dd/yyyy',
+                format: 'dd/MM/yyyy',
                 startDate: formfirstDate,
                 endDate: lastDate
             });
@@ -181,10 +181,10 @@
         });
 
         $('#report_frm').on('submit', function() {
-            if ($('#student_report_type').is(":checked") && $('input[name=student\\[\\]]:checked').length == 0) {
+            if ($('#report_type_student').is(":checked") && $('input[name=student\\[\\]]:checked').length == 0) {
                 alert("Please select atleast one student.");
                 return false;
-            }            
+            }       
         });
     });
 </script>

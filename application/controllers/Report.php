@@ -72,7 +72,7 @@ class Report extends MY_Controller {
 
 				$ci = rand(1,7);
 				
-				$str .= "INSERT INTO `educare_db`.`sc00001_attendance` (`ID`, `Date_Attendance`, `IN_Time`, `OUT_Time`, `Candidate_ID`) VALUES (NULL, '".$date."', '".$time_in."', '".$time_out."', '".$ci."');" . "\n";
+				$str .= "INSERT INTO `educare_db`.`SC00001_Attendance` (`ID`, `Date_Attendance`, `IN_Time`, `OUT_Time`, `Candidate_ID`) VALUES (NULL, '".$date."', '".$time_in."', '".$time_out."', '".$ci."');" . "\n";
 				//$str .= "INSERT INTO `educare_db`.`sc00001_attendance` (`ID`, `DateTime`, `IN_OUT`, `SC00001_Candidate_ID`) VALUES (NULL, '".$date." ".$time_out."', 'OUT', '".$ci."');" . "\n";
 				//$str .= "INSERT INTO `educare_db`.`school_days` (`School_ID`, `Month`, `Year`, `school_days`) VALUES ('SC00001', ". $i .", '2016', " . rand(18, 25) ."); \n";
 			//}
@@ -141,11 +141,13 @@ class Report extends MY_Controller {
 
 		$interval = array('yly' => 12, 'hly' => 6, 'qly' => 3, 'mly' => 1);
 
-		if ($this->input->post('report_type') != "student") {
+		//print_r($_REQUEST); die;
+
+		if ($this->input->post('student_report_type') != "student") {
 			$params = array(
 				'type' => 'other',
-				'start_month' => intval($start_date[0]),
-				'end_month' => intval($end_date[0]),
+				'start_month' => intval($start_date[1]),
+				'end_month' => intval($end_date[1]),
 				'school_id' => $this->school_id,
 				'classes' => $class,
 				'sections' => $section,
@@ -226,10 +228,13 @@ class Report extends MY_Controller {
 		$classes = array();
 		$sections = array();
 
-		if (!empty($this->input->get('classes')))
-			$classes = explode(",", $this->input->get('classes'));
-		if (!empty($this->input->get('sections')))
-			$sections = explode(",", $this->input->get('sections'));
+		$class_input = $this->input->get('classes');
+		$section_input = $this->input->get('sections');
+
+		if (!empty($class_input))
+			$classes = explode(",", $class_input);
+		if (!empty($section_input))
+			$sections = explode(",", $section_input);
 
 		$this->load->model("candidate_model");
 		$data = $this->candidate_model->get_candidate_by_class_section($classes, $sections);

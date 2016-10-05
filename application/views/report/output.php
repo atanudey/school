@@ -141,8 +141,8 @@
                 </tr>
             <?php } else if ($s['Type'] == "header") { ?>
                 <tr class="header info">
-                    <td><strong><?php echo $s['Name']; ?>&nbsp;<?php echo $s['Class']; ?></strong></td>
-                    <td></td>
+                    <td><strong><?php echo $s['Name']; ?>, <?php echo $s['Class']; ?></strong></td>
+                    <td><strong><?php echo $s['Date']; ?></strong></td>
                     <td></td>
                     <td></td>                    
                     <td></td>

@@ -10,48 +10,87 @@
 
     <?php $array_attendance_type = array('1' => 'Monthly', '3' => 'Quarterly', '6' => 'Half Yearly', '12' => 'Yearly'); ?>
 
-	<h2><?php echo $array_attendance_type[$report['parameters']['interval']] ?> Attendance Report</h2>
-    <table id="example" class="table table-striped table-bordered attablePdf" cellspacing="0" width="100%">
-        <thead>
-            <tr>
-               	<th align="left" class="th">Roll</th>			
-                <th align="left" class="th">Name</th>
-                <th align="left" class="th">Address</th>
-                <th align="left" class="th">Class</th>
-                <th align="left" class="th">Section</th>
-                <th align="left" class="th">Present</th>
-                <th align="left" class="th">Absent</th>
-            </tr>
-        </thead>
-        <tbody>
-        <?php foreach($report as $s): ?>	
-            <?php if ($s['Type'] == "data") { ?>
-                <tr>                                
-                    <td align="left" class="td"><?php echo $s['Roll']; ?></td>
-                    <td align="left" class="td"><?php echo $s['Name']; ?></td>
-                    <td align="left" class="td"><?php echo $s['Address']; ?></td>
-                    <td align="left" class="td"><?php echo $s['Class']; ?></td>
-                    <td align="left" class="td"><?php echo $s['Section']; ?></td>
-                    <td align="left" class="td"><?php echo $s['Present']; ?></td>
-                    <td align="left" class="td"><?php echo $s['Absent']; ?></td>
-                </tr>
-            <?php } else if ($s['Type'] == "header") { ?>
-                <tr class="header info">
-                    <td colspan="7" align="center" class="td info" style="background-color: #d9edf7; color: #333; font-weight:bold"><?php echo $s['Information']; ?></td>
-                </tr>            
-            <?php
-            } else {
-            ?>
+    <?php if ($report['parameters']['type'] != "student") { ?>
+        
+        <h2><?php echo $array_attendance_type[$report['parameters']['interval']] ?> Attendance Report</h2>
+        <table id="example" class="table table-striped table-bordered attablePdf" cellspacing="0" width="100%">
+            <thead>
                 <tr>
-                    <td colspan="5" align="left" class="td" style="background-color:#f1f1f1;color:#333; font-weight:bold"><?php echo $s['Information']; ?></td>
-                    <td align="left" class="td" style="background-color:#f1f1f1; color:#333; font-weight:bold"><?php echo $s['Present']; ?></td>
-                    <td align="left" class="td" style="background-color:#f1f1f1; color:#333; font-weight:bold"><?php echo $s['Absent']; ?></td>                
+                    <th align="left" class="th">Roll</th>			
+                    <th align="left" class="th">Name</th>
+                    <th align="left" class="th">Address</th>
+                    <th align="left" class="th">Class</th>
+                    <th align="left" class="th">Section</th>
+                    <th align="left" class="th">Present</th>
+                    <th align="left" class="th">Absent</th>
                 </tr>
-            <?php
-            }
-            ?>
-                
-        <?php endforeach; ?>
-        </tbody> 
-    </table>
+            </thead>
+            <tbody>
+            <?php foreach($report as $s): ?>	
+                <?php if ($s['Type'] == "data") { ?>
+                    <tr>                                
+                        <td align="left" class="td"><?php echo $s['Roll']; ?></td>
+                        <td align="left" class="td"><?php echo $s['Name']; ?></td>
+                        <td align="left" class="td"><?php echo $s['Address']; ?></td>
+                        <td align="left" class="td"><?php echo $s['Class']; ?></td>
+                        <td align="left" class="td"><?php echo $s['Section']; ?></td>
+                        <td align="left" class="td"><?php echo $s['Present']; ?></td>
+                        <td align="left" class="td"><?php echo $s['Absent']; ?></td>
+                    </tr>
+                <?php } else if ($s['Type'] == "header") { ?>
+                    <tr class="header info">
+                        <td colspan="7" align="center" class="td info" style="background-color: #d9edf7; color: #333; font-weight:bold"><?php echo $s['Information']; ?></td>
+                    </tr>            
+                <?php
+                } else {
+                ?>
+                    <tr>
+                        <td colspan="5" align="left" class="td" style="background-color:#f1f1f1;color:#333; font-weight:bold"><?php echo $s['Information']; ?></td>
+                        <td align="left" class="td" style="background-color:#f1f1f1; color:#333; font-weight:bold"><?php echo $s['Present']; ?></td>
+                        <td align="left" class="td" style="background-color:#f1f1f1; color:#333; font-weight:bold"><?php echo $s['Absent']; ?></td>                
+                    </tr>
+                <?php
+                }
+                ?>
+                    
+            <?php endforeach; ?>
+            </tbody> 
+        </table>
+    <?php } else { ?>
+        <h2>Monthwise Daily Attendance Report</h2>
+        <table id="example" class="table table-striped table-bordered attablePdf" cellspacing="0" width="100%">
+            <thead>
+                <tr>                    	
+                    <th>Date</th>			
+                    <th>Guardian</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>IN Time</th>
+                    <th>OUT Time</th>                
+                </tr>
+            </thead>
+            <tbody>
+            <?php foreach($report as $s): ?>	
+                <?php if ($s['Type'] == "data") { ?>
+                    <tr>                        
+                        <td><?php echo $s['Date']; ?></td>
+                        <td><?php echo $s['Guardian']; ?></td>
+                        <td><?php echo $s['Phone']; ?></td>                    
+                        <td><?php echo $s['Address']; ?></td>                    
+                        <td><?php echo $s['IN']; ?></td>
+                        <td><?php echo $s['OUT']; ?></td>
+                    </tr>
+                <?php } else if ($s['Type'] == "header") { ?>
+                    <tr class="header info">
+                        <td class="td info" style="background-color: #d9edf7; color: #333; font-weight:bold"><?php echo $s['Date']; ?></td>
+                        <td colspan="5" align="right" class="td info" style="background-color: #d9edf7; color: #333; font-weight:bold">Name: <?php echo $s['Name']; ?>, <?php echo $s['Class']; ?></td>
+                    </tr>            
+                <?php
+                }
+                ?>
+                    
+            <?php endforeach; ?>
+            </tbody> 
+        </table>
+    <?php } ?>
 </div>

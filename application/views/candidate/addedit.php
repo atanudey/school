@@ -1,4 +1,11 @@
 <div class="bodyPanel">
+  <div class="headingText">
+  	<?php if (!empty($candidate['Candidate_ID'])) { ?>
+	  	<h1>Edit Candidate</h1>
+	<?php } else { ?>
+		<h1>Add Candidate</h1>
+	<?php } ?>	
+  </div>
   <div class="container tblwrap">
     <div class="innerPanel">
 	<div class="errorBox">
@@ -44,10 +51,9 @@
 			<label for="State" class="col-md-4 control-label">State</label>
 			<div class="col-md-8">
 				<select name="State" class="form-control">
-					<option value="">select</option>
+					<option value="">--- Select ---</option>
 					<?php 
-					$State_values = array(
-					);
+					$State_values = $this->config->item('indian_all_states');
 
 					foreach($State_values as $value => $display_text)
 					{
@@ -80,13 +86,13 @@
 		</div>
 	</div>
 	<div class="form-group">
-		<label for="Mob1" class="col-md-4 control-label">Mob1</label>
+		<label for="Mob1" class="col-md-4 control-label">Mobile 1</label>
 		<div class="col-md-8">
 			<input type="text" name="Mob1" value="<?php echo ($this->input->post('Mob1') ? $this->input->post('Mob1') : $candidate['Mob1']); ?>" class="form-control" id="Mob1" />
 		</div>
 	</div>
 	<div class="form-group">
-		<label for="Mob2" class="col-md-4 control-label">Mob2</label>
+		<label for="Mob2" class="col-md-4 control-label">Mobile 2</label>
 		<div class="col-md-8">
 			<input type="text" name="Mob2" value="<?php echo ($this->input->post('Mob2') ? $this->input->post('Mob2') : $candidate['Mob2']); ?>" class="form-control" id="Mob2" />
 		</div>
@@ -101,7 +107,7 @@
 		<label for="Gender" class="col-md-4 control-label">Gender</label>
 		<div class="col-md-8">
 			<select name="Gender" class="form-control">
-				<option value="">select</option>
+				<option value="">--- Select ---</option>
 				<?php 
 				$gender_values = array(
 					'M'=>'Male',
@@ -131,7 +137,7 @@
 			<label for="Is_Admin" class="col-md-4 control-label">Is Admin</label>
 			<div class="col-md-8">
 				<select name="Is_Admin" class="form-control">
-					<option value="">select</option>
+					<option value="">--- Select ---</option>
 					<?php 
 					$Is_Admin_values = array(
 						'0'=>'No',
@@ -151,11 +157,12 @@
 			</div>
 		</div>
 	<?php } ?>	
+	<?php if (!empty($candidate['Candidate_ID'])) { ?>
 	<div class="form-group">
 			<label for="IN_OUT" class="col-md-4 control-label">IN OUT</label>
 			<div class="col-md-8">
 				<select name="IN_OUT" class="form-control">
-					<option value="">select</option>
+					<option value="">--- Select ---</option>
 					<?php 
 					$IN_OUT_values = array(
 						'IN'=>'IN',
@@ -174,11 +181,14 @@
 				</select>
 			</div>
 		</div>
+	<?php  } else { ?>
+		<input type="hidden" name="IN_OUT" value="OUT">
+	<?php } ?>
 	<div class="form-group">
-			<label for="Class_ID" class="col-md-4 control-label">Class Section</label>
+			<label for="Class_ID" class="col-md-4 control-label">Class & Section</label>
 			<div class="col-md-8">
 				<select name="Class_ID" class="form-control">
-					<option value="">select educlass</option>
+					<option value="">--- Select ---</option>
 					<?php 
 					foreach($all_educlasses as $educlass)
 					{
@@ -196,7 +206,7 @@
 			<label for="Candidate_Type_ID" class="col-md-4 control-label">Candidate Type</label>
 			<div class="col-md-8">
 				<select name="Candidate_Type_ID" class="form-control">
-					<option value="">select</option>
+					<option value="">--- Select ---</option>
 					<?php 
 					foreach($all_candidate_type as $candidate_type)
 					{

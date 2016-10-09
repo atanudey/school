@@ -1,3 +1,7 @@
+<div class="headingText">
+	<h1>List of Classes</h1>	
+</div>
+
 <div class="pull-right">
 	<a href="<?php echo site_url('class/add'); ?>" class="btn btn-success">Add</a> 
 </div>

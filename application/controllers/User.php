@@ -45,10 +45,10 @@ class User extends MY_Controller {
 		
 		// set validation rules
 		$this->form_validation->set_rules('user_type_id','User Type','trim|required');
-		$this->form_validation->set_rules('username', 'Username', 'trim|required|alpha_numeric|min_length[4]|is_unique[login.user_id]', array('is_unique' => 'This username already exists. Please choose another one.'));
+		$this->form_validation->set_rules('username', 'Username', 'trim|required|alpha_numeric|min_length[4]|is_unique[login.User_ID]', array('is_unique' => 'This username already exists. Please choose another one.'));
 		$this->form_validation->set_rules('name','Name','trim|required');
 		$this->form_validation->set_rules('mob1','Mobile','trim|required|numeric');
-		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[login.email]');
+		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[login.Email]');
 		$this->form_validation->set_rules('password', 'Password', 'trim|required|min_length['. $this->config->item('password_min_length') .']');
 		$this->form_validation->set_rules('password_confirm', 'Confirm Password', 'trim|required|min_length[6]|matches[password]');				
 		$this->form_validation->set_rules('zipcode','Zip','trim|required|integer');	
@@ -120,7 +120,7 @@ class User extends MY_Controller {
 	 * @access public
 	 * @return void
 	 */
-	public function login() {
+	public function login() {		
 		if (empty($_SESSION['user'])) {
 			
 			$data = array();
@@ -173,7 +173,7 @@ class User extends MY_Controller {
 
 			// send error to the view					
 			$this->load->template('user/login/index', $data);
-		} else {
+		} else {			
 			redirect("home");
 		}
 	}
@@ -196,7 +196,7 @@ class User extends MY_Controller {
 		}
 
 		// redirect him to site root
-		redirect('/');		
+		redirect('login');		
 	}
 
 	public function home() {		
@@ -214,7 +214,7 @@ class User extends MY_Controller {
 			}			
 			$this->load->template('user/home/'.$template);	
 		} else {
-			$this->load->template('user/home/index');
+			redirect('login');
 		}
 	}
 
@@ -263,6 +263,8 @@ class User extends MY_Controller {
 				"template_data" => array('name' => $user->Name, 'user_id' => $user->ID, 'slug' => $slug),				
 				"to" => $user->Email,
 				"to_name" => $user->Name,
+				"from" => $this->config->item('from_email'),
+				"from_name" => $this->config->item('from_name'),
 				"subject" => "Reset your Password",			
 			);
 
@@ -329,5 +331,10 @@ class User extends MY_Controller {
 	{
 		$new_password = password_hash($new_password, PASSWORD_BCRYPT);
 		$this->user_model->update_user($user_id, array('password' => $new_password));
+	}
+
+	function permission(){
+		$data = array();
+		$this->load->template('user/permission/index', $data);
 	}
 }

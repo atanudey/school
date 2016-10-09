@@ -91,7 +91,11 @@
                 <div class="row">
                     <div class="col-xs-6">
                         <div class="logo">
-                            <h2><a href="<?= base_url('/') ?>">KRP Educare</a></h2>
+                            <?php if (!empty($session_user['logged_in']) && $session_user['logged_in'] === true) { ?> 
+                                <h2><a href="<?= base_url('/') ?>">KRP Educare</a></h2>
+                            <?php } else { ?>
+                                <h2><a href="<?= base_url('home') ?>">KRP Educare</a></h2>
+                            <?php } ?>
                         </div>
                     </div>
                     <div class="col-xs-6">

@@ -1,4 +1,6 @@
-
+<div class="headingText">
+	<h1>Edit Class</h1>	
+</div>
 <?php echo form_open('class/edit/'.$class['ID'],array("class"=>"form-horizontal")); ?>
 
 	<div class="form-group">
@@ -17,6 +19,7 @@
 	<div class="form-group">
 		<div class="col-sm-offset-4 col-sm-8">
 			<button type="submit" class="btn btn-success">Save</button>
+			<a href="<?= base_url('class'); ?>" class="btn btn-cancel" >Cancel</a>
         </div>
 	</div>
 	

@@ -1,8 +1,15 @@
 <script type="text/javascript" language="javascript">
 	$(document).ready(function(){
-		$('#candidate_list').DataTable({});
+		$('#candidate_list').DataTable({
+			"columns": [
+				{ "width": "15%" , "target": 10},
+			]
+		});
 	});
 </script>
+<div class="headingText">
+	<h1>List of Candidates</h1>	
+</div>
 <div class="container tblwrap">
 	<a href="<?php echo site_url('candidate/addedit'); ?>" class="btn btn-success add"><i class="fa fa-plus" aria-hidden="true"></i>Add</a>
 	<table id="candidate_list" class="table table-striped table-bordered">
@@ -14,7 +21,7 @@
 				<td>Address1</td>
 				<td>Address2</td>
 				<td>Guardian Name</td>
-				<td>Mob1</td>
+				<td>Mobile</td>
 				<td>Gender</td>
 				<td>Age</td>
 				<td>IN OUT</td>

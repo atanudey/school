@@ -19,9 +19,50 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 $config['base_url'] = 'http://localhost/school/';
 $config['site_email'] = "info@krpsolutions.co.in";
-$config['site_emaiL_name'] = "Educare";
+$config['site_email_name'] = "Educare Admin";
+
+$config['from_email'] = "educare.registration@krpsolutions.co.in";
+$config['from_name'] = "Educare Admin";
 
 $config['password_min_length'] = 6;
+
+$config['indian_all_states']  = array (
+ 'AP' => 'Andhra Pradesh',
+ 'AR' => 'Arunachal Pradesh',
+ 'AS' => 'Assam',
+ 'BR' => 'Bihar',
+ 'CT' => 'Chhattisgarh',
+ 'GA' => 'Goa',
+ 'GJ' => 'Gujarat',
+ 'HR' => 'Haryana',
+ 'HP' => 'Himachal Pradesh',
+ 'JK' => 'Jammu & Kashmir',
+ 'JH' => 'Jharkhand',
+ 'KA' => 'Karnataka',
+ 'KL' => 'Kerala',
+ 'MP' => 'Madhya Pradesh',
+ 'MH' => 'Maharashtra',
+ 'MN' => 'Manipur',
+ 'ML' => 'Meghalaya',
+ 'MZ' => 'Mizoram',
+ 'NL' => 'Nagaland',
+ 'OR' => 'Odisha',
+ 'PB' => 'Punjab',
+ 'RJ' => 'Rajasthan',
+ 'SK' => 'Sikkim',
+ 'TN' => 'Tamil Nadu',
+ 'TR' => 'Tripura',
+ 'UK' => 'Uttarakhand',
+ 'UP' => 'Uttar Pradesh',
+ 'WB' => 'West Bengal',
+ 'AN' => 'Andaman & Nicobar',
+ 'CH' => 'Chandigarh',
+ 'DN' => 'Dadra and Nagar Haveli',
+ 'DD' => 'Daman & Diu',
+ 'DL' => 'Delhi',
+ 'LD' => 'Lakshadweep',
+ 'PY' => 'Puducherry',
+);
 
 /*
 |--------------------------------------------------------------------------

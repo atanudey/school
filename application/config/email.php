@@ -3,9 +3,9 @@
 $config['useragent']        = 'PHPMailer';              // Mail engine switcher: 'CodeIgniter' or 'PHPMailer'
 $config['protocol']         = 'smtp';                   // 'mail', 'sendmail', or 'smtp'
 $config['mailpath']         = '/usr/sbin/sendmail';
-$config['smtp_host']        = 'smtp.gmail.com';
-$config['smtp_user']        = 'newsworm.india@gmail.com';
-$config['smtp_pass']        = 'NewsW0rm';
+$config['smtp_host']        = 'a2plcpnl0033.prod.iad2.secureserver.net';
+$config['smtp_user']        = 'educare.registration@krpsolutions.co.in';
+$config['smtp_pass']        = 'krpeduRegis*01';
 $config['smtp_port']        = 465;
 $config['smtp_timeout']     = 30;                       // (in seconds)
 $config['smtp_crypto']      = 'ssl';                    // '' or 'tls' or 'ssl'

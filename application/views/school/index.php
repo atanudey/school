@@ -1,8 +1,21 @@
 <script type="text/javascript" language="javascript">
 	$(document).ready(function(){
-		$('#school_list').DataTable({});
+		$('#school_list').DataTable({
+			"columns": [
+				{ "width": "10%" },
+				{ "width": "15%" },
+				{ "width": "30%" },
+				{ "width": "10%" },
+				{ "width": "10%" },
+				{ "width": "10%" },
+				{ "width": "15%" },
+			]
+		});
 	});
 </script>
+<div class="headingText">
+	<h1>List of Schools</h1>	
+</div>
 <div class="container tblwrap">
 	<a href="<?php echo site_url('school/add'); ?>" class="btn btn-success add"><i class="fa fa-plus" aria-hidden="true"></i>
  Add</a>

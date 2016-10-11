@@ -110,8 +110,72 @@ class User extends MY_Controller {
 				// send error to the view				
 				$this->load->template('user/register/register', $data);								
 			}			
-		}
+		}		
+	}
+
+	/**
+	* Update profile section
+	* 
+	* @access public
+	* @return void	
+	*/
+	function profile() {
+
+		$data = array();
+
+		// Storing session data to variables
+		$sess_user = $this->session->userdata("user");
+		$sess_user->school = $this->session->userdata("school");
+
+		$data["user"] = $sess_user;
 		
+		// load form helper and validation library
+		$this->load->helper('form');
+		$this->load->library('form_validation');
+
+		//Loading a custom helper for sending template based emails
+		$this->load->helper('email_template');
+		
+		// set validation rules	
+		$this->form_validation->set_rules('username', 'Username', 'trim|required|alpha_numeric|min_length[4]|edit_unique[login.User_ID.'.$sess_user->ID.']');			
+		$this->form_validation->set_rules('name','Name','trim|required');
+		$this->form_validation->set_rules('mob1','Mobile','trim|required|numeric');
+		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|edit_unique[login.Email.'.$sess_user->ID.']');						
+		$this->form_validation->set_rules('zipcode','Zip','trim|required|integer');			
+		
+		if ($this->form_validation->run() === true) {
+			
+			// set variables from the form
+			if(isset($_POST) && count($_POST) > 0)     
+			{   
+				$params = array(
+					'User_ID' => $this->input->post('username'),
+					'Name' => $this->input->post('name'),
+					'Email' => $this->input->post('email'),
+					'Mob1' => $this->input->post('mob1'),
+					'Address' => $this->input->post('address'),
+					'City' => $this->input->post('city'),
+					'State' => $this->input->post('state'),
+					'ZipCode' => $this->input->post('zipcode'),					
+				);
+			}
+
+			$result = $this->user_model->update_user($sess_user->ID, $params);
+
+			if ($result) {	
+				// Update session user data
+				$user = $this->user_model->get_user(array('login.ID' => $sess_user->ID));
+				$this->session->set_userdata("user", $user);
+
+				redirect("user/profile");
+
+			} else {				
+				// user update failed, this should never happen
+				$data["error"] = 'There was a problem updating your profile. Please try again.';											
+			}			
+		}
+
+		$this->load->template('user/profile/index', $data);	
 	}
 		
 	/**
@@ -336,5 +400,40 @@ class User extends MY_Controller {
 	function permission(){
 		$data = array();
 		$this->load->template('user/permission/index', $data);
+	}
+
+	function change_password() {
+		
+		$this->load->library('form_validation');
+		$this->load->helper('form');
+		$data['success'] = false;
+
+		$sess_user = $this->session->userdata("user");	
+		
+		$this->form_validation->set_rules('current_password', 'Current Password', 'required|callback_oldpassword_check');
+		$this->form_validation->set_rules('password', 'Password', 'required|min_length['. $this->config->item('password_min_length') .']');
+		$this->form_validation->set_rules('password_conf', 'Confirm Password', 'required|matches[password]');
+		
+		if($this->form_validation->run()){
+			$this->reset_password($sess_user->ID, $this->input->post('password'));
+			$data['success'] = true;
+		}
+
+		$this->load->template('user/profile/change_password', $data);
+	}
+
+	public function oldpassword_check($old_password) {
+
+		// Storing session data to variables
+		$sess_user = $this->session->userdata("user");		
+		$old_password_db_hash = $sess_user->Password;
+
+		if(!$this->user_model->verify_password_hash($old_password, $old_password_db_hash))
+		{
+			$this->form_validation->set_message('oldpassword_check', 'Current password not match');
+			return FALSE;
+		} 
+
+		return TRUE;
 	}
 }

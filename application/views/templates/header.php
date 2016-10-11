@@ -73,7 +73,8 @@
                                 <a href="#">Welcome <?php echo $session_user["user"]->Name; ?></a>                                
                                 <div class="adminDropdown">
                                     <ul>                                        
-                                        <li class="updateBtn"><a href="<?= base_url('#') ?>">Update Profile</a></li>
+                                        <li class="updateBtn"><a href="<?= base_url('user/profile') ?>">Update Profile</a></li>
+                                        <li class="updateBtn"><a href="<?= base_url('user/change_password') ?>">Change Password</a></li>
                                         <li class="logOutBtn"><a href="<?= base_url('logout') ?>">Logout</a></li>                                        
                                     </ul>
                                 </div>

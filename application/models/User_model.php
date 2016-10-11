@@ -107,7 +107,7 @@ class User_model extends CI_Model {
 	 * @param mixed $hash
 	 * @return bool
 	 */
-	private function verify_password_hash($password, $hash) {
+	function verify_password_hash($password, $hash) {
 		return password_verify($password, $hash);		
 	}	
 
@@ -117,6 +117,15 @@ class User_model extends CI_Model {
     function update_user($ID, $params)
     {
         $this->db->where('ID', $ID);
-        $this->db->update('login', $params);
+        return $this->db->update('login', $params);
     }
+
+	/**
+	* @access private
+	* @param int user id
+	* @return hashed password
+	*/
+	private function get_password_hash_by_id() {
+
+	}
 }

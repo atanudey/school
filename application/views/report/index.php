@@ -127,8 +127,12 @@
             $("#todate .datetimepicker-input").val(currentmonth);
 
             var formfirstDate = new Date(d.getFullYear(), 0, 1);       
-            var lastDate = new Date(currentmonth());
-            var firstDate = new Date(prevmonth());
+
+            var first = prevmonth().split("/");
+            var last = currentmonth().split("/");            
+
+            var firstDate = new Date(first[1] + "/" + first[0] + "/" + first[2]);
+            var lastDate = new Date(last[1]  + "/" + last[0]  + "/" + last[2]);
 
             $('#todate').datetimepicker({
                 language: 'en',

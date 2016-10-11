@@ -1,10 +1,25 @@
 <script type="text/javascript" language="javascript">
 	$(document).ready(function(){
-		$('#candidate_list').DataTable({
-			"columns": [
-				{ "width": "15%" , "target": 10},
-			]
-		});
+		$('#candidate_list').DataTable({ 
+			"processing": true, //Feature control the processing indicator.
+			"serverSide": true, //Feature control DataTables' server-side processing mode.
+			"order": [], //Initial no order.
+
+			// Load data for the table's content from an Ajax source
+			"ajax": {
+				"url": "<?php echo site_url('candidate/ajax_list')?>",
+				"type": "POST"
+			},
+
+			//Set column definition initialisation properties.
+			"columnDefs": [
+				{ 
+					"targets": [ -1 ], //last column
+					"orderable": false, //set not orderable
+					"width": "15%",
+				},
+			],
+    	});
 	});
 </script>
 <div class="headingText">
@@ -29,7 +44,7 @@
 			</tr>
 		</thead>
 		<tbody>
-		<?php foreach($candidate as $s): ?>
+		<?php /* foreach($candidate as $s): ?>
 			<tr>
 				<td><?php echo $s['RFID_NO']; ?></td>
 				<td><?php echo $s['Roll_No']; ?></td>
@@ -41,12 +56,12 @@
 				<td><?php echo $s['Gender']; ?></td>
 				<td><?php echo $s['Age']; ?></td>
 				<td><?php echo $s['IN_OUT']; ?></td>
-				<td>
+				<td width="12%">
 					<a href="<?php echo site_url('candidate/addedit/edit/'.$s['Candidate_ID']); ?>" class="btn btn-info">Edit</a> 
 					<a href="<?php echo site_url('candidate/remove/'.$s['Candidate_ID']); ?>" class="btn btn-danger">Delete</a>
 				</td>
 			</tr>
-		<?php endforeach; ?>
+		<?php endforeach; */ ?>
 		</tbody>
 	</table>
 </div>

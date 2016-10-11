@@ -5,7 +5,7 @@
 </script>
 
 <div class="container tblwrap">
-	<a href="<?php echo site_url('educlass/add'); ?>" class="btn btn-success add"><i class="fa fa-plus" aria-hidden="true"></i>
+	<a href="<?php echo site_url('edu_class/add'); ?>" class="btn btn-success add"><i class="fa fa-plus" aria-hidden="true"></i>
  Add</a>
 <table id="educlass_list" class="table table-striped table-bordered">
 	<thead>

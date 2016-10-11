@@ -86,6 +86,9 @@
         </tbody> 
     </table>
 </div>
+
+<!-- STUDENT DAILY REPORT SECTION BEGINS -->
+
 <?php } else { ?>
 <script type="text/javascript" language="javascript">
 	$(document).ready(function(){

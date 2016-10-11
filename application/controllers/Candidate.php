@@ -22,6 +22,43 @@ class Candidate extends MY_Controller
         $this->load->template('candidate/index',$data);
     }
 
+	function ajax_list() {
+
+		$list = $this->candidate_model->get_datatables();
+		$data = array();
+		$no = $_POST['start'];
+		foreach ($list as $candidate) {
+			$no++;
+			$row = array();
+			$row[] = $candidate->RFID_NO;
+			$row[] = $candidate->Roll_No;
+			$row[] = $candidate->Candidate_Name;			
+			$row[] = $candidate->Address1;
+			$row[] = $candidate->Address2;
+			$row[] = $candidate->Guardian_Name;
+			$row[] = $candidate->Mob1;
+			$row[] = $candidate->Gender;
+			$row[] = $candidate->Age;
+			$row[] = $candidate->IN_OUT;
+
+			//add html for action
+			$row[] = '<a class="btn btn-info" href="'.site_url('candidate/addedit/edit/'.$candidate->Candidate_ID).'" title="Edit"><i class="glyphicon glyphicon-pencil"></i> Edit</a>
+				  <a class="btn btn-danger" href="'.site_url('candidate/remove/'.$candidate->Candidate_ID).'" title="Delete"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
+		
+			$data[] = $row;
+		}
+
+		$output = array(
+						"draw" => $_POST['draw'],
+						"recordsTotal" => $this->candidate_model->count_all(),
+						"recordsFiltered" => $this->candidate_model->count_filtered(),
+						"data" => $data,
+				);
+
+		//output to json format
+		echo json_encode($output);
+	}
+
     /*
      * Adding a new candidate
      */
@@ -36,8 +73,8 @@ class Candidate extends MY_Controller
 		$this->form_validation->set_rules('Pin','Pin','required|numeric');
 		$this->form_validation->set_rules('Guardian_Name','Guardian Name','required');
 		$this->form_validation->set_rules('Email_ID','Email ID','required|valid_email');
-		$this->form_validation->set_rules('Mob1','Mobile 1','required|numeric');
-		$this->form_validation->set_rules('Mob2','Mobile 2','numeric');
+		$this->form_validation->set_rules('Mob1','Mobile 1','required|numeric|min_length[10]|max_length[10]');
+		$this->form_validation->set_rules('Mob2','Mobile 2','numeric|min_length[10]|max_length[10]');
 		$this->form_validation->set_rules('School_ID','School ID','required');
 		$this->form_validation->set_rules('Class_ID','Class & Section','required');
 		$this->form_validation->set_rules('Candidate_Type_ID','Candidate Type','required');

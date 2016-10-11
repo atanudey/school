@@ -4,9 +4,9 @@
 <div class="bodyPanel">
 	<div class="loginPanelOuter">
 		<div id="login" class="loginPanelInner">
-			<h1>Thank you for registering with Educare!</h1>
+			<h1>Welcome to Educare!</h1>
 			<div class="fldRow">
-				<p>You have successfully registered. Please check your email inbox to confirm your email address.</p>
+				<p>Thank You! You have successfully registered. Please wait for your profile to get activated.</p>
 			</div>
 		</div>
 	</div><!-- .loginPanelOuter -->

@@ -15,7 +15,7 @@ class Edu_class extends MY_Controller
     {
         $data['educlasses'] = $this->Edu_class_model->get_all_educlasses();
 
-        $this->load->template('educlass/index',$data);
+        $this->load->template('edu_class/index',$data);
     }
 
     /*
@@ -35,7 +35,7 @@ class Edu_class extends MY_Controller
         }
         else
         {
-            $this->load->template('educlass/add');
+            $this->load->template('edu_class/add');
         }
     }  
 
@@ -63,7 +63,7 @@ class Edu_class extends MY_Controller
             {   
                 $data['educlass'] = $this->Edu_class_model->get_educlass($ID);
     
-                $this->load->template('educlass/edit',$data);
+                $this->load->template('edu_class/edit',$data);
             }
         }
         else

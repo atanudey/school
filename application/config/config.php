@@ -1,6 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
-
+defined('BASEPATH') OR exit('No direct script accss allowed');
 /*
 |--------------------------------------------------------------------------
 | Base Site URL
@@ -17,7 +16,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | environments.
 |
 */
-$config['base_url'] = 'http://localhost/school/';
+$config['base_url'] = 'http://192.168.1.200/oth/educare/';
 $config['site_email'] = "info@krpsolutions.co.in";
 $config['site_email_name'] = "Educare Admin";
 

@@ -3,8 +3,8 @@
 		$('#school_list').DataTable({
 			"columns": [
 				{ "width": "10%" },
-				{ "width": "15%" },
-				{ "width": "30%" },
+				{ "width": "20%" },
+				{ "width": "20%" },
 				{ "width": "10%" },
 				{ "width": "10%" },
 				{ "width": "10%" },
@@ -24,7 +24,7 @@
 			<tr>
 				<th>ID</th>
 				<th>School Name</th>
-				<th>Description</th>
+				<th>Contact</th>
 				<th>Address1</th>
 				<th>Address2</th>
 				<th>No Of Students</th>
@@ -36,7 +36,7 @@
 		<tr>
 			<td><?php echo $s['ID']; ?></td>
 			<td><?php echo $s['School_Name']; ?></td>
-			<td><?php echo $s['Description']; ?></td>
+			<td><?php echo $s['Contact']; ?></td>
 			<td><?php echo $s['Address1']; ?></td>
 			<td><?php echo $s['Address2']; ?></td>
 			<td><?php echo $s['No_Of_Students']; ?></td>

@@ -91,7 +91,7 @@ class Candidate_model extends CI_Model
 
     private function _get_datatables_query()
 	{	
-		$this->db->from($this->school_id.'_candidate');
+		$this->db->from($this->school_id.'_Candidate');
 		$i = 0;
 		foreach ($this->column_search as $item) // loop column 
 		{
@@ -144,7 +144,7 @@ class Candidate_model extends CI_Model
 
 	public function count_all()
 	{
-		$this->db->from($this->school_id.'_candidate');
+		$this->db->from($this->school_id.'_Candidate');
 		return $this->db->count_all_results();
 	}
 }

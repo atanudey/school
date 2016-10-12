@@ -24,6 +24,16 @@
             $("#class_section_block").find('input').each(function () {
                 $(this).prop('disabled', true);
             });
+			
+			$('.dateOption').find('input').each(function(){
+                if ($(this).val() != 'mly') {
+                    $(this).prop('disabled', false);
+				} else {
+					$(this).prop('checked', true);					
+				}
+			});
+			
+			$.fn.changeCalendar('mly');
         });
 
         $("#report_type_class").on('click', function(){
@@ -38,13 +48,23 @@
             $(".select_all").find('input').each(function () {
                 $(this).prop('disabled', false);
             });
+			
+			$('.dateOption').find('input').each(function(){
+                if ($(this).val() != 'mly') {
+                    $(this).prop('disabled', false);
+				} else {
+					$(this).prop('checked', true);					
+				}
+			});
+			
+			$.fn.changeCalendar('mly');
         });
 
         $("#report_type_student").on('click', function(){
             $(this).closest('.reportInner').find('.row').show(); 
             $(this).closest('.reportInner').find( "[type=checkbox]" ).prop('checked', false); 
-
-            $("#class_section_block").find('input').each(function () {
+			
+            $("#class_section_block").find('.class_block').find('input').each(function () {				
                 $(this).prop('disabled', false);
             }); 
 
@@ -52,9 +72,15 @@
             $('#select_all_section').prop('disabled', true);  
 
             $('.dateOption').find('input').each(function(){
-                if ($(this).val() != 'mly')
+                if ($(this).val() != 'mly') {
                     $(this).prop('disabled', true);
-            });
+				} else {
+					$(this).prop('checked', true);					
+				}
+			});
+			
+			$.fn.changeCalendar('mly');
+			
         });
 
         $("#class_section_block").find(".select_all").on('change', function(){             
@@ -68,9 +94,9 @@
             $(this).closest('.reportHeading').next().find(".checkbox_cst").prop('checked', $(this).prop("checked"));
         });
 
-        $('.checkbox_cst').on('change', function(){         
-            if(false == $(this).prop("checked")){
-                $(this).closest('.reportBlockContent').prev().find('.select_all').prop('checked', false);
+        $('.checkbox_cst').on('change', function(){ 						
+            if(false == $(this).prop("checked")){				
+                $(this).closest('.reportBlockContent').prev().find('.select_all').prop('checked', false);				
             }
 
             if ($(this).closest('.reportBlockContent').find('.checkbox_cst:checked').size() == $(this).closest('.reportBlockContent').find('.checkbox_cst').size() ){
@@ -162,8 +188,8 @@
                 
         $('.checkbox_cst').on('change', function() {
             if ($('#report_type_student').prop('checked')) {            
-                var classes = [], sections = [];
-
+                var classes = [], sections = [];				
+				
                 $.each($('input[name=class\\[\\]]:checked'), function(){
                     classes.push($(this).val());
                 });
@@ -171,6 +197,20 @@
                 $.each($('input[name=section\\[\\]]:checked'), function(){
                     sections.push($(this).val());
                 });
+				
+				if (classes.length > 0 && $(this).prop('checked') == true) {
+					$("#class_section_block").find('.section_block').find('input').each(function () {				
+						$(this).prop('disabled', false);
+						$(this).prop('checked', true);
+					});
+				} else if (classes.length == 0 && $(this).prop('checked') == false) {					
+					$("#class_section_block").find('.section_block').find('input').each(function () {		
+						$(this).prop('checked', false);
+						$(this).prop('disabled', true);
+					});
+					
+					classes = sections = [];
+				}
 
                 $("#student_container").empty();
                 $("#student_container").append("<div class='wait'> Getting list of students. Be Patient! </div>");
@@ -219,7 +259,7 @@
                     </div>
                 </div>
                 <div class="row" id="class_section_block">
-                    <div class="col-sm-6">
+                    <div class="col-sm-6 class_block">
                         <div class="borderdWhiteBox">
                             <div class="reportHeading">
                                 <div class="checkbox-inline"> <label><input type="checkbox" name="select_all_class" id="select_all_class" class="select_all" value="class">Class (Select All)</label></div>
@@ -236,7 +276,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-6 section_block">
                         <div class="borderdWhiteBox">
                             <div class="reportHeading">
                                 <div class="checkbox-inline"> <label><input type="checkbox" name="select_all_section" id="select_all_section" class="select_all" value="section">Section (Select All)</label></div>

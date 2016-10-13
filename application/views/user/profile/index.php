@@ -1,8 +1,9 @@
 <div class="bodyPanel">
+	
+	<div class="container tblwrap">
 	<div class="headingText">
 		<h1>Update Profile </h1>
 	</div>
-	<div class="container tblwrap">
 	<div class="innerPanel">
 		<div class="errorBox"><?php echo validation_errors(); ?></div>
 			<?php echo form_open('user/profile/',array("class"=>"form-horizontal")); ?>

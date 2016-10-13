@@ -1005,18 +1005,19 @@ color:#fff !important;
 	border:1px solid #bebebe;
 	}
 .adminDropdown{
-	width: 280px;
+	width: 260px;
 	padding: 10px 10px !important;
 	text-align:left;
 	right:0;
 	overflow: hidden;
 	}
 .adminDropdown ul .updateBtn{
-	float: left;
-	width: 60%;
+	/*float: left;
+	width: 60%;*/
 }
 .adminDropdown ul .updateBtn a{
-	color: #FFF;
+	/*color: #FFF;*/
+	color: #000;
 	text-decoration: none!important;
 }
 .adminDropdown ul .logOutBtn{
@@ -1178,12 +1179,7 @@ color:#fff !important;
 	color:#fff;
 	}
 
-.homePage .mainHeading img{
-	float:left;
-	margin:0 20px 20px 0;
-	}
-.homePage .headingText{
-	float:left;
+.homePage .mheadingText
 }
 .homePage .mainContent p{
 	padding-bottom:20px !important;
@@ -1312,10 +1308,18 @@ color:#fff !important;
         height: 100% !important;
     }
 .homePage .topLinks li .adminDropdown ul li{
-	display:block;
+	border-bottom: 1px solid #ccc;
+    display: block;
+    padding: 7px 8px;
 	}
+.homePage .topLinks li .adminDropdown ul li a{
+	text-decoration: none!important;
+}
+.homePage .topLinks li .adminDropdown ul li:last-child{
+	border-bottom: 0;
+}
 .adminDropdown .updateBtn{
-	background: #102e7b;
+	/*background: #102e7b;
     padding: 10px 20px;
     font-size: 14px;
     line-height: 22px;
@@ -1329,14 +1333,14 @@ color:#fff !important;
     text-transform: uppercase;
     transition: all 0.5s ease-in;
 	text-decoration:none;
-	margin-bottom:3px;
+	margin-bottom:3px;*/
 	}
 .adminDropdown .updateBtn:hover{
-	background:#081f5a;
+	/*background:#081f5a;*/
 	text-decoration:none !important;
 	}
 .adminDropdown .logOutBtn{
-	background: #eb4141;
+	/*background: #eb4141;
     padding: 10px 20px;
     font-size: 14px;
     line-height: 22px;
@@ -1349,10 +1353,10 @@ color:#fff !important;
     text-align: center;
     text-transform: uppercase;
     transition: all 0.5s ease-in;
-	text-decoration:none;
+	text-decoration:none;*/
 	}
 .adminDropdown .logOutBtn:hover{
-	background:#ce2020;
+	/*background:#ce2020;*/
 	text-decoration:none !important;
 	}
 

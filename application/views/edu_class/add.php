@@ -1,12 +1,13 @@
 <div class="bodyPanel">
-	<div class="headingText">
+	
+  <div class="container tblwrap">
+  	<div class="headingText">
   	<?php if (!empty($candidate['Candidate_ID'])) { ?>
 	  	<h1>Edit Class & Section</h1>
 	<?php } else { ?>
 		<h1>Add Class & Section</h1>
 	<?php } ?>	
   </div>
-  <div class="container tblwrap">
     <div class="innerPanel">
 	<div class="errorBox"><?php echo validation_errors(); ?></div>
 <?php echo form_open('edu_class/add/', array("class"=>"form-horizontal")); ?>

@@ -9,10 +9,11 @@
 <?php } ?>
 <!--body panel starts -->
 <div class="bodyPanel">
-    <div class="headingText">
-        <h1>Change Password</h1>
-    </div>
+    
     <div class="container tblwrap">
+        <div class="headingText">
+            <h1>Change Password</h1>
+        </div>
         <div class="innerPanel">
             <div class="errorBox"><?php echo validation_errors(); ?></div>
             <?php echo form_open('user/change_password',array("class"=>"form-horizontal")); ?>

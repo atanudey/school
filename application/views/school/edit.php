@@ -1,8 +1,11 @@
 <div class="bodyPanel">
-  <div class="headingText">
-	<h1>Edit School</h1>	
-</div>
-  <div class="container tblwrap"> <?php echo form_open('school/edit/'.$school['ID'],array("class"=>"form-horizontal")); ?>
+  
+  <div class="container tblwrap"> 
+    <div class="headingText">
+      <h1>Edit School</h1>  
+    </div>
+
+    <?php echo form_open('school/edit/'.$school['ID'],array("class"=>"form-horizontal")); ?>
     <div class="innerPanel">
       <div class="errorBox"><?php echo validation_errors(); ?></div>
       <div class="form-group">

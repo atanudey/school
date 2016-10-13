@@ -1,6 +1,6 @@
 @charset "utf-8";
 /* CSS Document */
-/*-----------------------------------------------------------------Admin Pages Style Starts-----------------------------------------------------------------*/
+/*------------------------Admin Pages Style Starts--------------------------*/
 @media (max-width: 1000px) {
 .dateOption{
 	float:none;
@@ -63,7 +63,7 @@
 
 }
 
-/*-----------------------------------------------------------------Admin Pages Style Ends-----------------------------------------------------------------*/
+/*------------------------Admin Pages Style Ends--------------------------*/
 /*-------------Theme 1 Home Style Starts----------------*/
 @media (max-width: 975px) {
 .homePage .themeSelect li{
@@ -135,9 +135,26 @@
 	}
 }
 @media (max-width: 460px) {
-.homePage .topLinks > li{
-	background:none;
-	
+	.homePage .topLinks > li{
+		background:none;
+		
+	}
 }
+
+@media (max-width: 500px) {
+	.theme1 .btmBtnsInner .signUpBtn, 
+	.theme2 .btmBtnsInner .signUpBtn, 
+	.theme3 .btmBtnsInner .signUpBtn{
+		float: left;
+		width: 45%;
+	}
+	.theme1 .btmBtnsInner .updateProfileBtn, 
+	.theme2 .btmBtnsInner .updateProfileBtn, 
+	.theme3 .btmBtnsInner .updateProfileBtn{
+		float: right;
+		width: 45%;
+	}
 }
+
+
 /*-------------Theme 1 Home Style Ends----------------*/

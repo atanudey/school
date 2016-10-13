@@ -1,8 +1,9 @@
 <div class="bodyPanel">
-  <div class="headingText">
-	<h1>Add School</h1>	
-</div>
+
   <div class="container tblwrap">
+    <div class="headingText">
+      <h1>Add School</h1> 
+    </div>
     <div class="innerPanel">
       <div class="errorBox"><?php echo validation_errors(); ?></div>
       <?php echo form_open('school/add',array("class"=>"form-horizontal")); ?>

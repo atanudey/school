@@ -22,10 +22,11 @@
     	});
 	});
 </script>
-<div class="headingText">
-	<h1>List of Candidates</h1>	
-</div>
+
 <div class="container tblwrap">
+	<div class="headingText">
+		<h1>List of Candidates</h1>	
+	</div>
 	<a href="<?php echo site_url('candidate/addedit'); ?>" class="btn btn-success add"><i class="fa fa-plus" aria-hidden="true"></i>Add</a>
 	<table id="candidate_list" class="table table-striped table-bordered">
 		<thead>

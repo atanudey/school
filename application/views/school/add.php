@@ -32,6 +32,12 @@
         </div>
       </div>
       <div class="form-group">
+        <label for="Contact" class="col-md-3">Contact Number</label>
+        <div class="col-md-8">
+          <input type="text" name="Contact" value="<?php echo $this->input->post('Contact'); ?>" class="form-control" id="Contact" />
+        </div>
+      </div>
+      <div class="form-group">
         <label for="State" class="col-md-3">State</label>
         <div class="col-md-8">
           <select name="State" class="form-control">

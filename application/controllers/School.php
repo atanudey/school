@@ -25,10 +25,11 @@ class School extends MY_Controller
 
 		$this->form_validation->set_rules('School_Name','School Name','required');
 		$this->form_validation->set_rules('Description','Description','required');
-		$this->form_validation->set_rules('Address1','Address1','required');
-		$this->form_validation->set_rules('Address2','Address2','required');
+		$this->form_validation->set_rules('Address1','Address 1','required');
+		$this->form_validation->set_rules('Address2','Address 2','required');
+        $this->form_validation->set_rules('Contact','Contact Number','required|numeric|min_length[10]|max_length[10]');
 		$this->form_validation->set_rules('State','State','required');
-		$this->form_validation->set_rules('Pin','Pin','numeric');
+		$this->form_validation->set_rules('Pin','Pin','required|numeric');
 		$this->form_validation->set_rules('No_Of_Students','No Of Students','numeric');
 		$this->form_validation->set_rules('No_Of_Machines','No Of Machines','numeric');
 		$this->form_validation->set_rules('Event_Active','Event Active','required');
@@ -40,6 +41,7 @@ class School extends MY_Controller
 				'Description' => $this->input->post('Description'),
 				'Address1' => $this->input->post('Address1'),
 				'Address2' => $this->input->post('Address2'),
+                'Contact'  => $this->input->post('Contact'),
 				'State' => $this->input->post('State'),
 				'Pin' => $this->input->post('Pin'),
 				'No_Of_Students' => $this->input->post('No_Of_Students'),
@@ -74,6 +76,7 @@ class School extends MY_Controller
 			$this->form_validation->set_rules('Description','Description','required');
 			$this->form_validation->set_rules('Address1','Address1','required');
 			$this->form_validation->set_rules('Address2','Address2','required');
+            $this->form_validation->set_rules('Contact','Contact Number','required|numeric|min_length[10]|max_length[10]');
 			$this->form_validation->set_rules('State','State','required');
 			$this->form_validation->set_rules('Pin','Pin','numeric');
 			$this->form_validation->set_rules('No_Of_Students','No Of Students','numeric');
@@ -87,6 +90,7 @@ class School extends MY_Controller
 					'Description' => $this->input->post('Description'),
 					'Address1' => $this->input->post('Address1'),
 					'Address2' => $this->input->post('Address2'),
+                    'Contact'  => $this->input->post('Contact'),
 					'State' => $this->input->post('State'),
 					'Pin' => $this->input->post('Pin'),
 					'No_Of_Students' => $this->input->post('No_Of_Students'),

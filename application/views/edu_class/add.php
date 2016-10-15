@@ -8,7 +8,11 @@
   </div>
   <div class="container tblwrap">
     <div class="innerPanel">
-      <div class="errorBox"><?php echo validation_errors(); ?></div>
+      <div class="errorBox">
+        <ul>
+          <?php echo validation_errors('<li>', '</li>'); ?>
+        </ul>
+      </div>
       <?php echo form_open('edu_class/add/', array("class"=>"form-horizontal")); ?>
       <div class="form-group">
         <label for="Name" class="col-md-4 control-label">Name</label>

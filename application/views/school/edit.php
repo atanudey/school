@@ -4,7 +4,11 @@
   </div>
   <div class="container tblwrap"> <?php echo form_open('school/edit/'.$school['ID'],array("class"=>"form-horizontal")); ?>
     <div class="innerPanel">
-      <div class="errorBox"><?php echo validation_errors(); ?></div>
+      <div class="errorBox">
+        <ul>
+          <?php echo validation_errors('<li>', '</li>'); ?>
+        </ul>
+      </div>
       <div class="form-group">
         <label for="School_Name" class="col-md-3">School Name</label>
         <div class="col-md-8">

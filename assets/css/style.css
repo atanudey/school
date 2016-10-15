@@ -1373,6 +1373,10 @@ color:#fff !important;
 .tblwrap h3{
 	padding-bottom: 30px!important;
 }
+.tblwrap .btn-cancel{
+	background: #d9534f;
+	color: #FFF;
+}
 
 .datarange .well{
 	overflow:hidden;
@@ -1409,6 +1413,27 @@ color:#fff !important;
 .errorBox{
 	color: #eb0000;
 	margin-bottom: 20px;
+	/*background: #ff0;*/
+}
+.errorBox ul{
+	/*padding: 10px 19px;*/
+}
+.errorBox ul li{
+	display: inline-block;
+	position: relative;
+	padding-right: 16px;
+}
+.errorBox ul li:last-child:before{
+	border-right: 0;
+}
+.errorBox ul li:before{
+	border-right: 2px solid #eb0000;
+    content: " ";
+    height: 12px;
+    left: 95%;
+    position: absolute;
+    top: 5px;
+    width: 5px;
 }
 .headingText{
 	padding-bottom: 25px;

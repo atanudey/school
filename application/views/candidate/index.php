@@ -23,29 +23,29 @@
 	});
 </script>
 
-<div class="container tblwrap">
-	<div class="headingText">
-		<h1>List of Candidates</h1>	
-	</div>
-	<a href="<?php echo site_url('candidate/addedit'); ?>" class="btn btn-success add"><i class="fa fa-plus" aria-hidden="true"></i>Add</a>
-	<table id="candidate_list" class="table table-striped table-bordered">
-		<thead>
-			<tr>
-				<td>RFID NO</td>
-				<td>Roll No</td>
-				<td>Candidate Name</td>
-				<td>Address1</td>
-				<td>Address2</td>
-				<td>Guardian Name</td>
-				<td>Mobile</td>
-				<td>Gender</td>
-				<td>Age</td>
-				<td>IN OUT</td>
-				<td>Actions</td>
-			</tr>
-		</thead>
-		<tbody>
-		<?php /* foreach($candidate as $s): ?>
+<div class="bodyPanel">
+  	<div class="container headingText">
+    	<h1>List of Candidates</h1>
+    </div>
+  <div class="container tblwrap"> <a href="<?php echo site_url('candidate/addedit'); ?>" class="btn btn-success add"><i class="fa fa-plus" aria-hidden="true"></i>Add</a>
+    <table id="candidate_list" class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <td>RFID NO</td>
+          <td>Roll No</td>
+          <td>Candidate Name</td>
+          <td>Address1</td>
+          <td>Address2</td>
+          <td>Guardian Name</td>
+          <td>Mobile</td>
+          <td>Gender</td>
+          <td>Age</td>
+          <td>IN OUT</td>
+          <td>Actions</td>
+        </tr>
+      </thead>
+      <tbody>
+        <?php /* foreach($candidate as $s): ?>
 			<tr>
 				<td><?php echo $s['RFID_NO']; ?></td>
 				<td><?php echo $s['Roll_No']; ?></td>
@@ -63,6 +63,7 @@
 				</td>
 			</tr>
 		<?php endforeach; */ ?>
-		</tbody>
-	</table>
+      </tbody>
+    </table>
+  </div>
 </div>

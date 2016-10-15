@@ -1,9 +1,8 @@
 <div class="bodyPanel">
-
+  <div class="container headingText">
+    <h1>Add School</h1>
+  </div>
   <div class="container tblwrap">
-    <div class="headingText">
-      <h1>Add School</h1> 
-    </div>
     <div class="innerPanel">
       <div class="errorBox"><?php echo validation_errors(); ?></div>
       <?php echo form_open('school/add',array("class"=>"form-horizontal")); ?>
@@ -54,7 +53,7 @@
               echo '<option value="'.$value.'" '.$selected.'>'.$display_text.'</option>';
             } 
             ?>
-				  </select>          
+          </select>
         </div>
       </div>
       <div class="form-group">
@@ -101,8 +100,7 @@
       <div class="form-group">
         <div class="col-sm-offset-3 col-sm-6">
           <button type="submit" class="btn btn-success">Save</button>
-          <a href="<?= base_url('school'); ?>" class="btn btn-cancel" >Cancel</a>
-        </div>
+          <a href="<?= base_url('school'); ?>" class="btn btn-cancel" >Cancel</a> </div>
       </div>
       <?php echo form_close(); ?> </div>
   </div>

@@ -1024,14 +1024,14 @@ color:#fff !important;
 	border: 0;
 }
 .theme1 .adminDropdown .updateBtn{
-	background: #069b99;
+	/*background: #069b99;*/
 }
 .theme1 .adminDropdown .updateBtn:hover{
-	background: #0b7a78;
+	/*background: #0b7a78;*/
 }
 .homePage .dropDownMenu ul li{
 	padding-bottom:5px;
-	}
+}
 .homePage .dropDownMenu ul li a{
 	color: #646464;
 	padding:5px 20px;
@@ -1179,8 +1179,7 @@ color:#fff !important;
 	color:#fff;
 	}
 
-.homePage .mheadingText
-}
+
 .homePage .mainContent p{
 	padding-bottom:20px !important;
 	}
@@ -1365,6 +1364,9 @@ color:#fff !important;
 .tblwrap {
 	padding: 40px 0;	
 }
+.tblwrap .btn{
+	padding: 4px 8px;	
+}
 .tblwrap .add{
 	margin-bottom: 20px;
 }
@@ -1401,7 +1403,17 @@ color:#fff !important;
 	max-width: 600px;
 	margin: 0 auto;
 }
+.innerPanel .form-horizontal .control-label{
+	text-align: left;
+}
 .errorBox{
 	color: #eb0000;
 	margin-bottom: 20px;
+}
+.headingText{
+	padding-bottom: 25px;
+}
+.headingText h1{
+	color: #FFF;
+	font-size: 30px;
 }

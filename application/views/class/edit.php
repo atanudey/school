@@ -1,4 +1,4 @@
-<div class="headingText">
+<div class="container headingText">
 	<h1>Edit Class</h1>	
 </div>
 <?php echo form_open('class/edit/'.$class['ID'],array("class"=>"form-horizontal")); ?>

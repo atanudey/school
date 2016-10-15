@@ -1,5 +1,5 @@
 <div class="bodyPanel">
-	<div class="headingText">
+	<div class="container headingText">
   	<?php if (!empty($candidate['Candidate_ID'])) { ?>
 	  	<h1>Edit Class & Section</h1>
 	<?php } else { ?>

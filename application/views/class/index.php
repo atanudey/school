@@ -1,4 +1,4 @@
-<div class="headingText">
+<div class="container headingText">
 	<h1>List of Classes</h1>	
 </div>
 

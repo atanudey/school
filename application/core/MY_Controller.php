@@ -30,6 +30,10 @@ class MY_Controller extends CI_Controller {
         
             $allowed = $this->user_privilege_model->get_allowed_controllers_methods($sess_user["user"]->User_Type_ID);
 
+            $screens = $this->user_privilege_model->get_allowed_screens($sess_user["user"]->User_Type_ID);
+
+            //print_r($screens);
+
             //Allowing login method because it will check
             $allowed[]['method'] = 'login';
             $allowed[]['method'] = 'home';

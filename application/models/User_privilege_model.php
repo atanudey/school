@@ -24,14 +24,6 @@ Class User_privilege_model extends CI_Model {
         return $this->get_user_privileges($params);
     }
 
-    function get_child_menu($parent_id, $user_type_id) {
-        $params['P.User_Type_ID'] = $user_type_id;
-        $params['S.Parent_ID'] = $parent_id;
-        $params['P.Is_Active'] = '1';
-        
-        return $this->get_user_privileges($params);
-    }
-
     function get_allowed_screens($user_type_id) {
         $screens = array();
         $data = $this->get_user_privileges_by_type($user_type_id);
@@ -45,15 +37,14 @@ Class User_privilege_model extends CI_Model {
             $controllers['URI'] = $val['Uri'];
             $controllers['PID'] = $val['Parent_ID'];
 
-            if (intval($val['Parent_ID']) > 0 && $screens[count($screens) - 1]['ID'] == $val['Parent_ID']) {
-                $child = $this->get_child_menu($val['Parent_ID'], $user_type_id);
-                $screens[count($screens) - 1]['children'][] = $controllers;
+            if (intval($val['Parent_ID']) > 0) {
+                $screens[$val['Parent_ID']]['children'][] = $controllers;
             } else if(intval($val['Parent_ID']) == 0) {         
-                $screens[$i] = $controllers;       
+                $screens[$val['SID']] = $controllers;       
                 $i++;
             }
         }
-
+        
         return $screens;
     }
 

@@ -36,8 +36,9 @@ class Report_model extends CI_Model {
 
 		//echo "CALL " . $sp_name . "('".implode("','", $params)."')"; die;
 
-		$this->db->query("CALL " . $sp_name . "('".implode("','", $params)."')");
-		$query = $this->db->query("SELECT * FROM ". $table_name);		
+		$query = $this->db->query("CALL " . $sp_name . "('".implode("','", $params)."')");
+		//$this->db->query("SELECT * FROM ". $table_name);	
+			
 		return $query->result_array();
 	}
 }

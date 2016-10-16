@@ -63,6 +63,55 @@ $config['indian_all_states']  = array (
  'PY' => 'Puducherry',
 );
 
+/*$config['controller_methods'] = array (
+    "candidate" => array (
+        "List Candidate" => "index",
+        "List Candidate (Ajax)" => "ajax_list",
+        "Add Candidate" => "addedit",
+        "3" => "remove"
+    ),
+    "candidate_type" => array (
+        "0" => "index",
+        "1" => "add",
+        "2" => "edit",
+        "3" => "remove"        
+    ),
+    "edu_class" => array (
+        "0" => "index",
+        "1" => "add",
+        "2" => "edit",
+        "3" => "remove"
+    ),
+    "report" => array (
+        "0" => "index",            
+        "1" => "generate"
+    ),
+    "school" => array (
+        "0" => "index",
+        "1" => "add",
+        "2" => "edit",
+        "3" => "remove"
+    ),
+    "user" => array (
+        "0" => "index",
+        "1" => "register",
+        "2" => "profile",
+        "3" => "login",
+        "4" => "logout",
+        "5" => "home",
+        "6" => "forgot",
+        "7" => "reset",
+        "8" => "reset_password",
+        "9" => "change_password"
+    ),
+    "user_type" => array (
+        "0" => "index",
+        "1" => "add",
+        "2" => "edit",
+        "3" => "remove"
+    )
+);*/
+
 /*
 |--------------------------------------------------------------------------
 | Index File

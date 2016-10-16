@@ -51,7 +51,7 @@
 	</head>
 
 	<body class="theme1 homePage">
-		<!--top nav panel starts-->
+        <!--top nav panel starts-->
         <div class="topNavPanel">
             <div class="container">
                 <div class="row">
@@ -98,26 +98,45 @@
                                 <h2><a href="<?= base_url('home') ?>">KRP Educare</a></h2>
                             <?php } ?>
                         </div>
-                    </div>
-                    <div class="col-xs-6">
+                    </div>                    
+                    <div class="col-xs-6">                        
 						<?php if (!empty($session_user['logged_in']) 
                                     && $session_user['logged_in'] === true
-                                    && $session_user["user"]->User_Type_ID != 3) { ?>
-                        <span class="navBar"></span>
+                                    && $session_user["user"]->User_Type_ID != 3) { ?>     
+                                                       
+                        <?php $type = $session_user["user"]->User_Type_ID; ?>
+                        <span class="navBar"></span>                        
                         <div class="dropDownMenu">
-                            <ul>
-                                <li><a href="#">School Events</a></li>
-                                <li><a href="<?= base_url('candidate') ?>">School Candidates</a></li>
-                                <li><a href="#">School Point of Contact</a></li>
-                                <li><a href="<?= base_url('edu_class') ?>">Class Master</a></li>
-                                <li><a href="<?= base_url('school') ?>">School Master</a><li>
-                                <li class="subMenu"><a href="#">Report</a>
-                                    <ul>
-                                        <li><a href="<?= base_url('report') ?>">Attendance Report</a> </li>
-                                        <li><a href="#">Missing Report</a></li>
-                                    </ul>
-                                </li>        
-                            </ul>                            
+                            <?php
+                                $CI =& get_instance();  
+                                $CI->load->library('menu');
+                                echo $CI->menu->build_menu($type);
+                            ?>
+                            <!--<ul>                                
+                                <?php if ($type == 1) { ?>
+                                    <li><a href="#">School Events</a></li>
+                                <?php } ?>
+                                <?php if ($type == 1 || $type == 2) { ?>
+                                    <li><a href="<?= base_url('candidate') ?>">School Candidates</a></li>
+                                <?php } ?>
+                                <?php if ($type == 1) { ?>
+                                    <li><a href="#">School Point of Contact</a></li>
+                                <?php } ?>
+                                <?php if ($type == 1 || $type == 2) { ?>
+                                    <li><a href="<?= base_url('edu_class') ?>">Class Master</a></li>
+                                <?php } ?>
+                                <?php if ($type == 1) { ?>
+                                    <li><a href="<?= base_url('school') ?>">School Master</a><li>
+                                <?php } ?>
+                                <?php if ($type == 1 || $type == 2) { ?>
+                                    <li class="subMenu"><a href="#">Report</a>
+                                        <ul>
+                                            <li><a href="<?= base_url('report') ?>">Attendance Report</a> </li>
+                                            <li><a href="#">Missing Report</a></li>
+                                        </ul>
+                                    </li>
+                                <?php } ?>   
+                            </ul>-->                            
                         </div>
 						<?php } ?>
                     </div>

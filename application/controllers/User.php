@@ -435,5 +435,5 @@ class User extends MY_Controller {
 		} 
 
 		return TRUE;
-	}
+	}	
 }

@@ -14,6 +14,8 @@ class MY_Controller extends CI_Controller {
     function __construct()
     {
         parent::__construct();
+        //print_r($this->config->item('controller_methods'));
+
         if ( ! $this->session->userdata('logged_in'))
         {			
             $allowed = array('login', 'register', 'forgot', 'reset');
@@ -21,16 +23,44 @@ class MY_Controller extends CI_Controller {
                 redirect('login');
             }
         } else {
-            $allowed = $this->checkPermission();
-            
+            $sess_user = $this->session->userdata();
+
+            //Fetch permission list from User_Privilege table
+            $this->load->model('user_privilege_model');
+        
+            $allowed = $this->user_privilege_model->get_allowed_controllers_methods($sess_user["user"]->User_Type_ID);
+
             //Allowing login method because it will check
-            //$allowed[] = 'login';
-            //$allowed[] = 'home';
+            $allowed[]['method'] = 'login';
+            $allowed[]['method'] = 'home';
+
+            $allowed[]['controller'] = 'user';
+            $allowed[]['method'] = 'permission';
 
             //if ( ! in_array($this->router->fetch_method(), $allowed)) {
-            if ( ! in_array($this->router->fetch_class(), $allowed)) {
+            /*if ( ! in_array($this->router->fetch_class(), $allowed)) {
                 redirect('user/permission');
+            }*/
+
+            //print_r($allowed); die;
+
+            $found = 0;
+            foreach($allowed as $valid_controller) {
+                if (!empty($valid_controller['controller']) && !empty($valid_controller['method'])) {
+                    if ($this->router->fetch_class() == $valid_controller['controller'] && $this->router->fetch_method() == $valid_controller['method'])
+                        $found = 1;
+                } else if (!empty($valid_controller['controller'])) {
+                    if ($this->router->fetch_class() == $valid_controller['controller'])
+                        $found = 1;
+                } else if (!empty($valid_controller['method'])) {
+                    if ($this->router->fetch_method() == $valid_controller['method'])
+                        $found = 1;
+                }
             }
+
+            //echo $found; die;
+
+            if (!$found) redirect('user/permission');
         }
 
         //Fetching school information for admin user
@@ -45,45 +75,15 @@ class MY_Controller extends CI_Controller {
             $this->school_id = intval($this->session->userdata('school_id'));
         }
 
-        $this->load->vars(  array(
-                'school_list' => $this->getSchools(),
+        $this->load->vars( array(
+                'school_list' => $this->school_model->get_all_school(),
                 'session_user' => $this->session->userdata()
             )
         );        
     }
 
-    function checkPermission() {
-        $sess_user = $this->session->userdata();
-
-        //GET List of all controller names
-        /*
-        $controllers = array();
-        
-        $this->load->helper('file');
-
-        // Scan files in the /application/controllers directory
-        // Set the second param to TRUE or remove it if you 
-        // don't have controllers in sub directories
-        $files = get_dir_file_info(APPPATH.'controllers', FALSE);
-
-        // Loop through file names removing .php extension
-        foreach (array_keys($files) as $file)
-        {
-            $controllers[] = strtolower(str_replace('.php', '', $file));
-        }
-
-        print_r($controllers); // Array with all our controllers
-        */
-
-        //Fetch permission list from User_Privilege table
-        $this->load->model('user_privilege_model');
-        
-        $privileges = $this->user_privilege_model->get_allowed_controllers($sess_user["user"]->User_Type_ID);
-
-        return $privileges;
-    }
-
-    function getSchools() {	
-		return $this->school_model->get_all_school();
-	}
+    /*function list_controller() {
+		$this->load->library('controllerlist'); // Load the library
+		$this->config->set_item('controller_methods', $this->controllerlist->getControllers());
+	}*/
 }

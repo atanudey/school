@@ -15,7 +15,7 @@
       </div>
       <?php echo form_open('edu_class/add/', array("class"=>"form-horizontal")); ?>
       <div class="form-group">
-        <label for="Name" class="col-md-4 control-label">Name</label>
+        <label for="Name" class="col-md-4 control-label">Class</label>
         <div class="col-md-8">
           <input type="text" name="Name" value="<?php echo $this->input->post('Name'); ?>" class="form-control" id="Name" />
         </div>

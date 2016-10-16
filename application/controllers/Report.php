@@ -261,5 +261,9 @@ class Report extends MY_Controller {
 	       return $customer;
 	    }
 	}
+
+	function missing() {
+		
+	}
 }
 ?>

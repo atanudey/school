@@ -100,11 +100,11 @@ class Candidate_model extends CI_Model
 				if($i===0) // first loop
 				{
 					$this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
-					$this->db->like($item, $_POST['search']['value']);
+					$this->db->like($item, $_POST['search']['value'], 'after');
 				}
 				else
 				{
-					$this->db->or_like($item, $_POST['search']['value']);
+					$this->db->or_like($item, $_POST['search']['value'], 'after');
 				}
 
 				if(count($this->column_search) - 1 == $i) //last loop

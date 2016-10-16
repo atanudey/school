@@ -5,6 +5,9 @@
 </script>
 
 <div class="bodyPanel">
+  <div class="container headingText">
+    <h1>List of Class & Section</h1>
+  </div>
   <div class="container tblwrap"> <a href="<?php echo site_url('edu_class/add'); ?>" class="btn btn-success add"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
     <table id="educlass_list" class="table table-striped table-bordered">
       <thead>

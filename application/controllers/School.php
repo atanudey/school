@@ -24,15 +24,15 @@ class School extends MY_Controller
         $this->load->library('form_validation');
 
 		$this->form_validation->set_rules('School_Name','School Name','required');
-		$this->form_validation->set_rules('Description','Description','required');
+		//$this->form_validation->set_rules('Description','Description','required');
 		$this->form_validation->set_rules('Address1','Address 1','required');
-		$this->form_validation->set_rules('Address2','Address 2','required');
+		//$this->form_validation->set_rules('Address2','Address 2','required');
         $this->form_validation->set_rules('Contact','Contact Number','required|numeric|min_length[10]|max_length[10]');
 		$this->form_validation->set_rules('State','State','required');
 		$this->form_validation->set_rules('Pin','Pin','required|numeric');
-		$this->form_validation->set_rules('No_Of_Students','No Of Students','numeric');
-		$this->form_validation->set_rules('No_Of_Machines','No Of Machines','numeric');
-		$this->form_validation->set_rules('Event_Active','Event Active','required');
+		//$this->form_validation->set_rules('No_Of_Students','No Of Students','numeric');
+		//$this->form_validation->set_rules('No_Of_Machines','No Of Machines','numeric');
+		//$this->form_validation->set_rules('Event_Active','Event Active','required');
 		
 		if($this->form_validation->run())     
         {   
@@ -73,15 +73,15 @@ class School extends MY_Controller
             $this->load->library('form_validation');
 
 			$this->form_validation->set_rules('School_Name','School Name','required');
-			$this->form_validation->set_rules('Description','Description','required');
+			//$this->form_validation->set_rules('Description','Description','required');
 			$this->form_validation->set_rules('Address1','Address1','required');
-			$this->form_validation->set_rules('Address2','Address2','required');
+			//$this->form_validation->set_rules('Address2','Address2','required');
             $this->form_validation->set_rules('Contact','Contact Number','required|numeric|min_length[10]|max_length[10]');
 			$this->form_validation->set_rules('State','State','required');
 			$this->form_validation->set_rules('Pin','Pin','numeric');
-			$this->form_validation->set_rules('No_Of_Students','No Of Students','numeric');
-			$this->form_validation->set_rules('No_Of_Machines','No Of Machines','numeric');
-			$this->form_validation->set_rules('Event_Active','Event Active','required');
+			//$this->form_validation->set_rules('No_Of_Students','No Of Students','numeric');
+			//$this->form_validation->set_rules('No_Of_Machines','No Of Machines','numeric');
+			//$this->form_validation->set_rules('Event_Active','Event Active','required');
 		
 			if($this->form_validation->run())     
             {   

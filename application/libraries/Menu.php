@@ -15,16 +15,25 @@ class Menu {
 
         $menu = '<ul>';
         foreach($privileges as $val) {
+            $url = "#";
+            if (!empty($val['URI'])) {
+                $url = base_url($val['URI']);
+            }
+
             if (!empty($val['children'])) {
-                $menu .= '<li><a href="' . base_url($val['URI']) . '">' . $val['SN'] . '</a>';
+                $menu .= '<li><a href="' . $url . '">' . $val['SN'] . '</a>';
                     $menu .= '<ul>';
                     foreach($val['children'] as $child) {
-                        $menu .= '<li><a href="' . base_url($child['URI']) . '">' . $child['SN'] . '</a></li>';
+                        $url = "#";
+                        if (!empty($child['URI'])) {
+                            $url = base_url($child['URI']);
+                        }
+                        $menu .= '<li><a href="' . $url . '">' . $child['SN'] . '</a></li>';
                     }
                     $menu .= '</ul>';
                 $menu .= '</li>';
             } else {
-                $menu .= '<li><a href="' . base_url($val['URI']) . '">' . $val['SN'] . '</a></li>';
+                $menu .= '<li><a href="' . $url . '">' . $val['SN'] . '</a></li>';
             }
         }
         $menu .= '</ul>';

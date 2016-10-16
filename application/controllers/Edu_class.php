@@ -23,6 +23,11 @@ class Edu_class extends MY_Controller
      */
     function add()
     {   
+        $this->load->library('form_validation');
+
+		$this->form_validation->set_rules('Name','Class','required');
+		$this->form_validation->set_rules('Section','Section','required');
+
         if(isset($_POST) && count($_POST) > 0)     
         {   
             $params = array(
@@ -30,13 +35,14 @@ class Edu_class extends MY_Controller
 				'Section' => $this->input->post('Section'),
             );
             
-            $educlass_id = $this->Edu_class_model->add_educlass($params);
-            redirect('edu_class/index');
+            if($this->form_validation->run())     
+            {
+                $educlass_id = $this->Edu_class_model->add_educlass($params);
+                redirect('edu_class/index');
+            }
         }
-        else
-        {
-            $this->load->template('edu_class/add');
-        }
+        
+        $this->load->template('edu_class/add');
     }  
 
     /*
@@ -46,6 +52,11 @@ class Edu_class extends MY_Controller
     {   
         // check if the educlass exists before trying to edit it
         $educlass = $this->Edu_class_model->get_educlass($ID);
+
+        $this->load->library('form_validation');
+
+		$this->form_validation->set_rules('Name','Class','required');
+		$this->form_validation->set_rules('Section','Section','required');
         
         if(isset($educlass['ID']))
         {
@@ -56,13 +67,15 @@ class Edu_class extends MY_Controller
 					'Section' => $this->input->post('Section'),
                 );
 
-                $this->Edu_class_model->update_educlass($ID,$params);            
-                redirect('edu_class/index');
+                if($this->form_validation->run())     
+                {
+                    $this->Edu_class_model->update_educlass($ID,$params);            
+                    redirect('edu_class/index');
+                }
             }
             else
             {   
                 $data['educlass'] = $this->Edu_class_model->get_educlass($ID);
-    
                 $this->load->template('edu_class/edit',$data);
             }
         }

@@ -744,7 +744,7 @@ color:#fff !important;
 	}
 .reportPanel h2{
 	font-family: 'Roboto', sans-serif;
-	font-size:22px;
+	font-size:30px;
 	line-height:26px;
 	font-weight:normal;
 	color:#fff;
@@ -755,6 +755,7 @@ color:#fff !important;
 	line-height:21px;
 	font-weight:normal;
 	color:#fff;
+	text-align: left;
 	}
 .reportWhiteBox{
 	background:#fff;
@@ -864,6 +865,25 @@ color:#fff !important;
 .dateOption label{
 	padding-top:0;
 	}
+.school_center{
+	text-align: center;
+}
+.school_center h3{
+	padding-bottom: 10!important;
+}
+.admin_common_dd{
+	position: relative;
+}	
+.admin_common_dd #school_id{
+	position: absolute;
+	right: 0;
+	top: 50px;
+	padding: 5px;
+}
+
+
+
+
 /*------------Attendence Report Ends-----------------*/
 
 .theme2 .reportBtnsBtm .processBtn{

@@ -159,7 +159,7 @@
             //print_r($session_user);
             if (!empty($session_user['user']) && $session_user['user']->User_Type_ID == "1") {
         ?>
-        <div>
+        <div class="admin_common_dd container">
             <form id="school_choose" name="school_choose" method="post">
             <select name="school_id" id="school_id" required>
                 <option value="">--- Select School ---</option>

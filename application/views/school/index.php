@@ -2,13 +2,13 @@
 	$(document).ready(function(){
 		$('#school_list').DataTable({
 			"columns": [
-				{ "width": "10%" },
-				{ "width": "20%" },
-				{ "width": "20%" },
-				{ "width": "10%" },
-				{ "width": "10%" },
-				{ "width": "10%" },
+				{ "width": "7%" },
+				{ "width": "19%" },
+				{ "width": "13%" },
+				{ "width": "22%" },
 				{ "width": "15%" },
+				{ "width": "10%" },
+				{ "width": "14%" },
 			]
 		});
 	});
@@ -27,7 +27,7 @@
           <th>Contact</th>
           <th>Address1</th>
           <th>Address2</th>
-          <th>No Of Students</th>
+          <th>Students #</th>
           <th>Actions</th>
         </tr>
       </thead>

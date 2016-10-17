@@ -37,9 +37,8 @@ class Candidate extends MY_Controller
 			$row[] = $candidate->Address2;
 			$row[] = $candidate->Guardian_Name;
 			$row[] = $candidate->Mob1;
-			$row[] = $candidate->Gender;
+			$row[] = ($candidate->Gender == "M") ? "Male":"Female";
 			$row[] = $candidate->Age;
-			$row[] = $candidate->IN_OUT;
 
 			//add html for action
 			$row[] = '<a class="btn btn-info" href="'.site_url('candidate/addedit/edit/'.$candidate->Candidate_ID).'" title="Edit"><i class="glyphicon glyphicon-pencil"></i> Edit</a>
@@ -66,8 +65,8 @@ class Candidate extends MY_Controller
     {   
         $this->load->library('form_validation');
 
-		$this->form_validation->set_rules('RFID_NO','RFID NO','required|numeric');
-		$this->form_validation->set_rules('Roll_No','Roll No','required|numeric');
+		$this->form_validation->set_rules('RFID_NO','RFID #','required|numeric');
+		$this->form_validation->set_rules('Roll_No','Roll #','required|numeric');
 		$this->form_validation->set_rules('Candidate_Name','Candidate Name','required');
 		$this->form_validation->set_rules('Address1','Address1','required');
 		$this->form_validation->set_rules('Pin','Pin','required|numeric');

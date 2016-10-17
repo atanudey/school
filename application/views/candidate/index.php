@@ -31,8 +31,8 @@
     <table id="candidate_list" class="table table-striped table-bordered">
       <thead>
         <tr>
-          <td>RFID NO</td>
-          <td>Roll No</td>
+          <td>RFID #</td>
+          <td>Roll #</td>
           <td>Candidate Name</td>
           <td>Address1</td>
           <td>Address2</td>
@@ -40,7 +40,6 @@
           <td>Mobile</td>
           <td>Gender</td>
           <td>Age</td>
-          <td>IN OUT</td>
           <td>Actions</td>
         </tr>
       </thead>
@@ -56,8 +55,7 @@
 				<td><?php echo $s['Mob1']; ?></td>
 				<td><?php echo $s['Gender']; ?></td>
 				<td><?php echo $s['Age']; ?></td>
-				<td><?php echo $s['IN_OUT']; ?></td>
-				<td width="12%">
+				<td>
 					<a href="<?php echo site_url('candidate/addedit/edit/'.$s['Candidate_ID']); ?>" class="btn btn-info">Edit</a> 
 					<a href="<?php echo site_url('candidate/remove/'.$s['Candidate_ID']); ?>" class="btn btn-danger">Delete</a>
 				</td>

@@ -12,7 +12,7 @@ class Menu {
         $this->ci->load->model('user_privilege_model');
         
         $privileges = $this->ci->user_privilege_model->get_allowed_screens($user_type_id);
-
+        
         $menu = '<ul>';
         foreach($privileges as $val) {
             $url = "#";

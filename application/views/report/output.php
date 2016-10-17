@@ -108,11 +108,13 @@
         });
 	});
 </script>
-<div class="headingText">
-    <h3><?php echo $school["School_Name"]; ?></h3>
-    <p><?php echo $school['Address1'] . ", " . $school['Address2'] . " - ". $school['Pin']; ?></p>
-</div>
+
 <div class="container tblwrap">    
+    <div class="headingText">
+        <h3><?php echo $school["School_Name"]; ?></h3>
+        <p><?php echo $school['Address1'] . ", " . $school['Address2'] . " - ". $school['Pin']; ?></p>
+    </div>
+
     <div class="pull-right">
         <a href="<?php echo site_url('report/prnt'); ?>" target="__blank" class="btn btn-success">Print</a> 
         <a href="<?php echo site_url('report/pdf'); ?>" target="__blank" class="btn btn-success">PDF</a>
@@ -135,7 +137,7 @@
         <?php foreach($report as $s): ?>	
             <?php if ($s['Type'] == "data") { ?>
                 <tr>
-                    <td></td>               
+                    <td>&nbsp;</td>               
                     <td><?php echo $s['Date']; ?></td>
                     <td><?php echo $s['Guardian']; ?></td>
                     <td><?php echo $s['Phone']; ?></td>                    

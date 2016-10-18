@@ -51,6 +51,7 @@
 	</head>
 
 	<body class="theme1 homePage">
+        <?php //print_r($_SESSION); ?>
         <!--top nav panel starts-->
         <div class="topNavPanel">
             <div class="container">
@@ -156,8 +157,11 @@
         </div>
         <!--header slider ends-->    
         <?php
-            //print_r($session_user);
-            if (!empty($session_user['user']) && $session_user['user']->User_Type_ID == "1") {
+            //print_r($session_user);            
+            if (!empty($session_user['user']) 
+                && $this->router->fetch_class() != "user" 
+                && $this->router->fetch_method() != "generate" 
+                && ($session_user['user']->User_Type_ID == "1" || $session_user['user']->User_Type_ID == "4")) {
         ?>
         <div class="admin_common_dd container">
             <form id="school_choose" name="school_choose" method="post">

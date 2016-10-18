@@ -9,7 +9,7 @@
           <?php echo validation_errors('<li>', '</li>'); ?>
         </ul>
       </div>
-      <?php echo form_open('school/add',array("class"=>"form-horizontal")); ?>
+      <?php echo form_open('school/add',array("class"=>"form-horizontal", "name" => "school_frm")); ?>
       <div class="form-group">
         <label for="School_Name" class="col-md-3">School Name</label>
         <div class="col-md-8">

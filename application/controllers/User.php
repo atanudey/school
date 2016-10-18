@@ -259,6 +259,8 @@ class User extends MY_Controller {
 			}			
 		}
 
+		//session_destroy();
+
 		// redirect him to site root
 		redirect('login');		
 	}

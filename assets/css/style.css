@@ -1462,3 +1462,30 @@ color:#fff !important;
 	color: #FFF;
 	font-size: 30px;
 }
+
+.theme1.homePage .topNavPanel{
+	background: #20a276;
+}
+.theme2.homePage .topNavPanel{
+	background: #8b467d;
+}
+.theme3.homePage .topNavPanel{
+	background: #956a52;
+}
+
+.homePage .themeSelect{
+	color: #FFF;
+}
+.homePage .topLinks, .homePage .topLinks li a{
+	color: #FFF;
+}
+
+.theme1.homePage .logo h2 a{
+	color: #20a276;
+}
+.theme2.homePage .logo h2 a{
+	color: #8b467d;
+}
+.theme3.homePage .logo h2 a{
+	color: #956a52;
+}

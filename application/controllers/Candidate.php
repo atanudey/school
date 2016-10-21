@@ -115,10 +115,10 @@ class Candidate extends MY_Controller
 		if($this->form_validation->run())     
         {      
 			if (!empty($mode) && $mode == "edit") {				
-				$this->candidate_model->update_candidate($Candidate_ID,$params);            
+				$this->candidate_model->update_candidate($Candidate_ID,$params);				           
                 redirect('candidate/index');
 			} else {    
-            	$candidate_id = $this->candidate_model->add_candidate($params);
+            	$candidate_id = $this->candidate_model->add_candidate($params);				
             	redirect('candidate/index');
 			}			
         }

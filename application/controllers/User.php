@@ -167,8 +167,9 @@ class User extends MY_Controller {
 				$user = $this->user_model->get_user(array('login.ID' => $sess_user->ID));
 				$this->session->set_userdata("user", $user);
 
-				redirect("user/profile");
+				$this->session->set_flashdata('flashInfo', 'Your profile has been successfully updated.');
 
+				redirect("user/profile");
 			} else {				
 				// user update failed, this should never happen
 				$data["error"] = 'There was a problem updating your profile. Please try again.';											
@@ -419,6 +420,7 @@ class User extends MY_Controller {
 		if($this->form_validation->run()){
 			$this->reset_password($sess_user->ID, $this->input->post('password'));
 			$data['success'] = true;
+			$this->form_validation->set_message('success', 'Your password has been changed successfully');
 		}
 
 		$this->load->template('user/profile/change_password', $data);

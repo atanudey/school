@@ -1,9 +1,12 @@
 <div class="bodyPanel">
+  <div class="container headingText">
+    <h1>Update Profile</h1>
+  </div>
   <div class="container tblwrap">
-    <div class="headingText">
-      <h1>Update Profile </h1>
-    </div>
     <div class="innerPanel">
+      <?php if($this->session->flashdata('flashInfo')): ?>
+      <p class='flashMsg flashInfo'> <?php echo $this->session->flashdata('flashInfo'); ?> </p>
+      <?php endif ?>
       <div class="errorBox">
         <ul>
           <?php echo validation_errors('<li>', '</li>'); ?>
@@ -14,10 +17,12 @@
         <label class="col-md-4 control-label">User Type</label>
         <div class="col-md-8"> <?php echo $user->Type_Name; ?></div>
       </div>
+      <?php if ($session_user['user']->User_Type_ID == "2" || $session_user['user']->User_Type_ID == "3") { ?>
       <div class="form-group">
         <label class="col-md-4 control-label">School</label>
         <div class="col-md-8"> <?php echo $user->school["School_Name"]; ?> </div>
       </div>
+      <?php } ?>
       <div class="form-group">
         <label for="username" class="col-md-4 control-label">* Username</label>
         <div class="col-md-8">

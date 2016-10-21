@@ -57,6 +57,7 @@ class School_model extends CI_Model
             "Description" => $params["Description"],
             "Address1" => $params["Address1"],
             "Address2" => $params["Address2"],
+            //"Contact"  => $params["Contact"],
             "State" => $params["State"],
             "Pin" => $params["Pin"],
             "No_Of_Students" => $params["No_Of_Machines"],
@@ -91,7 +92,7 @@ class School_model extends CI_Model
     function delete_school($ID)
     {
         $this->db->delete('School',array('ID'=>$ID));
-        $this->dbforge->drop_table($ID . "_Candidate");
-        $this->dbforge->drop_table($ID . "_Attendance");
+        //$this->dbforge->drop_table($ID . "_Candidate");
+        //$this->dbforge->drop_table($ID . "_Attendance");
     }
 }

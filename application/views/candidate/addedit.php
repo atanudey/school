@@ -8,6 +8,9 @@
   </div>
   <div class="container tblwrap">
     <div class="innerPanel">
+      <?php if($this->session->flashdata('flashInfo')): ?>
+      <p class='flashMsg flashInfo'> <?php echo $this->session->flashdata('flashInfo'); ?> </p>
+      <?php endif ?>
       <div class="errorBox">
         <ul>
           <?php echo validation_errors('<li>', '</li>'); ?>
@@ -20,27 +23,27 @@
       <?php } ?>
       <input type="hidden" name="School_ID" value="<?php echo $session_user["school_id"]; ?>">
       <div class="form-group">
-        <label for="RFID_NO" class="col-md-4 control-label">RFID NO</label>
+        <label for="RFID_NO" class="col-md-4 control-label">* RFID NO</label>
         <div class="col-md-8">
-          <input type="text" name="RFID_NO" value="<?php echo ($this->input->post('RFID_NO') ? $this->input->post('RFID_NO') : $candidate['RFID_NO']); ?>" class="form-control" id="RFID_NO" />
+          <input type="text" name="RFID_NO" value="<?php echo ($this->input->post('RFID_NO') ? $this->input->post('RFID_NO') : $candidate['RFID_NO']); ?>" class="form-control" id="RFID_NO" required='required' pattern='[0-9]{10}$' title="Enter a 10 digit number" />
         </div>
       </div>
       <div class="form-group">
-        <label for="Roll_No" class="col-md-4 control-label">Roll No</label>
+        <label for="Roll_No" class="col-md-4 control-label">* Roll No</label>
         <div class="col-md-8">
-          <input type="text" name="Roll_No" value="<?php echo ($this->input->post('Roll_No') ? $this->input->post('Roll_No') : $candidate['Roll_No']); ?>" class="form-control" id="Roll_No" />
+          <input type="text" name="Roll_No" value="<?php echo ($this->input->post('Roll_No') ? $this->input->post('Roll_No') : $candidate['Roll_No']); ?>" class="form-control" id="Roll_No"  required='required' pattern='[0-9]+$' title="Enter only numbers" />
         </div>
       </div>
       <div class="form-group">
-        <label for="Candidate_Name" class="col-md-4 control-label">Candidate Name</label>
+        <label for="Candidate_Name" class="col-md-4 control-label">* Candidate Name</label>
         <div class="col-md-8">
-          <input type="text" name="Candidate_Name" value="<?php echo ($this->input->post('Candidate_Name') ? $this->input->post('Candidate_Name') : $candidate['Candidate_Name']); ?>" class="form-control" id="Candidate_Name" />
+          <input type="text" name="Candidate_Name" value="<?php echo ($this->input->post('Candidate_Name') ? $this->input->post('Candidate_Name') : $candidate['Candidate_Name']); ?>" class="form-control" id="Candidate_Name" required='required' pattern='[a-zA-Z ]+$' title="Enter only alphabets and spaces" />
         </div>
       </div>
       <div class="form-group">
-        <label for="Address1" class="col-md-4 control-label">Address1</label>
+        <label for="Address1" class="col-md-4 control-label">* Address1</label>
         <div class="col-md-8">
-          <input type="text" name="Address1" value="<?php echo ($this->input->post('Address1') ? $this->input->post('Address1') : $candidate['Address1']); ?>" class="form-control" id="Address1" />
+          <input type="text" name="Address1" value="<?php echo ($this->input->post('Address1') ? $this->input->post('Address1') : $candidate['Address1']); ?>" class="form-control" id="Address1" required='required'  />
         </div>
       </div>
       <div class="form-group">
@@ -70,33 +73,33 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="Pin" class="col-md-4 control-label">Pin</label>
+        <label for="Pin" class="col-md-4 control-label">* Pin</label>
         <div class="col-md-8">
-          <input type="text" name="Pin" value="<?php echo ($this->input->post('Pin') ? $this->input->post('Pin') : $candidate['Pin']); ?>" class="form-control" id="Pin" />
+          <input type="text" name="Pin" value="<?php echo ($this->input->post('Pin') ? $this->input->post('Pin') : $candidate['Pin']); ?>" class="form-control" id="Pin" required='required' pattern='[0-9]{6}$' title="Enter 6 digit pincode number" />
         </div>
       </div>
       <div class="form-group">
-        <label for="Guardian_Name" class="col-md-4 control-label">Guardian Name</label>
+        <label for="Guardian_Name" class="col-md-4 control-label">* Guardian Name</label>
         <div class="col-md-8">
-          <input type="text" name="Guardian_Name" value="<?php echo ($this->input->post('Guardian_Name') ? $this->input->post('Guardian_Name') : $candidate['Guardian_Name']); ?>" class="form-control" id="Guardian_Name" />
+          <input type="text" name="Guardian_Name" value="<?php echo ($this->input->post('Guardian_Name') ? $this->input->post('Guardian_Name') : $candidate['Guardian_Name']); ?>" class="form-control" id="Guardian_Name" required='required' pattern='[a-zA-Z ]+$' title="Enter only alphabets and spaces"  />
         </div>
       </div>
       <div class="form-group">
-        <label for="Email_ID" class="col-md-4 control-label">Email ID</label>
+        <label for="Email_ID" class="col-md-4 control-label">* Email ID</label>
         <div class="col-md-8">
-          <input type="text" name="Email_ID" value="<?php echo ($this->input->post('Email_ID') ? $this->input->post('Email_ID') : $candidate['Email_ID']); ?>" class="form-control" id="Email_ID" />
+          <input type="text" name="Email_ID" value="<?php echo ($this->input->post('Email_ID') ? $this->input->post('Email_ID') : $candidate['Email_ID']); ?>" class="form-control" id="Email_ID" required='required' pattern='[^@]+@[^@]+\.[a-zA-Z]{2,6}' />
         </div>
       </div>
       <div class="form-group">
-        <label for="Mob1" class="col-md-4 control-label">Mobile 1</label>
+        <label for="Mob1" class="col-md-4 control-label">* Mobile 1</label>
         <div class="col-md-8">
-          <input type="text" name="Mob1" value="<?php echo ($this->input->post('Mob1') ? $this->input->post('Mob1') : $candidate['Mob1']); ?>" class="form-control" id="Mob1" />
+          <input type="text" name="Mob1" value="<?php echo ($this->input->post('Mob1') ? $this->input->post('Mob1') : $candidate['Mob1']); ?>" class="form-control" id="Mob1" required='required' pattern='[0-9]{10}$' title="Enter 10 digit mobile number" />
         </div>
       </div>
       <div class="form-group">
         <label for="Mob2" class="col-md-4 control-label">Mobile 2</label>
         <div class="col-md-8">
-          <input type="text" name="Mob2" value="<?php echo ($this->input->post('Mob2') ? $this->input->post('Mob2') : $candidate['Mob2']); ?>" class="form-control" id="Mob2" />
+          <input type="text" name="Mob2" value="<?php echo ($this->input->post('Mob2') ? $this->input->post('Mob2') : $candidate['Mob2']); ?>" class="form-control" id="Mob2" pattern='[0-9]{10}$' title="Enter 10 digit mobile number" />
         </div>
       </div>
       <div class="form-group">
@@ -106,9 +109,9 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="Gender" class="col-md-4 control-label">Gender</label>
+        <label for="Gender" class="col-md-4 control-label">* Gender</label>
         <div class="col-md-8">
-          <select name="Gender" class="form-control">
+          <select name="Gender" class="form-control" required="required">
             <option value="">--- Select ---</option>
             <?php 
 				$gender_values = array(
@@ -131,7 +134,7 @@
       <div class="form-group">
         <label for="Age" class="col-md-4 control-label">Age</label>
         <div class="col-md-8">
-          <input type="text" name="Age" value="<?php echo ($this->input->post('Age') ? $this->input->post('Age') : $candidate['Age']); ?>" class="form-control" id="Age" />
+          <input type="number" name="Age" value="<?php echo ($this->input->post('Age') ? $this->input->post('Age') : $candidate['Age']); ?>" class="form-control" id="Age"  required='required' min="1" max="59" />
         </div>
       </div>
       <?php if (!empty($session_user['user']) && $session_user['user']->User_Type_ID == "1") { ?>
@@ -187,9 +190,9 @@
       <input type="hidden" name="IN_OUT" value="OUT">
       <?php } ?>
       <div class="form-group">
-        <label for="Class_ID" class="col-md-4 control-label">Class & Section</label>
+        <label for="Class_ID" class="col-md-4 control-label">* Class & Section</label>
         <div class="col-md-8">
-          <select name="Class_ID" class="form-control">
+          <select name="Class_ID" class="form-control" required="required">
             <option value="">--- Select ---</option>
             <?php 
 					foreach($all_educlasses as $educlass)
@@ -205,9 +208,9 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="Candidate_Type_ID" class="col-md-4 control-label">Candidate Type</label>
+        <label for="Candidate_Type_ID" class="col-md-4 control-label">* Candidate Type</label>
         <div class="col-md-8">
-          <select name="Candidate_Type_ID" class="form-control">
+          <select name="Candidate_Type_ID" class="form-control" required="required">
             <option value="">--- Select ---</option>
             <?php 
 					foreach($all_candidate_type as $candidate_type)

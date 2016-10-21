@@ -18,7 +18,7 @@
   <div class="container headingText">
     <h1>List of Schools</h1>
   </div>
-  <div class="container tblwrap"> <a href="<?php echo site_url('school/add'); ?>" class="btn btn-success add"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
+  <div class="container tblwrap"> <a href="<?php echo site_url('school/addedit'); ?>" class="btn btn-success add"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
     <table id="school_list" class="table table-striped table-bordered">
       <thead>
         <tr>
@@ -40,7 +40,7 @@
           <td><?php echo $s['Address1']; ?></td>
           <td><?php echo $s['Address2']; ?></td>
           <td><?php echo $s['No_Of_Students']; ?></td>
-          <td><a href="<?php echo site_url('school/edit/'.$s['ID']); ?>" class="btn btn-info"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</a> <a href="<?php echo site_url('school/remove/'.$s['ID']); ?>" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a></td>
+          <td><a href="<?php echo site_url('school/addedit/edit/'.$s['ID']); ?>" class="btn btn-info"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</a> <a href="<?php echo site_url('school/remove/'.$s['ID']); ?>" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a></td>
         </tr>
         <?php endforeach; ?>
       </tbody>

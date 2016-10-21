@@ -10,10 +10,10 @@
 <!--body panel starts -->
 
 <div class="bodyPanel">
-  <div class="container tblwrap">
-    <div class="headingText">
-      <h1>Change Password</h1>
-    </div>
+  <div class="container headingText">
+    <h1>Change Password</h1>
+  </div>
+  <div class="container tblwrap">    
     <div class="innerPanel">
       <div class="errorBox">
         <ul>

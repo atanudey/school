@@ -1035,9 +1035,9 @@ color:#fff !important;
 	/*float: left;
 	width: 60%;*/
 }
-.adminDropdown ul .updateBtn a{
+.adminDropdown ul li a{
 	/*color: #FFF;*/
-	color: #000;
+	color: #000!important;
 	text-decoration: none!important;
 }
 .adminDropdown ul .logOutBtn{

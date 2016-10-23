@@ -756,7 +756,7 @@ color:#fff !important;
 	line-height:21px;
 	font-weight:normal;
 	color:#fff;
-	text-align: left;
+	text-align: right;
 	}
 .reportWhiteBox{
 	background:#fff;
@@ -876,6 +876,7 @@ color:#fff !important;
 	position: relative;
 }	
 .admin_common_dd #school_id{
+	width: 250px;
 	position: absolute;
     right: 0;
     top: 50px;
@@ -1389,7 +1390,7 @@ color:#fff !important;
 	padding: 40px 0;	
 }
 .tblwrap .btn{
-	padding: 4px 8px;	
+	padding: 8px;
 }
 .tblwrap .add{
 	margin-bottom: 20px;
@@ -1401,7 +1402,10 @@ color:#fff !important;
 	background: #d9534f;
 	color: #FFF;
 }
-
+.tblwrap .btn.btn-success,
+.tblwrap .btn.btn-cancel{
+	width: 95px;
+}
 .datarange .well{
 	overflow:hidden;
 	padding:3px;

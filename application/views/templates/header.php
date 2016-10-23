@@ -41,10 +41,24 @@
                     $("body").addClass("homePage");
 
                     $.cookie('theme', theme, {expires:5*365, path: '/'});
-                }
+                }         
 
-                $('#school_id').on("change", function(){                    
-                    $('#school_choose').submit();
+                 $('.school_choose_submit').on('click', function(){ 
+                    if(!$('#school_id')[0].checkValidity()) {
+                        $("#school_choose_submit").trigger('click');
+                        return false;
+                    } else {
+                        return true;
+                    }             
+                });       
+
+                $('#school_id').on("change", function(){                                          
+                    $.post("<?php echo base_url("school/choose_school_ajax") ?>", { school_id: $(this).val() }, function( data ) {
+                        var response = $.parseJSON(data);
+                        if (response.success) {
+                            location.href = "";
+                        }
+                    });
                 });
             });
         </script>		
@@ -165,7 +179,7 @@
         ?>
         <div class="admin_common_dd container">
             <form id="school_choose" name="school_choose" method="post">
-            <select name="school_id" id="school_id" required>
+            <select name="school_id" id="school_id" required="required" oninvalid="this.setCustomValidity('Please choose a school to proceed')">
                 <option value="">--- Select School ---</option>
                 <?php foreach($school_list as $SN)  { ?>
                     <?php
@@ -174,6 +188,7 @@
                     <option value="<?php echo $SN['ID']; ?>" <?php echo ($selected == $SN['ID']) ? "selected" : ""; ?>><?php echo $SN['School_Name']; ?></option>
                 <?php } ?>
             </select>
+            <button type="submit" id="school_choose_submit" class="btn btn-success" style="display:none">Select</button>
             </form>
         </div>
         <?php } ?>

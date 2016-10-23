@@ -26,35 +26,35 @@
       <div class="form-group">
         <label for="username" class="col-md-4 control-label">* Username</label>
         <div class="col-md-8">
-          <input type="text" name="username" value="<?php echo ($this->input->post('username') ? $this->input->post('username') : $user->User_ID); ?>" class="form-control" id="username" />
+          <input type="text" name="username" value="<?php echo ($this->input->post('username') ? $this->input->post('username') : $user->User_ID); ?>" class="form-control" id="username" required='required' />
         </div>
       </div>
       <div class="form-group">
-        <label for="username" class="col-md-4 control-label">* Name</label>
+        <label for="name" class="col-md-4 control-label">* Name</label>
         <div class="col-md-8">
           <input class="form-control" type="text" id="name" name="name" placeholder="Enter your name" value="<?php echo ($this->input->post('name') ? $this->input->post('name') : $user->Name); ?>" required='required'>
         </div>
       </div>
       <div class="form-group">
-        <label for="username" class="col-md-4 control-label">* Mobile</label>
+        <label for="mob1" class="col-md-4 control-label">* Mobile</label>
         <div class="col-md-8">
           <input class="form-control" type="text" id="mob1" name="mob1" placeholder="Enter your mobile no" value="<?php echo ($this->input->post('mob1') ? $this->input->post('mob1') : $user->Mob1); ?>" required='required' pattern='[0-9]{10}$' title="Enter 10 digit mobile number">
         </div>
       </div>
       <div class="form-group">
-        <label for="username" class="col-md-4 control-label">* Email</label>
+        <label for="email" class="col-md-4 control-label">* Email</label>
         <div class="col-md-8">
           <input  class="form-control" type="email" id="email" name="email" placeholder="Enter your email" value="<?php echo ($this->input->post('email') ? $this->input->post('email') : $user->Email); ?>" required='required' pattern='[^@]+@[^@]+\.[a-zA-Z]{2,6}'>
         </div>
       </div>
       <div class="form-group">
-        <label for="username" class="col-md-4 control-label">* Address</label>
+        <label for="address" class="col-md-4 control-label">* Address</label>
         <div class="col-md-8">
           <textarea id="address" name="address" placeholder="Enter your address" class="form-control"><?php echo ($this->input->post('address') ? $this->input->post('address') : $user->Address); ?></textarea>
         </div>
       </div>
       <div class="form-group">
-        <label for="username" class="col-md-4 control-label">* City</label>
+        <label for="city" class="col-md-4 control-label">* City</label>
         <div class="col-md-8">
           <input  class="form-control" type="text" id="city" name="city" placeholder="Enter your city" value="<?php echo ($this->input->post('city') ? $this->input->post('city') : $user->City); ?>">
         </div>

@@ -6,6 +6,30 @@ class Edu_class_model extends CI_Model
     {
         parent::__construct();
     }
+
+    /*
+    * Get all Class by school
+    */
+    function get_all_class_by_school($School_ID) {
+        
+        $candidate = $School_ID.'_Candidate';
+
+        $this->db->select('cl.Name, cl.Section');
+        $this->db->from('Class cl');
+        $this->db->join($candidate . ' as cd', 'cl.ID = cd.Class_ID');
+        $this->db->where('cd.School_ID', $School_ID);
+
+        $result = $this->db->get()->result_array();
+        return $result;
+    }
+
+    /*
+     * Get all Class
+     */
+    function get_all_class($params = array())
+    {
+        return $this->db->get_where('Class', $params)->result_array();
+    }
     
     /*
      * Get educlass by ID

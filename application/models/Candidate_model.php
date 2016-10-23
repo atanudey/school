@@ -48,7 +48,7 @@ class Candidate_model extends CI_Model
             return array();
         }
 
-        $this->db->where('Candidate_type_ID', $candidate_type);
+        $this->db->where('Candidate_Type_ID', $candidate_type);
 
         $result = $this->db->get()->result_array();
 

@@ -50,7 +50,7 @@ class User extends MY_Controller {
 		$this->form_validation->set_rules('mob1','Mobile','trim|required|numeric');
 		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[login.Email]');
 		$this->form_validation->set_rules('password', 'Password', 'trim|required|min_length['. $this->config->item('password_min_length') .']');
-		$this->form_validation->set_rules('password_confirm', 'Confirm Password', 'trim|required|min_length[6]|matches[password]');				
+		$this->form_validation->set_rules('confirm_password', 'Confirm Password', 'trim|required|min_length[6]|matches[password]');				
 		$this->form_validation->set_rules('zipcode','Zip','trim|required|integer');	
 		
 		if ($this->form_validation->run() === false) {
@@ -260,7 +260,7 @@ class User extends MY_Controller {
 			}			
 		}
 
-		//session_destroy();
+		session_destroy();
 
 		// redirect him to site root
 		redirect('login');		
@@ -415,7 +415,7 @@ class User extends MY_Controller {
 		
 		$this->form_validation->set_rules('current_password', 'Current Password', 'required|callback_oldpassword_check');
 		$this->form_validation->set_rules('password', 'Password', 'required|min_length['. $this->config->item('password_min_length') .']');
-		$this->form_validation->set_rules('password_conf', 'Confirm Password', 'required|matches[password]');
+		$this->form_validation->set_rules('confirm_password', 'Confirm Password', 'required|matches[password]');
 		
 		if($this->form_validation->run()){
 			$this->reset_password($sess_user->ID, $this->input->post('password'));

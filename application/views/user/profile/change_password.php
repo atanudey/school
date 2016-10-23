@@ -1,12 +1,18 @@
-<?php if (!empty($error) || validation_errors()) { ?>
 <script language="javascript">
-	$(document).ready(function() {
-		$('html, body').animate({
-			scrollTop: $("#alert").offset().top
-		}, 2000);
-	});
+  $(document).ready(function() {
+    var password = document.getElementById("password"), confirm_password = document.getElementById("confirm_password");
+    function validatePassword(){
+      console.log('Function called');
+      if(password.value != confirm_password.value) {
+        confirm_password.setCustomValidity("Passwords Don't Match");
+      } else {
+        confirm_password.setCustomValidity('');
+      }
+    }
+    password.onchange = validatePassword;
+    confirm_password.onkeyup = validatePassword;
+  });
 </script>
-<?php } ?>
 <!--body panel starts -->
 
 <div class="bodyPanel">
@@ -20,23 +26,23 @@
           <?php echo validation_errors('<li>', '</li>'); ?>
         </ul>
       </div>
-      <?php echo form_open('user/change_password',array("class"=>"form-horizontal")); ?>
+      <?php echo form_open('user/change_password', array("id" => "change_pw", "class"=>"form-horizontal")); ?>
       <div class="form-group">
         <label for="current_password" class="col-md-4 control-label">* Current Password</label>
         <div class="col-md-8">
-          <input class="form-control" type="password" id="current_password" name="current_password" placeholder="Enter current password">
+          <input class="form-control" type="password" id="current_password" name="current_password" placeholder="Enter current password" required='required'>
         </div>
       </div>
       <div class="form-group">
         <label for="password" class="col-md-4 control-label">* New Password</label>
         <div class="col-md-8">
-          <input class="form-control" type="password" id="password" name="password" placeholder="Enter new password">
+          <input class="form-control" type="password" id="password" name="password" placeholder="Enter new password" required='required'>
         </div>
       </div>
       <div class="form-group">
-        <label for="password_conf" class="col-md-4 control-label">* Confirm your password</label>
+        <label for="confirm_password" class="col-md-4 control-label">* Confirm your password</label>
         <div class="col-md-8">
-          <input class="form-control" type="password" id="password_conf" name="password_conf" placeholder="Confirm your password">
+          <input class="form-control" type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required='required'>
         </div>
       </div>
       <div class="form-group">

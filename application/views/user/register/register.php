@@ -8,6 +8,21 @@
 	});
 </script>
 <?php } ?>
+<script language="javascript">
+  $(document).ready(function() {
+    var password = document.getElementById("password"), confirm_password = document.getElementById("confirm_password");
+    function validatePassword(){
+      console.log('Function called');
+      if(password.value != confirm_password.value) {
+        confirm_password.setCustomValidity("Passwords Don't Match");
+      } else {
+        confirm_password.setCustomValidity('');
+      }
+    }
+    password.onchange = validatePassword;
+    confirm_password.onkeyup = validatePassword;
+  });
+</script>
 <!--body panel starts -->
 <div class="bodyPanel">
 	<div class="loginPanelOuter">
@@ -70,7 +85,7 @@
 					<input type="password" id="password" name="password" placeholder="* Enter a password" value="<?php echo set_value("password");?>" required='required'>									
 				</div>
 				<div class="fldRow">					
-					<input type="password" id="password_confirm" name="password_confirm" placeholder="* Confirm your password" value="<?php echo set_value("password_confirm");?>" required='required'>									
+					<input type="password" id="confirm_password" name="confirm_password" placeholder="* Confirm your password" value="<?php echo set_value("confirm_password");?>" required='required'>									
 				</div>
 				<div class="fldRow">					
 					<textarea id="address" name="address" placeholder="Enter your address"><?php echo set_value("address");?></textarea>					
@@ -80,7 +95,7 @@
 				</div>
 				<div class="fldRow">	
 					<div class="select-style">
-						<select name="state" class="form-control">
+						<select name="state" class="form-control" required="required">
 							<option selected="" value="selected">* Select a State </option>
 							<?php 
 							$State_values = $this->config->item('indian_all_states');

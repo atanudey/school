@@ -7,7 +7,7 @@
 
 			// Load data for the table's content from an Ajax source
 			"ajax": {
-				"url": "<?php echo site_url('candidate/ajax_list')?>",
+				"url": "<?php echo site_url('candidate/ajax_list') ?>",
 				"type": "POST"
 			},
 

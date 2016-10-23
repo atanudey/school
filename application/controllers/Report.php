@@ -9,7 +9,7 @@ class Report extends MY_Controller {
 		parent::__construct();
 		$this->load->model('report_model');	
 		$this->load->model('school_model');
-		$this->load->model('class_model');
+		$this->load->model('edu_class_model');
 		
 		// Load Third Party PDF Library MPDF
 		$this->load->library('mpdf60/mpdf');
@@ -29,20 +29,23 @@ class Report extends MY_Controller {
 	function index() {		
 
 		$data = $this->data;
-		$classes = $this->class_model->get_all_class_by_school($this->school_id);
+		if (!empty($this->school_id))
+			$classes = $this->edu_class_model->get_all_class_by_school($this->school_id);
 
 		$data['classes'] = array();
-		foreach($classes as $class) {
-			if (!in_array($class['Name'], $data['classes'])) {
-				$data['classes'][] = $class['Name'];
-			}	
-		}
-
 		$data['sections'] = array();
-		foreach($classes as $class) {
-			if (!in_array($class['Section'], $data['sections'])) {
-				$data['sections'][] = $class['Section'];
-			}	
+		if (!empty($classes)) {
+			foreach($classes as $class) {
+				if (!in_array($class['Name'], $data['classes'])) {
+					$data['classes'][] = $class['Name'];
+				}	
+			}
+
+			foreach($classes as $class) {
+				if (!in_array($class['Section'], $data['sections'])) {
+					$data['sections'][] = $class['Section'];
+				}	
+			}
 		}
 
 		$this->load->template('report/index', $data);
@@ -116,62 +119,70 @@ class Report extends MY_Controller {
 	}
 
 	function generate() {
-		$data = $this->data;
 
-		//print_r($_REQUEST);
+		print_r($_REQUEST);
+		die;
 
-		$start_date = explode("/",$this->input->post('start_date'));
-		$end_date = explode("/",$this->input->post('end_date'));
+		$data["report"] = array();
+		if (!empty($this->school_id)) {
+			$data = $this->data;
 
-		if ($this->input->post('student_report_type') == "all") {
-			$class = "";
-			$section = "";
-		} else if ($this->input->post('student_report_type') == "class") {
-			if (!empty($_REQUEST['class'])) {
-				$class = implode(",", $this->input->post('class'));			
-			} else {
+			//print_r($_REQUEST);
+
+			$start_date = explode("/",$this->input->post('start_date'));
+			$end_date = explode("/",$this->input->post('end_date'));
+
+			if ($this->input->post('student_report_type') == "all") {
 				$class = "";
-			}
-			if (!empty($_REQUEST['section'])) {
-				$section = implode(",", $this->input->post('section'));	
-			} else {
 				$section = "";
+			} else if ($this->input->post('student_report_type') == "class") {
+				if (!empty($_REQUEST['class'])) {
+					$class = implode(",", $this->input->post('class'));			
+				} else {
+					$class = "";
+				}
+				if (!empty($_REQUEST['section'])) {
+					$section = implode(",", $this->input->post('section'));	
+				} else {
+					$section = "";
+				}
 			}
+
+			$interval = array('yly' => 12, 'hly' => 6, 'qly' => 3, 'mly' => 1);
+
+			//print_r($_REQUEST); die;
+
+			if ($this->input->post('student_report_type') != "student") {
+				$params = array(
+					'type' => 'other',
+					'start_month' => intval($start_date[1]),
+					'end_month' => intval($end_date[1]),
+					'school_id' => $this->school_id,
+					'classes' => $class,
+					'sections' => $section,
+					'interval' => $interval[$this->input->post('report_range_type')]		
+				);
+			} else {
+				$params = array(
+					'type' => 'student',
+					'start_date' => $start_date[2]."-".$start_date[1]."-".$start_date[0],
+					'end_date' => $end_date[2]."-".$end_date[1]."-".$end_date[0],
+					'school_id' => $this->school_id,
+					'student_id_list' => implode(",", $this->input->post('student'))		
+				);
+			}
+
+			//print_r($params); die;
+
+			$data['report'] = $this->report_model->get_attendance($params);
+			
+			$data['report']['parameters'] = $params;
+			$data['report']['parameters']['start_date'] = $this->input->post('start_date');
+			$data['report']['parameters']['end_date'] = $this->input->post('end_date');
+
+			$this->session->set_userdata('report', $data['report']);
 		}
 
-		$interval = array('yly' => 12, 'hly' => 6, 'qly' => 3, 'mly' => 1);
-
-		//print_r($_REQUEST); die;
-
-		if ($this->input->post('student_report_type') != "student") {
-			$params = array(
-				'type' => 'other',
-				'start_month' => intval($start_date[1]),
-				'end_month' => intval($end_date[1]),
-				'school_id' => $this->school_id,
-				'classes' => $class,
-				'sections' => $section,
-				'interval' => $interval[$this->input->post('report_range_type')]		
-			);
-		} else {
-			$params = array(
-				'type' => 'student',
-				'start_date' => $start_date[2]."-".$start_date[1]."-".$start_date[0],
-				'end_date' => $end_date[2]."-".$end_date[1]."-".$end_date[0],
-				'school_id' => $this->school_id,
-				'student_id_list' => implode(",", $this->input->post('student'))		
-			);
-		}
-
-		//print_r($params); die;
-
-		$data['report'] = $this->report_model->get_attendance($params);
-		
-		$data['report']['parameters'] = $params;
-		$data['report']['parameters']['start_date'] = $this->input->post('start_date');
-		$data['report']['parameters']['end_date'] = $this->input->post('end_date');
-
-		$this->session->set_userdata('report', $data['report']);
 		$this->load->template('report/output', $data);
 	}
 

@@ -4,9 +4,9 @@
   </div>
   <div class="container tblwrap">
     <?php if (!empty($school['ID'])) { ?>
-    <?php echo form_open('school/addedit/edit/'.$school['ID'], array("class"=>"form-horizontal")); ?>    
+    <?php echo form_open('school/addedit/edit/'.$school['ID'], array("id" => "school_frm", "class"=>"form-horizontal")); ?>    
     <?php } else { ?>
-    <?php echo form_open('school/addedit/',array("class"=>"form-horizontal")); ?>
+    <?php echo form_open('school/addedit/',array("id" => "school_frm", "class"=>"form-horizontal")); ?>
     <?php } ?>   
     <div class="innerPanel">
       <div class="errorBox">
@@ -15,9 +15,9 @@
         </ul>
       </div>
       <div class="form-group">
-        <label for="School_Name" class="col-md-3">School Name</label>
+        <label for="School_Name" class="col-md-3">* School Name</label>
         <div class="col-md-8">
-          <input type="text" name="School_Name" value="<?php echo ($this->input->post('School_Name') ? $this->input->post('School_Name') : $school['School_Name']); ?>" class="form-control" id="School_Name" />
+          <input type="text" name="School_Name" value="<?php echo ($this->input->post('School_Name') ? $this->input->post('School_Name') : $school['School_Name']); ?>" class="form-control" id="School_Name" required="required" />
         </div>
       </div>
       <div class="form-group">
@@ -27,9 +27,9 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="Address1" class="col-md-3">Address 1</label>
+        <label for="Address1" class="col-md-3">* Address 1</label>
         <div class="col-md-8">
-          <input type="text" name="Address1" value="<?php echo ($this->input->post('Address1') ? $this->input->post('Address1') : $school['Address1']); ?>" class="form-control" id="Address1" />
+          <input type="text" name="Address1" value="<?php echo ($this->input->post('Address1') ? $this->input->post('Address1') : $school['Address1']); ?>" class="form-control" id="Address1" required="required"  />
         </div>
       </div>
       <div class="form-group">
@@ -39,15 +39,15 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="Contact" class="col-md-3">Contact Number</label>
+        <label for="Contact" class="col-md-3">* Contact Number</label>
         <div class="col-md-8">
-          <input type="text" name="Contact" value="<?php echo ($this->input->post('Contact') ? $this->input->post('Contact') : $school['Contact']); ?>" class="form-control" id="Contact" />
+          <input type="text" name="Contact" value="<?php echo ($this->input->post('Contact') ? $this->input->post('Contact') : $school['Contact']); ?>" class="form-control" id="Contact" required='required' pattern='[0-9]{10}$' title="Enter 10 digit mobile number" />
         </div>
       </div>
       <div class="form-group">
-        <label for="State" class="col-md-3">State</label>
+        <label for="State" class="col-md-3">* State</label>
         <div class="col-md-8">
-          <select name="State" class="form-control">
+          <select name="State" class="form-control" required="required">
             <option value="">--- Select ---</option>
             <?php 
             $State_values = $this->config->item('indian_all_states');
@@ -65,9 +65,9 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="Pin" class="col-md-3">Pin</label>
+        <label for="Pin" class="col-md-3">* Pin</label>
         <div class="col-md-8">
-          <input type="text" name="Pin" value="<?php echo ($this->input->post('Pin') ? $this->input->post('Pin') : $school['Pin']); ?>" class="form-control" id="Pin" />
+          <input type="text" name="Pin" value="<?php echo ($this->input->post('Pin') ? $this->input->post('Pin') : $school['Pin']); ?>" class="form-control" id="Pin" required="required" />
         </div>
       </div>
       <div class="form-group">

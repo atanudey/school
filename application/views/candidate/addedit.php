@@ -132,7 +132,7 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="Age" class="col-md-4 control-label">Age</label>
+        <label for="Age" class="col-md-4 control-label">* Age</label>
         <div class="col-md-8">
           <input type="number" name="Age" value="<?php echo ($this->input->post('Age') ? $this->input->post('Age') : $candidate['Age']); ?>" class="form-control" id="Age"  required='required' min="1" max="59" />
         </div>
@@ -227,7 +227,7 @@
       </div>
       <div class="form-group">
         <div class="col-sm-offset-4 col-sm-8">
-          <button type="submit" class="btn btn-success">Save</button>
+          <button type="submit"class="btn btn-success school_choose_submit">Save</button>
           <a href="<?= base_url('candidate'); ?>" class="btn btn-cancel" >Cancel</a> </div>
       </div>
       <?php echo form_close(); ?> </div>

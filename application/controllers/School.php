@@ -4,7 +4,9 @@ class School extends MY_Controller
     function __construct()
     {
         parent::__construct();
-        $this->load->model('school_model');        		
+        $this->load->model('school_model'); 
+
+        $this->load->library('session');       		
     } 
 
     /*
@@ -15,6 +17,17 @@ class School extends MY_Controller
         $data['school'] = $this->school_model->get_all_school();        
         $this->load->template('school/index',$data);        
     } 
+
+    function choose_school_ajax() {
+        $schid = $this->input->post("school_id");
+		if (!empty($schid)) {
+			$this->session->set_userdata('school_id', $schid);
+            $this->session->set_userdata('school', $this->school_model->get_school($schid));      
+            echo json_encode(array("success" => true));      		
+		} else {
+            echo json_encode(array("error" => true, "message" => "School id missing"));
+        }
+    }
 
     /*
      * Adding or Editing a school

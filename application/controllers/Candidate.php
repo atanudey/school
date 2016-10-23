@@ -18,41 +18,54 @@ class Candidate extends MY_Controller
      */
     function index()
     {
-        $data['candidate'] = $this->candidate_model->get_all_candidate();
+		$data = array();
+		if (!empty($this->school_id))
+        	$data['candidate'] = $this->candidate_model->get_all_candidate();
+
         $this->load->template('candidate/index',$data);
     }
 
 	function ajax_list() {
 
-		$list = $this->candidate_model->get_datatables();
-		$data = array();
-		$no = $_POST['start'];
-		foreach ($list as $candidate) {
-			$no++;
-			$row = array();
-			$row[] = $candidate->RFID_NO;
-			$row[] = $candidate->Roll_No;
-			$row[] = $candidate->Candidate_Name;			
-			$row[] = $candidate->Address1;
-			$row[] = $candidate->Address2;
-			$row[] = $candidate->Guardian_Name;
-			$row[] = $candidate->Mob1;
-			$row[] = ($candidate->Gender == "M") ? "Male":"Female";
-			$row[] = $candidate->Age;
+		if (!empty($this->school_id)) {
+			$list = $this->candidate_model->get_datatables();
+			$data = array();
+			$no = $_POST['start'];
+			foreach ($list as $candidate) {
+				$no++;
+				$row = array();
+				$row[] = $candidate->RFID_NO;
+				$row[] = $candidate->Roll_No;
+				$row[] = $candidate->Candidate_Name;			
+				$row[] = $candidate->Address1;
+				$row[] = $candidate->Address2;
+				$row[] = $candidate->Guardian_Name;
+				$row[] = $candidate->Mob1;
+				$row[] = ($candidate->Gender == "M") ? "Male":"Female";
+				$row[] = $candidate->Age;
 
-			//add html for action
-			$row[] = '<a class="btn btn-info" href="'.site_url('candidate/addedit/edit/'.$candidate->Candidate_ID).'" title="Edit"><i class="glyphicon glyphicon-pencil"></i> Edit</a>
-				  <a class="btn btn-danger" href="'.site_url('candidate/remove/'.$candidate->Candidate_ID).'" title="Delete"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
-		
-			$data[] = $row;
+				//add html for action
+				$row[] = '<a class="btn btn-info" href="'.site_url('candidate/addedit/edit/'.$candidate->Candidate_ID).'" title="Edit"><i class="glyphicon glyphicon-pencil"></i> Edit</a>
+					<a class="btn btn-danger" href="'.site_url('candidate/remove/'.$candidate->Candidate_ID).'" title="Delete"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
+			
+				$data[] = $row;
+			}
+
+			$output = array(
+							"draw" => $_POST['draw'],
+							"recordsTotal" => $this->candidate_model->count_all(),
+							"recordsFiltered" => $this->candidate_model->count_filtered(),
+							"data" => $data,
+					);
+			
+		} else {
+			$output = array(
+					"draw" => $_POST['draw'],
+					"recordsTotal" => 0,
+					"recordsFiltered" => 0,
+					"data" => array(),
+			);			
 		}
-
-		$output = array(
-						"draw" => $_POST['draw'],
-						"recordsTotal" => $this->candidate_model->count_all(),
-						"recordsFiltered" => $this->candidate_model->count_filtered(),
-						"data" => $data,
-				);
 
 		//output to json format
 		echo json_encode($output);
@@ -74,7 +87,7 @@ class Candidate extends MY_Controller
 		$this->form_validation->set_rules('Email_ID','Email ID','required|valid_email');
 		$this->form_validation->set_rules('Mob1','Mobile 1','required|numeric|min_length[10]|max_length[10]');
 		$this->form_validation->set_rules('Mob2','Mobile 2','numeric|min_length[10]|max_length[10]');
-		$this->form_validation->set_rules('School_ID','School ID','required');
+		$this->form_validation->set_rules('School_ID','School ID','required', array('required' => 'Please select a school before add/edit a candidate.'));
 		$this->form_validation->set_rules('Class_ID','Class & Section','required');
 		$this->form_validation->set_rules('Candidate_Type_ID','Candidate Type','required');
 		$this->form_validation->set_rules('Gender','Gender','required');
@@ -124,14 +137,14 @@ class Candidate extends MY_Controller
         }
         else
         {
-			$this->load->model('School_model');
-			$data['all_school'] = $this->School_model->get_all_school();
+			/*$this->load->model('School_model');
+			$data['all_school'] = $this->School_model->get_all_school();*/
 
 			$this->load->model('Edu_class_model');
 			$data['all_educlasses'] = $this->Edu_class_model->get_all_educlasses();
 
 			$this->load->model('Candidate_type_model');
-			$data['all_candidate_type'] = $this->Candidate_type_model->get_all_candidate_type();			
+			$data['all_candidate_type'] = $this->Candidate_type_model->get_all_candidate_type();	
         }
 
 		if (!empty($mode) && $mode == "edit" && !empty($Candidate_ID) && intval($Candidate_ID) > 0)

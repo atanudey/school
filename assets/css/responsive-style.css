@@ -2,10 +2,13 @@
 /* CSS Document */
 /*------------------------Admin Pages Style Starts--------------------------*/
 @media (max-width: 1000px) {
-.dateOption{
-	float:none;
-	clear:both;
-	padding-top:15px;
+	.dateOption{
+		float:none;
+		clear:both;
+		padding-top:15px;
+		}
+	.dataTables_wrapper{
+		overflow-x: auto; 
 	}
 }
 @media (max-width: 768px) {

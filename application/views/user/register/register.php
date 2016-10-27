@@ -10,6 +10,15 @@
 <?php } ?>
 <script language="javascript">
   $(document).ready(function() {
+
+	$('#user_type_id').on('change', function(){
+		console.log($(this).val());
+		if($(this).val() == 4)
+			$('#school_input').show();
+		else
+			$('#school_input').hide();
+	});
+
     var password = document.getElementById("password"), confirm_password = document.getElementById("confirm_password");
     function validatePassword(){
       console.log('Function called');
@@ -54,7 +63,7 @@
 					</select>					
 					</div>
 				</div>
-				<div class="fldRow selectBox">
+				<div class="fldRow selectBox" id="school_input" style="display:none">
 					<div class="select-style">
 					<select name="school_id" name="school_id" required='required'>
 						<option value="">* Select School</option>

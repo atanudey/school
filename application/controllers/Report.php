@@ -119,10 +119,6 @@ class Report extends MY_Controller {
 	}
 
 	function generate() {
-
-		print_r($_REQUEST);
-		die;
-
 		$data["report"] = array();
 		if (!empty($this->school_id)) {
 			$data = $this->data;
@@ -274,7 +270,7 @@ class Report extends MY_Controller {
 	}
 
 	function missing() {
-		
+		$this->load->template('report/missing', $data);
 	}
 }
 ?>

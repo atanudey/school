@@ -3,21 +3,28 @@
 		$('#example').DataTable({
             "ordering": false,
             "columns": [
+                { "width": "6%" },
+                { "width": "8%" },
+                { "width": "16%" },
                 { "width": "14%" },
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
+                { "width": "16%" },
+                { "width": "10%" },
+                { "width": "24%" },
+                { "width": "6%" },
             ],
             "searching": false
         });
 
-        $('#fromdate').datetimepicker({
+        $('#reportdate').datetimepicker({
             language: 'en',
             format: 'dd/MM/yyyy',
+        }).on('changeDate', function(ev){
+            // do what you want here
+            $(this).datetimepicker('hide');
+        });
+
+        $("#view_report").on("click", function(){
+            $('#missing_frm').submit();
         });
 	});
 </script>
@@ -27,20 +34,22 @@
             <h3><?php echo $school["School_Name"]; ?></h3>
             <p><?php echo $school['Address1'] . ", " . $school['Address2'] . " - ". $school['Pin']; ?></p>
         </div>   
-        <div class="fldRowInline boxPadding inlineDateFlds datarange">
+        <?php echo form_open('report/missing', array('name' => 'missing_frm', 'id' => 'missing_frm'));?>
+        <div class="fldRowInline inlineDateFlds datarange">
             <div class="fldRowInline dateFld">
-                <label>From</label>
+                <label>Date </label>
                 <div class="well">
-                    <div id="fromdate" class="input-append startdatetime-from">
-                    <input name="start_date" data-format="dd/MM/yyyy" type="text" class="datetimepicker-input"></input>
+                    <div id="reportdate" class="input-append startdatetime-from">
+                    <input name="report_date" value="<?php echo $report_parameters["date"]; ?>" data-format="dd/MM/yyyy" type="text" class="datetimepicker-input"></input>
                     <span class="add-on">
                         <span class="glyphicon glyphicon-calendar"></span>
                     </span>
                     </div>
                 </div>
             </div>
+            <a href="javascript:void(0)" id="view_report" class="btn btn-success">View Report</a>
         </div>
-
+        </form>
         <div class="pull-right">
             <a href="<?php echo site_url('report/prnt'); ?>" target="__blank" class="btn btn-success">Print</a> 
             <a href="<?php echo site_url('report/pdf'); ?>" target="__blank" class="btn btn-success">PDF</a>
@@ -62,15 +71,15 @@
             </thead>
             <tbody>
             <?php foreach($report as $s): ?>	
-                <tr>
-                    <td></td>               
-                    <td><?php echo $s['Roll']; ?></td>
-                    <td><?php echo $s['Name']; ?></td>
+                <tr>                             
+                    <td><?php echo $s['Roll_No']; ?></td>
+                    <td><?php echo $s['RFID_NO']; ?></td>
+                    <td><?php echo $s['Candidate_Name']; ?></td>
+                    <td><?php echo $s['ClassSection']; ?></td>
+                    <td><?php echo $s['Guardian_Name']; ?></td>
+                    <td><?php echo $s['Mob1']; ?></td>
                     <td><?php echo $s['Address']; ?></td>
-                    <td><?php echo $s['Class']; ?></td>
-                    <td><?php echo $s['Section']; ?></td>
-                    <td><?php echo $s['Present']; ?></td>
-                    <td><?php echo $s['Absent']; ?></td>
+                    <td><?php echo $s['IN_Time']; ?></td>
                 </tr>                    
             <?php endforeach; ?>
             </tbody> 

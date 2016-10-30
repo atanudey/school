@@ -23,6 +23,7 @@ class Report extends MY_Controller {
 
 		$this->school_id = $this->session->userdata('school_id');		
 		$this->data['report'] = $this->session->userdata('report');
+		$this->data['report_parameters'] = $this->session->userdata('report_parameters');		
 		$this->data['school'] = $this->session->userdata('school');
 	}
 	
@@ -171,10 +172,12 @@ class Report extends MY_Controller {
 			//print_r($params); die;
 
 			$data['report'] = $this->report_model->get_attendance($params);
-			
-			$data['report']['parameters'] = $params;
-			$data['report']['parameters']['start_date'] = $this->input->post('start_date');
-			$data['report']['parameters']['end_date'] = $this->input->post('end_date');
+
+			//Modifying date format to show in pdf report			
+			$params['start_date'] = $this->input->post('start_date');
+			$params['end_date'] = $this->input->post('end_date');
+
+			$this->session->set_userdata('report_parameters', $params);
 
 			$this->session->set_userdata('report', $data['report']);
 		}
@@ -270,7 +273,27 @@ class Report extends MY_Controller {
 	}
 
 	function missing() {
-		$this->load->template('report/missing', $data);
+		$date = $this->input->post('report_date');
+		if (empty($date))
+			$date = date('Y-m-d');
+		
+		$this->data["report"] = $this->report_model->get_missing(implode("-", array_reverse(explode("/", $date))));		
+
+
+		$params = array(
+			'type' => 'missing',
+			'date' => $date,			
+			'school_id' => $this->school_id		
+		);
+
+		$this->data["report_parameters"] = $params;
+
+		$this->session->set_userdata('report', $this->data['report']);
+		$this->session->set_userdata('report_parameters', $params);
+
+		//print_r($params); die;
+
+		$this->load->template('report/missing', $this->data);
 	}
 }
 ?>

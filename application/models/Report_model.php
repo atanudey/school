@@ -41,4 +41,11 @@ class Report_model extends CI_Model {
 			
 		return $query->result_array();
 	}
+
+	public function get_missing($date) {
+		$SQL = "SELECT C.`Roll_No`, C.`RFID_NO`, C.`Candidate_Name`, CONCAT(CL.`Name`, ' - ', CL.`Section`) ClassSection, C.`Guardian_Name`, C.`Mob1`, CONCAT(C.`Address1`, ' ', C.`Address2`) Address, A.IN_Time FROM SC00001_Candidate C JOIN Class CL ON C.Class_ID = CL.ID JOIN SC00001_Attendance A ON C.Candidate_ID = A.Candidate_ID WHERE Date_Attendance = '" . $date . "' AND OUT_Time IS NULL";
+
+		$query = $this->db->query($SQL);	
+		return $query->result_array();
+	}
 }

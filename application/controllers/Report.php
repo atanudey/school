@@ -275,10 +275,9 @@ class Report extends MY_Controller {
 	function missing() {
 		$date = $this->input->post('report_date');
 		if (empty($date))
-			$date = date('Y-m-d');
+			$date = date('d/m/Y');
 		
-		$this->data["report"] = $this->report_model->get_missing(implode("-", array_reverse(explode("/", $date))));		
-
+		$this->data["report"] = $this->report_model->get_missing(implode("-", array_reverse(explode("/", $date))), $this->school_id);		
 
 		$params = array(
 			'type' => 'missing',

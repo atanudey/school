@@ -78,7 +78,9 @@ class Candidate_model extends CI_Model
     function update_candidate($Candidate_ID,$params)
     {
         $this->db->where('Candidate_ID',$Candidate_ID);
-        $this->db->update($this->school_id . '_Candidate',$params);
+        $result = $this->db->update($this->school_id . '_Candidate',$params);
+
+        return $result;
     }
     
     /*
@@ -100,11 +102,11 @@ class Candidate_model extends CI_Model
 				if($i===0) // first loop
 				{
 					$this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
-					$this->db->like($item, $_POST['search']['value'], 'after');
+					$this->db->like($item, $_POST['search']['value'], 'after');                    
 				}
 				else
 				{
-					$this->db->or_like($item, $_POST['search']['value'], 'after');
+					$this->db->or_like($item, $_POST['search']['value'], 'after');                    
 				}
 
 				if(count($this->column_search) - 1 == $i) //last loop
@@ -122,6 +124,8 @@ class Candidate_model extends CI_Model
 			$order = $this->order;
 			$this->db->order_by(key($order), $order[key($order)]);
 		}
+
+        //file_put_contents("queries.txt", $this->db->last_query() . "\n\n", FILE_APPEND);
 	}
 
 	function get_datatables()
@@ -132,6 +136,7 @@ class Candidate_model extends CI_Model
 		    $this->db->limit($_POST['length'], $_POST['start']);
 		
         $query = $this->db->get();
+        file_put_contents("queries.txt", $this->db->last_query() . "\n\n", FILE_APPEND);
 		return $query->result();
 	}
 

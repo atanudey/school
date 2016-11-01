@@ -39,15 +39,19 @@ class Edu_class extends MY_Controller
         if($this->form_validation->run())     
         {
             if ($mode == 'add') {
-                $this->Edu_class_model->add_educlass($params);  
+                $result = $this->Edu_class_model->add_educlass($params);
+                if ($result)
+                    $this->session->set_flashdata('flashInfo', 'Class added sucessfully.');  
             } else if (!empty($ID) && intval($ID) > 0) {                    
                 // check if the educlass exists before trying to edit it
                 $educlass = $this->Edu_class_model->get_educlass($ID);
 
                 if(!isset($educlass['ID'])) {
-                    show_error('The educlass you are trying to edit does not exist.');
+                    $this->session->set_flashdata('flashInfo','The educlass you are trying to edit does not exist.');
                 } else {
-                    $this->Edu_class_model->update_educlass($ID, $params);
+                   $result = $this->Edu_class_model->update_educlass($ID, $params);
+                   if ($result)
+                        $this->session->set_flashdata('flashInfo', 'Class modified sucessfully.');	
                 }  
             }                                  
             redirect('edu_class/index');
@@ -80,7 +84,7 @@ class Edu_class extends MY_Controller
             redirect('edu_class/index');
         }
         else
-            show_error('The educlass you are trying to delete does not exist.');
+            $this->session->set_flashdata('flashInfo','The educlass you are trying to delete does not exist.');
     }
     
 }

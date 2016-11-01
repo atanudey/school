@@ -83,7 +83,9 @@ class School_model extends CI_Model
     function update_school($ID,$params)
     {
         $this->db->where('ID',$ID);
-        $this->db->update('School',$params);
+        $result = $this->db->update('School',$params);
+        
+        return $result;  
     }
     
     /*

@@ -7,7 +7,8 @@
 		<title>KRP Educare</title>
 	    <link href="<?= base_url('assets/css/bootstrap.min.css') ?>" rel="stylesheet" type="text/css" />
 		<link href="<?= base_url('assets/css/dataTables.bootstrap.min.css') ?>" rel="stylesheet" type="text/css" />
-		<link href="<?= base_url('assets/css/bootstrap-datetimepicker.min.css') ?>" rel="stylesheet" type="text/css" />
+		<link href="<?= base_url('assets/css/bootstrap-datepicker.min.css') ?>" rel="stylesheet" type="text/css" />
+        <link href="<?= base_url('assets/css/bootstrap-datetimepicker.min.css') ?>" rel="stylesheet" type="text/css" />
 		<link href="<?= base_url('assets/css/style.css') ?>" rel="stylesheet" type="text/css" />
 		<link href="<?= base_url('assets/css/responsive-style.css') ?>" rel="stylesheet" type="text/css" />
 		<link rel="stylesheet" type="text/css" href="<?= base_url('assets/css/slider.css') ?>" />
@@ -21,7 +22,8 @@
 		<script type="text/javascript" language="javascript" src="<?= base_url('assets/js/jquery.dataTables.min.js') ?>"></script>
 		<script type="text/javascript" language="javascript" src="<?= base_url('assets/js/dataTables.bootstrap.min.js') ?>"></script>
         <script type="text/javascript" language="javascript" src="<?= base_url('assets/js/moment.min.js') ?>"></script>
-		<script type="text/javascript" language="javascript" src="<?= base_url('assets/js/bootstrap-datetimepicker.min.js') ?>"></script>
+		<script type="text/javascript" language="javascript" src="<?= base_url('assets/js/bootstrap-datepicker.min.js') ?>"></script>
+        <script type="text/javascript" language="javascript" src="<?= base_url('assets/js/bootstrap-datetimepicker.min.js') ?>"></script>
 		<script type="text/javascript" src="<?= base_url('assets/js/slider.js') ?>"></script>
         <script type="text/javascript" src="<?= base_url('assets/js/script.js') ?>"></script>
 
@@ -60,6 +62,8 @@
                         }
                     });
                 });
+
+                $('.flashInfo').fadeIn(800).delay(8000).fadeOut(800);
             });
         </script>		
 	</head>

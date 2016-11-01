@@ -99,7 +99,7 @@ class Candidate extends MY_Controller
 
 			if(empty($candidate['Candidate_ID']))
         	{
-				show_error('The candidate you are trying to edit does not exist.');
+				$this->session->set_flashdata('flashInfo','The candidate you are trying to edit does not exist.');
 			}
 		}
 
@@ -128,12 +128,19 @@ class Candidate extends MY_Controller
 		if($this->form_validation->run())     
         {      
 			if (!empty($mode) && $mode == "edit") {				
-				$this->candidate_model->update_candidate($Candidate_ID,$params);				           
-                redirect('candidate/index');
+				$result = $this->candidate_model->update_candidate($Candidate_ID,$params);
+				if ($result)
+					$this->session->set_flashdata('flashInfo', 'Candidate modified sucessfully.');               
 			} else {    
-            	$candidate_id = $this->candidate_model->add_candidate($params);				
-            	redirect('candidate/index');
-			}			
+            	$candidate_id = $this->candidate_model->add_candidate($params);	
+				if ($candidate_id)
+					$this->session->set_flashdata('flashInfo', 'Candidate added sucessfully.');			            	
+			}
+
+			if (!$result)
+				$this->session->set_flashdata('flashInfo', 'Some error ocurred! Please try later.');	
+
+			redirect('candidate/index');	
         }
         else
         {
@@ -169,7 +176,7 @@ class Candidate extends MY_Controller
             redirect('candidate/index');
         }
         else
-            show_error('The candidate you are trying to delete does not exist.');
+            $this->session->set_flashdata('flashInfo','The candidate you are trying to delete does not exist.');
     }
     
 }

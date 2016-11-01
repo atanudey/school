@@ -68,7 +68,10 @@ class School extends MY_Controller
             // check if the school exists before trying to edit it
             if(!empty($params))
             {
-                $this->school_model->update_school($ID, $params);            
+                $result = $this->school_model->update_school($ID, $params); 
+                if ($result)
+                    $this->session->set_flashdata('flashInfo', 'School modified sucessfully.');
+
                 redirect('school/index');
             }
             else
@@ -77,14 +80,15 @@ class School extends MY_Controller
                 if (!empty($school))
                     $data['school'] = $school;
                 else
-                    show_error('The school you are trying to edit does not exist.');                          
+                    $this->session->set_flashdata('flashInfo', 'The school you are trying to edit does not exist.');                          
             }
         } else if ($mode == 'add') { 
             if (!empty($params)) {
-
-                //print_r($params); die;
-
                 $school_id = $this->school_model->add_school($params);
+
+                if ($school_id)
+                    $this->session->set_flashdata('flashInfo', 'School modified sucessfully.');
+
                 redirect('school/index');
             } else {
                  $params = array(
@@ -121,7 +125,7 @@ class School extends MY_Controller
             redirect('school/index');
         }
         else
-            show_error('The school you are trying to delete does not exist.');
+            $this->session->set_flashdata('flashInfo', 'The school you are trying to delete does not exist.');
     }
     
 }

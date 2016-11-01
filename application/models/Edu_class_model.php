@@ -62,7 +62,9 @@ class Edu_class_model extends CI_Model
     function update_educlass($ID,$params)
     {
         $this->db->where('ID',$ID);
-        $this->db->update('Class',$params);
+        $result = $this->db->update('Class',$params);
+
+        return $result;
     }
     
     /*

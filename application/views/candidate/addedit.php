@@ -1,3 +1,14 @@
+<?php $school = $this->session->userdata('school'); ?>
+
+<script>
+  $(document).ready(function(){
+    $('#candidate_submit').on("click", function(){
+      var confrm = confirm("You are adding \"" + $('#Candidate_Name').val() + "\" to school \"<?php echo $school['School_Name']; ?>\". Are you sure?");
+      if (!confrm)
+        return false;
+    });
+  });
+</script>
 <div class="bodyPanel">
   <div class="container headingText">
     <?php if (!empty($candidate['Candidate_ID'])) { ?>
@@ -17,7 +28,7 @@
         </ul>
       </div>
       <?php if (!empty($candidate['Candidate_ID'])) { ?>
-      <?php echo form_open('candidate/addedit/edit/'.$candidate['Candidate_ID'],array("class"=>"form-horizontal")); ?>
+      <?php echo form_open('candidate/addedit/edit/'.$candidate['Candidate_ID'], array("class"=>"form-horizontal", "id" => "candidate_frm")); ?>
       <?php } else { ?>
       <?php echo form_open('candidate/addedit/',array("class"=>"form-horizontal")); ?>
       <?php } ?>
@@ -227,7 +238,7 @@
       </div>
       <div class="form-group">
         <div class="col-sm-offset-4 col-sm-8">
-          <button type="submit"class="btn btn-success school_choose_submit">Save</button>
+          <button type="submit" id="candidate_submit" class="btn btn-success school_choose_submit">Save</button>
           <a href="<?= base_url('candidate'); ?>" class="btn btn-cancel" >Cancel</a> </div>
       </div>
       <?php echo form_close(); ?> </div>

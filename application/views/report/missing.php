@@ -19,8 +19,7 @@
             language: 'en',
             format: 'dd/MM/yyyy',
         }).on('changeDate', function(ev){
-            // do what you want here
-            $(this).datetimepicker('hide');
+            $(this).datetimepicker('hide');             
         });
 
         $("#view_report").on("click", function(){
@@ -29,11 +28,10 @@
 	});
 </script>
 <div class="bodyPanel">
-    <div class="container tblwrap"> 
-        <div class="headingText school_center">
-            <h3><?php echo $school["School_Name"]; ?></h3>
-            <p><?php echo $school['Address1'] . ", " . $school['Address2'] . " - ". $school['Pin']; ?></p>
-        </div>   
+    <div class="container headingText">
+    	<h1>Missing Report</h1>
+    </div>
+    <div class="container tblwrap">            
         <?php echo form_open('report/missing', array('name' => 'missing_frm', 'id' => 'missing_frm'));?>
         <div class="fldRowInline inlineDateFlds datarange">
             <div class="fldRowInline dateFld">
@@ -50,6 +48,13 @@
             <a href="javascript:void(0)" id="view_report" class="btn btn-success">View Report</a>
         </div>
         </form>
+        <hr />
+        <?php if (!empty($school["School_Name"])) { ?>
+        <div class="headingText school_center">
+            <h3><?php echo $school["School_Name"]; ?></h3>
+            <p><?php echo $school['Address1'] . ", " . $school['Address2'] . " - ". $school['Pin']; ?></p>
+        </div>
+        <?php } ?>
         <div class="pull-right">
             <a href="<?php echo site_url('report/prnt'); ?>" target="__blank" class="btn btn-success">Print</a> 
             <a href="<?php echo site_url('report/pdf'); ?>" target="__blank" class="btn btn-success">PDF</a>

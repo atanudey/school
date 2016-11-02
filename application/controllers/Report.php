@@ -294,5 +294,31 @@ class Report extends MY_Controller {
 
 		$this->load->template('report/missing', $this->data);
 	}
+
+	function adjustment() {
+		//print_r($_REQUEST); die;
+
+		$data = $this->data;
+		if (!empty($this->school_id))
+			$classes = $this->edu_class_model->get_all_class_by_school($this->school_id);
+
+		$data['classes'] = array();
+		$data['sections'] = array();
+		if (!empty($classes)) {
+			foreach($classes as $class) {
+				if (!in_array($class['Name'], $data['classes'])) {
+					$data['classes'][] = $class['Name'];
+				}	
+			}
+
+			foreach($classes as $class) {
+				if (!in_array($class['Section'], $data['sections'])) {
+					$data['sections'][] = $class['Section'];
+				}	
+			}
+		}
+
+		$this->load->template('report/adjustment', $data);
+	}
 }
 ?>

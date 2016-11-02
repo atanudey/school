@@ -1,10 +1,32 @@
-<style>
-    .wait {
-        height: 100%;
-        width:100%;
-        text-align: center;
-    }
-</style>
+<script type="text/javascript" language="javascript">
+	$(document).ready(function(){
+		$('#example').DataTable({
+            "ordering": false,
+            "columns": [
+                { "width": "6%" },
+                { "width": "8%" },
+                { "width": "16%" },
+                { "width": "14%" },
+                { "width": "16%" },
+                { "width": "10%" },
+                { "width": "24%" },
+                { "width": "6%" },
+            ],
+            "searching": false
+        });
+
+        $('#reportdate').datetimepicker({
+            language: 'en',
+            format: 'dd/MM/yyyy',
+        }).on('changeDate', function(ev){
+            $(this).datetimepicker('hide');             
+        });
+
+        $("#view_report").on("click", function(){
+            $('#adjustment_frm').submit();
+        });
+	});
+</script>
 <script>  
     $(document).ready(function(){
         $("#student_select").on("change", function(){
@@ -104,7 +126,6 @@
         });
     });  
 </script>
-
 <!-- Bootstrap Datepicker Script -->
 <script type="text/javascript">
     $(document).ready(function() {
@@ -231,27 +252,13 @@
         });
     });
 </script>
-
-<!--body panel starts -->
-<?php echo form_open('report/generate', array('name' => 'report_frm', 'id' => 'report_frm'));?>
-<div class="bodyPanel reportPanel">
-    <div class="container">
-        <div class="row paddingBtm40">
-            <div class="col-sm-6">
-                <h2>Attendence Report</h2>
-            </div>
-            <!--<?php print_r($session_user['user']); ?>-->
-            <?php if ($session_user['user']->User_Type_ID == "2" || $session_user['user']->User_Type_ID == "3") { ?>
-            <div class="col-sm-6 rightHeading">                
-                <h3><?php echo $session_user['school']['School_Name']; ?></h3>                
-            </div>
-            <?php } ?>
-        </div>
-
+<div class="bodyPanel">
+    <div class="container headingText">
+    	<h1>Daily Absent Student & Adjustment</h1>
+    </div>
+    <div class="container tblwrap">            
+        <?php echo form_open('report/adjustment', array('name' => 'adjustment_frm', 'id' => 'adjustment_frm'));?>
         <div class="reportWhiteBox">
-            <div class="reportHeading">
-                <div class="fldRowInline"><input id="student_select" type="radio" name="report_type" value="student" checked="checked"> <h4>Students Report</h4></div>
-            </div>
             <div class="reportInner panel" id="student">
                 <div class="paddingBtm20">
                     <div class="fldRowInline">
@@ -312,102 +319,61 @@
                 </div>
             </div>
         </div>
-        
-        <div class="reportWhiteBox">
-            <div class="reportHeading">
-                <div class="fldRowInline"><input id="staff_select" type="radio" name="report_type" value="staff"> <h4>Staff Attendence Report</h4></div>
-            </div>
-            <div class="reportInner panel" id="staff" style="display: none">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="borderdWhiteBox">
-                            <div class="reportHeading">
-                                <div class="checkbox-inline"> <label><input type="checkbox"> Department</label></div>
-                            </div>
-                            <div class="reportBlockContent">
-                                <div class="fldRowInline"><input type="checkbox"> <label>Department A</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Department B</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Department C</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Department D</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Department E</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Department F</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Department G</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Department H</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Department I</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Department J</label></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="borderdWhiteBox">
-                            <div class="reportHeading">
-                                <div class="checkbox-inline"> <label><input type="checkbox"> Staffs Name</label></div>
-                            </div>
-                            <div class="reportBlockContent">
-                                <div class="fldRowInline"><input type="checkbox"> <label>Name 1</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Name 2</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Name 3</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Name 4</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Name 5</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Name 6</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Name 7</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Name 8</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Name 9</label></div>
-                                <div class="fldRowInline"><input type="checkbox"> <label>Name 10</label></div>
-                            </div>
-                        </div>
+        <div class="fldRowInline inlineDateFlds datarange">
+            <div class="fldRowInline dateFld">
+                <label>Date </label>
+                <div class="well">
+                    <div id="reportdate" class="input-append startdatetime-from">
+                    <input name="report_date" value="<?php echo $report_parameters["date"]; ?>" data-format="dd/MM/yyyy" type="text" class="datetimepicker-input"></input>
+                    <span class="add-on">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
                     </div>
                 </div>
             </div>
+            <a href="javascript:void(0)" id="view_report" class="btn btn-success">View Report</a>
         </div>
-        
-        <div class="reportWhiteBox">
-            <div class="reportHeading">
-                <h4>Date Range</h4>
-            </div>
-            <div class="reportInner">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="borderdWhiteBox">
-                            <div class="fldRowInline boxPadding inlineDateFlds datarange">
-                                <div class="fldRowInline dateFld">
-                                    <label>From</label>
-                                    <div class="well">
-									  <div id="fromdate" class="input-append startdatetime-from">
-										<input name="start_date" data-format="dd/MM/yyyy" type="text" class="datetimepicker-input"></input>
-										<span class="add-on">
-										 <span class="glyphicon glyphicon-calendar"></span>
-										</span>
-									  </div>
-									</div>
-                                </div>
-                                <div class="fldRowInline dateFld">
-                                    <label>To</label>
-                                    <div class="well">
-									  <div id="todate" class="input-append startdatetime-from">
-										<input name="end_date" data-format="dd/MM/yyyy" type="text" class="datetimepicker-input"></input>
-										<span class="add-on">
-										 <span class="glyphicon glyphicon-calendar"></span>
-										</span>
-									  </div>
-									</div>
-                                </div>
-                                <div class="dateOption">
-                                    <label><input type="radio" name="report_range_type" value="yly"> Yearly</label>             
-                                    <label><input type="radio" name="report_range_type" value="hly"> Half yearly</label>             
-                                    <label><input type="radio" name="report_range_type" value="qly"> Quaterly</label>             
-                                    <label><input type="radio" name="report_range_type" value="mly" checked="checked"> Monthly</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        </form>
+        <hr />
+        <?php if (!empty($school["School_Name"])) { ?>
+        <div class="headingText school_center">
+            <h3><?php echo $school["School_Name"]; ?></h3>
+            <p><?php echo $school['Address1'] . ", " . $school['Address2'] . " - ". $school['Pin']; ?></p>
         </div>
-        <div class="reportBtnsBtm">
-            <input type="submit" name="process" value="Process" class="processBtn">
+        <?php } ?>
+        <div class="pull-right">
+            <a href="<?php echo site_url('report/prnt'); ?>" target="__blank" class="btn btn-success">Print</a> 
+            <a href="<?php echo site_url('report/pdf'); ?>" target="__blank" class="btn btn-success">PDF</a>
+            <a href="<?php echo site_url('report/excel'); ?>" class="btn btn-success">Excel</a>
         </div>
+
+        <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>Roll #</th>		
+                    <th>RFID #</th>			
+                    <th>Candidate Name</th>                    
+                    <th>Class Section</th>
+                    <th>Guardian Name</th>
+                    <th>Contact</th>
+                    <th>Address</th>                    
+                    <th>In Time</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php foreach($report as $s): ?>	
+                <tr>                             
+                    <td><?php echo $s['Roll_No']; ?></td>
+                    <td><?php echo $s['RFID_NO']; ?></td>
+                    <td><?php echo $s['Candidate_Name']; ?></td>
+                    <td><?php echo $s['ClassSection']; ?></td>
+                    <td><?php echo $s['Guardian_Name']; ?></td>
+                    <td><?php echo $s['Mob1']; ?></td>
+                    <td><?php echo $s['Address']; ?></td>
+                    <td><?php echo $s['IN_Time']; ?></td>
+                </tr>                    
+            <?php endforeach; ?>
+            </tbody> 
+        </table>
     </div>
 </div>
-</form>
-<!--body panel ends -->

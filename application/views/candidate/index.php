@@ -18,6 +18,22 @@
 					"orderable": false, //set not orderable
 					"width": "15%",
 				},
+				{ 
+					"targets": [ 4 ],
+					"orderable": false, //set not orderable
+				},
+				{ 
+					"targets": [ 6 ],
+					"orderable": false, //set not orderable
+				},
+				{ 
+					"targets": [ 7 ],
+					"orderable": false, //set not orderable
+				},
+				{ 
+					"targets": [ 8 ],
+					"orderable": false, //set not orderable
+				},
 			],
     	});
 	});

@@ -1,6 +1,16 @@
 <script type="text/javascript" language="javascript">
 	$(document).ready(function(){
-		$('#educlass_list').DataTable({});
+		$('#educlass_list').DataTable({
+      //Set column definition initialisation properties.
+			"columnDefs": [
+				{ 
+					"targets": [ -1 ], //last column
+					"orderable": false, //set not orderable
+					"width": "15%",
+				},
+      ]
+
+    });
 	});
 </script>
 

@@ -4,7 +4,7 @@
 			"columns": [
 				{ "width": "7%" },
 				{ "width": "19%" },
-				{ "width": "13%" },
+				{ "width": "13%", "sortable": false },
 				{ "width": "22%" },
 				{ "width": "15%" },
 				{ "width": "10%" },

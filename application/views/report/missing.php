@@ -48,6 +48,7 @@
             <a href="javascript:void(0)" id="view_report" class="btn btn-success">View Report</a>
         </div>
         </form>
+        <?php if (!empty($_POST['report_date'])) { ?>
         <hr />
         <?php if (!empty($school["School_Name"])) { ?>
         <div class="headingText school_center">
@@ -89,5 +90,6 @@
             <?php endforeach; ?>
             </tbody> 
         </table>
+        <?php } ?>
     </div>
 </div>

@@ -1,10 +1,13 @@
 .pdf{
 	font-family: Arial;
 }
-
+.pdf .headingText{
+	text-align: center;
+	padding-bottom: 15px;
+}
 table.attablePdf {border-spacing: 0; width:100%; font-family: Arial;}
 table.attablePdf {
-	width:100%;
+	width:70%;
 	margin:0 auto;
 	background: #FFF;
 	font-family: DejaVuSans;
@@ -39,7 +42,7 @@ div.pdf h1{
 }
 
 div.pdf h2{
-	font-size:14px;
+	font-size:18px;
 	text-align:center;
 	padding:0 0 10px 0;
 }

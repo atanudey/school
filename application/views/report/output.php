@@ -24,7 +24,7 @@
             <p><?php echo $school['Address1'] . ", " . $school['Address2'] . " - ". $school['Pin']; ?></p>
         </div>   
         <div class="pull-right">
-            <a href="<?php echo site_url('report'); ?>" class="btn btn-primary">Move Back</a>
+            <a href="<?php echo site_url('report'); ?>" class="btn btn-primary back-btn">Back</a>
             <a href="<?php echo site_url('report/prnt'); ?>" target="__blank" class="btn btn-success">Print</a> 
             <a href="<?php echo site_url('report/pdf'); ?>" target="__blank" class="btn btn-success">PDF</a>
             <a href="<?php echo site_url('report/excel'); ?>" class="btn btn-success">Excel</a>

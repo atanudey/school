@@ -1,5 +1,8 @@
+.pdf{
+	font-family: Arial;
+}
 
-table.attablePdf {border-spacing: 0; width:100%}
+table.attablePdf {border-spacing: 0; width:100%; font-family: Arial;}
 table.attablePdf {
 	width:100%;
 	margin:0 auto;
@@ -14,9 +17,11 @@ table.attablePdf th.th{
 	font-size:14px;
 	border-left: 1px solid #ccc;
 	border-bottom: 1px solid #ccc;
+	font-family: Arial;
 	
 }
 table.attablePdf tr td.td{
+	font-family: Arial;
 	padding:8px 5px;
 	font-size:12px;
 	border-bottom:1px solid #ddd;

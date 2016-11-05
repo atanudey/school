@@ -22,11 +22,14 @@ class School extends MY_Controller
         $schid = $this->input->post("school_id");
 		if (!empty($schid)) {
 			$this->session->set_userdata('school_id', $schid);
-            $this->session->set_userdata('school', $this->school_model->get_school($schid));      
-            echo json_encode(array("success" => true));      		
+            $this->session->set_userdata('school', $this->school_model->get_school($schid));                   		
 		} else {
-            echo json_encode(array("error" => true, "message" => "School id missing"));
+            unset($_SESSION['school_id']);
+            unset($_SESSION['school']);
+            //echo json_encode(array("error" => true, "message" => "School id missing"));
         }
+
+        echo json_encode(array("success" => true));     
     }
 
     /*

@@ -131,31 +131,6 @@
                                 $CI->load->library('menu');
                                 echo $CI->menu->build_menu($type);
                             ?>
-                            <!--<ul>                                
-                                <?php if ($type == 1) { ?>
-                                    <li><a href="#">School Events</a></li>
-                                <?php } ?>
-                                <?php if ($type == 1 || $type == 2) { ?>
-                                    <li><a href="<?= base_url('candidate') ?>">School Candidates</a></li>
-                                <?php } ?>
-                                <?php if ($type == 1) { ?>
-                                    <li><a href="#">School Point of Contact</a></li>
-                                <?php } ?>
-                                <?php if ($type == 1 || $type == 2) { ?>
-                                    <li><a href="<?= base_url('edu_class') ?>">Class Master</a></li>
-                                <?php } ?>
-                                <?php if ($type == 1) { ?>
-                                    <li><a href="<?= base_url('school') ?>">School Master</a><li>
-                                <?php } ?>
-                                <?php if ($type == 1 || $type == 2) { ?>
-                                    <li class="subMenu"><a href="#">Report</a>
-                                        <ul>
-                                            <li><a href="<?= base_url('report') ?>">Attendance Report</a> </li>
-                                            <li><a href="#">Missing Report</a></li>
-                                        </ul>
-                                    </li>
-                                <?php } ?>   
-                            </ul>-->                            
                         </div>
 						<?php } ?>
                     </div>
@@ -195,5 +170,7 @@
             <button type="submit" id="school_choose_submit" class="btn btn-success" style="display:none">Select</button>
             </form>
         </div>
+        <?php } else if ($session_user['user']->User_Type_ID == "2" || $session_user['user']->User_Type_ID == "3") { ?>           
+            <h3><?php echo $session_user['school']['School_Name']; ?></h3>
         <?php } ?>
 		

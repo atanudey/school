@@ -240,12 +240,6 @@
             <div class="col-sm-6">
                 <h2>Attendence Report</h2>
             </div>
-            <!--<?php print_r($session_user['user']); ?>-->
-            <?php if ($session_user['user']->User_Type_ID == "2" || $session_user['user']->User_Type_ID == "3") { ?>
-            <div class="col-sm-6 rightHeading">                
-                <h3><?php echo $session_user['school']['School_Name']; ?></h3>                
-            </div>
-            <?php } ?>
         </div>
 
         <div class="reportWhiteBox">

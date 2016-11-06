@@ -9,6 +9,7 @@
 		}
 	.dataTables_wrapper{
 		overflow-x: auto; 
+		width: 100%;
 	}
 }
 @media (max-width: 768px) {
@@ -27,8 +28,15 @@
 .logo{
 	text-align:center;
 	}
-
-
+	.tblwrap .pull-right{
+		float: none!important;
+		padding-bottom: 20px;
+		text-align: center;
+	}
+	.tblwrap .pull-right a{
+		display: inline-block;
+		text-align: center;
+	}
 
 
 }
@@ -62,6 +70,9 @@
 	.theme2 .btmBtnsInner .updateProfileBtn, 
 	.theme3 .btmBtnsInner .updateProfileBtn{
 		width:100%!important;
+	}
+	.tblwrap .btn.btn-success, .tblwrap .btn.btn-cancel{
+		width: auto;
 	}
 
 }

@@ -7,7 +7,7 @@
         <?php if ($report_parameters['type'] == "missing") { ?> 
             <p>Report For Date: <?php echo $report_parameters['date']; ?></p>
         <?php } else { ?>
-            <p>Date Range: <?php echo $report['parameters']['start_date']; ?> - <?php echo $report['parameters']['end_date']; ?></p>
+            <p>Date Range: <?php echo $report_parameters['start_date']; ?> - <?php echo $report_parameters['end_date']; ?></p>
         <?php } ?>
         <p>Date: <?php echo date('m/d/Y H:i:s'); ?> </p>        
     </div>
@@ -16,7 +16,7 @@
 
     <?php if ($report_parameters['type'] == "other") { ?>
         
-        <h2><?php echo $array_attendance_type[$report['parameters']['interval']] ?> Attendance Report</h2>
+        <h2><?php echo $array_attendance_type[$report_parameters['interval']] ?> Attendance Report</h2>
         <table id="example" class="table table-striped table-bordered attablePdf" cellspacing="0" width="100%">
             <thead>
                 <tr>
@@ -61,6 +61,7 @@
             </tbody> 
         </table>
     <?php } else if ($report_parameters['type'] == "missing") {?>
+        <h2>Missing Report</h2>
         <table id="example" class="table table-striped table-bordered attablePdf" cellspacing="0" width="100%">
             <thead>
                 <tr>

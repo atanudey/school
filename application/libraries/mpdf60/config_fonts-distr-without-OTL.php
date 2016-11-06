@@ -206,7 +206,14 @@ $this->fontdata = array(
 	"sun-extb" => array(
 		'R' => "Sun-ExtB.ttf",
 		),
-
+		
+/* Arial Fonts */
+	"arial" => array(
+        'R' => "Arial-Regular.ttf",
+        'B' => "Arial-Bold.ttf",
+        'I' => "Arial-Italic.ttf",
+        'BI' => "Arial-BoldItalic.ttf",
+    ),
 
 );
 

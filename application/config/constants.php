@@ -93,3 +93,4 @@ define('DS', DIRECTORY_SEPARATOR);
 define('REPORT_PATH', APPPATH . '..' . DS . 'assets' . DS . 'reports' . DS); 
 define('WEBADMIN_NAME', 'Educare Admin');
 define('WEBADMIN_EMAIL', 'a2plcpnl0033.prod.iad2.secureserver.net');
+define('CANDIDATE_MEDIA_TYPES', 'gif|jpg|png|pdf|doc|docx');

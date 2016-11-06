@@ -49,8 +49,10 @@
                     if(!$('#school_id')[0].checkValidity()) {
                         $("#school_choose_submit").trigger('click');
                         return false;
-                    } else {
-                        return true;
+                    } else if ($('#mode').val() == 'add') {
+                        var confrm = confirm('You are adding "' + $('#Candidate_Name').val() + '" to school "<?php echo (!empty($session_user["school"]["School_Name"])) ? $session_user["school"]["School_Name"] : ""; ?>". Are you sure?');
+                        if (!confrm)
+                            return false;
                     }             
                 });       
 
@@ -67,7 +69,6 @@
             });
         </script>		
 	</head>
-
 	<body class="theme1 homePage">
         <?php //print_r($_SESSION); ?>
         <!--top nav panel starts-->
@@ -170,7 +171,7 @@
             <button type="submit" id="school_choose_submit" class="btn btn-success" style="display:none">Select</button>
             </form>
         </div>
-        <?php } else if ($session_user['user']->User_Type_ID == "2" || $session_user['user']->User_Type_ID == "3") { ?>           
+        <?php } else if (!empty($session_user['user']) && ($session_user['user']->User_Type_ID == "2" || $session_user['user']->User_Type_ID == "3")) { ?>           
             <h3><?php echo $session_user['school']['School_Name']; ?></h3>
         <?php } ?>
 		

@@ -78,7 +78,7 @@ class Candidate_model extends CI_Model
     function update_candidate($Candidate_ID,$params)
     {
         $this->db->where('Candidate_ID',$Candidate_ID);
-        $result = $this->db->update($this->school_id . '_Candidate',$params);
+        $result = $this->db->update($this->school_id . '_Candidate', $params);
 
         return $result;
     }

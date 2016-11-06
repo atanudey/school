@@ -127,18 +127,31 @@ class Candidate extends MY_Controller
 		
 		if($this->form_validation->run())     
         {      
+			$upload_params = array(
+				"path" => "./assets/sitedata/". $this->school_id . "/candidate/",
+				"files" => $_FILES,
+				"prefix" => $params["RFID_NO"],
+				"input_name" => "Image_Name",
+				"upload_for" => "candidate"
+			);
+
+			$upload_info = upload_file($upload_params);
+
+			$params["Image_Name"] = $upload_info["file_name"];
+
 			if (!empty($mode) && $mode == "edit") {				
-				$result = $this->candidate_model->update_candidate($Candidate_ID,$params);
+				$result = $this->candidate_model->update_candidate($Candidate_ID, $params);
 				if ($result)
-					$this->session->set_flashdata('flashInfo', 'Candidate modified sucessfully.');               
+					$this->session->set_flashdata('flashInfo', 'Candidate modified sucessfully.');   
+				else
+					$this->session->set_flashdata('flashInfo', 'Some error ocurred! Please try later.');            
 			} else {    
             	$candidate_id = $this->candidate_model->add_candidate($params);	
 				if ($candidate_id)
-					$this->session->set_flashdata('flashInfo', 'Candidate added sucessfully.');			            	
+					$this->session->set_flashdata('flashInfo', 'Candidate added sucessfully.');	
+				else
+					$this->session->set_flashdata('flashInfo', 'Some error ocurred! Please try later.');		            	
 			}
-
-			if (!$result)
-				$this->session->set_flashdata('flashInfo', 'Some error ocurred! Please try later.');	
 
 			redirect('candidate/index');	
         }

@@ -171,18 +171,18 @@ class Report extends MY_Controller {
 
 			//print_r($params); die;
 
-			$data['report'] = $this->report_model->get_attendance($params);
+			$this->data['report'] = $this->report_model->get_attendance($params);
+			$this->data["report_parameters"] = $params;
 
 			//Modifying date format to show in pdf report			
 			$params['start_date'] = $this->input->post('start_date');
 			$params['end_date'] = $this->input->post('end_date');
 
 			$this->session->set_userdata('report_parameters', $params);
-
-			$this->session->set_userdata('report', $data['report']);
+			$this->session->set_userdata('report', $this->data['report']);
 		}
 
-		$this->load->template('report/output', $data);
+		$this->load->template('report/output', $this->data);
 	}
 
 	function getReportContent($type = ""){

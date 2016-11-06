@@ -10,10 +10,8 @@
 <?php } ?>
 <script language="javascript">
   $(document).ready(function() {
-
 	$('#user_type_id').on('change', function(){
-		console.log($(this).val());
-		if($(this).val() == 4)
+		if($(this).val() == 2 || $(this).val() == 3)
 			$('#school_input').show();
 		else
 			$('#school_input').hide();

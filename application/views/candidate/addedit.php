@@ -1,14 +1,4 @@
 <?php $school = $this->session->userdata('school'); ?>
-
-<script>
-  $(document).ready(function(){
-    $('#candidate_submit').on("click", function(){
-      var confrm = confirm("You are adding \"" + $('#Candidate_Name').val() + "\" to school \"<?php echo $school['School_Name']; ?>\". Are you sure?");
-      if (!confrm)
-        return false;
-    });
-  });
-</script>
 <div class="bodyPanel">
   <div class="container headingText">
     <?php if (!empty($candidate['Candidate_ID'])) { ?>
@@ -28,11 +18,15 @@
         </ul>
       </div>
       <?php if (!empty($candidate['Candidate_ID'])) { ?>
-      <?php echo form_open('candidate/addedit/edit/'.$candidate['Candidate_ID'], array("class"=>"form-horizontal", "id" => "candidate_frm")); ?>
+        <?php //echo form_open('candidate/addedit/edit/'.$candidate['Candidate_ID'], array("class"=>"form-horizontal", "id" => "candidate_frm")); ?>
+        <form action="<?php echo base_url('candidate/addedit/edit/'.$candidate['Candidate_ID']); ?>" class="form-horizontal" id="candidate_frm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+        <input type="hidden" name="mode" value="edit"?>
       <?php } else { ?>
-      <?php echo form_open('candidate/addedit/',array("class"=>"form-horizontal")); ?>
+        <?php //echo form_open('candidate/addedit/',array("class"=>"form-horizontal")); ?>
+        <form action="<?php echo base_url('candidate/addedit/'); ?>" class="form-horizontal" id="candidate_frm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+        <input type="hidden" name="mode" id="mode" value="add"?>
       <?php } ?>
-      <input type="hidden" name="School_ID" value="<?php echo $session_user["school_id"]; ?>">
+      <input type="hidden" name="School_ID" id="mode" value="<?php echo (!empty($session_user["school_id"])) ? $session_user["school_id"] : ""; ?>">
       <div class="form-group">
         <label for="RFID_NO" class="col-md-4 control-label">* RFID NO</label>
         <div class="col-md-8">
@@ -49,6 +43,17 @@
         <label for="Candidate_Name" class="col-md-4 control-label">* Candidate Name</label>
         <div class="col-md-8">
           <input type="text" name="Candidate_Name" value="<?php echo ($this->input->post('Candidate_Name') ? $this->input->post('Candidate_Name') : $candidate['Candidate_Name']); ?>" class="form-control" id="Candidate_Name" required='required' pattern='[a-zA-Z ]+$' title="Enter only alphabets and spaces" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="Candidate_Name" class="col-md-4 control-label">* Candidate Photo</label>
+        <div class="col-md-8">
+          <?php if (!empty($candidate['Image_Name'])) { ?>
+            <img src="<?php echo get_image_path($candidate['Image_Name'], 'candidate'); ?>" width="100">
+          <?php } else { ?>
+            <img src="<?php echo get_image_path("", 'candidate'); ?>" width="100">
+          <?php } ?>
+          <input type="file" name="Image_Name" />
         </div>
       </div>
       <div class="form-group">

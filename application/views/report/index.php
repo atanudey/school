@@ -217,7 +217,7 @@
                 $.get("<?php echo base_url(); ?>report/get_candidate", {"classes": classes.join(","), "sections": sections.join(",")}).done(function( data ) {                
                     $("#student_container").empty();
                     $.each(JSON.parse(data), function(item, user) {
-                        $("#student_container").append('<input type="checkbox" name="student[]" class="checkbox_cst" value="' + user.Candidate_ID + '"><label>' + user.Candidate_Name + '</label></div>')
+                        $("#student_container").append('<div class="fldRowInline"><input type="checkbox" name="student[]" class="checkbox_cst" value="' + user.Candidate_ID + '"><label>' + user.Candidate_Name + '</label></div></div>')
                     });
                 });            
             }

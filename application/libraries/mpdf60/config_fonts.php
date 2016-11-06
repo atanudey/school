@@ -297,6 +297,14 @@ $this->fontdata = array(
 		'R' => "UnBatang_0613.ttf",
 		),
 
+/* Arial Fonts */
+	"arial" => array(
+        'R' => "Arial-Regular.ttf",
+        'B' => "Arial-Bold.ttf",
+        'I' => "Arial-Italic.ttf",
+        'BI' => "Arial-BoldItalic.ttf",
+    ),
+
 
 );
 

@@ -886,9 +886,19 @@ color:#fff !important;
     padding: 10px;
     border: 0;
     border-radius: 5px;
+    z-index: 500;
 }
-
-
+.school_dd{
+	max-width: 1170px;
+	margin: 0 auto;
+	position: relative;
+}
+.school_dd h3{
+	position: absolute;
+	right: 0;
+	top: 50px;
+	color: #FFF;
+}
 
 
 /*------------Attendence Report Ends-----------------*/
@@ -1505,4 +1515,17 @@ color:#fff !important;
 }
 .school_center h3{
 	padding-bottom: 15px!important;
+}
+.tblwrap{
+	position: relative;
+}
+.btn.btn-success.add {
+    position: absolute;
+    right: 289px;
+    top: 36px;
+    z-index: 500;
+}
+#candidate_frm .form-group img{
+	border: 1px solid #ccc;
+	margin-bottom: 15px;
 }

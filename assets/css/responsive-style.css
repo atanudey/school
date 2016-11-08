@@ -131,6 +131,9 @@
 	.reportHeading{
 		padding: 20px 10px;
 	}
+	.btn.btn-success.add {
+	    right: 37px;
+	}
 }
 @media (max-width: 680px) {
 .homePage .homeBodyPanel .container{
@@ -157,6 +160,22 @@
 	.paddingBtm40 h2{
 		text-align: center;
 	}
+	.headingText{
+		height: 100px;
+	}
+	.headingText h1{
+		text-align: center;
+	}
+	.school_dd h3{
+		left: 0;
+		right: 0;
+		text-align: center;
+		margin: 0 auto;
+		top: 95px;
+	}
+
+
+
 }
 @media (max-width: 470px) {
 .homePage .logo h2 a{
@@ -177,6 +196,10 @@
 	.homePage .topLinks > li{
 		background:none;
 		
+	}
+	.btn.btn-success.add {
+	    right: 15px;
+    	top: 29px;
 	}
 }
 

@@ -172,6 +172,6 @@
             </form>
         </div>
         <?php } else if (!empty($session_user['user']) && ($session_user['user']->User_Type_ID == "2" || $session_user['user']->User_Type_ID == "3")) { ?>           
-            <h3><?php echo $session_user['school']['School_Name']; ?></h3>
+            <div class="school_dd"><h3><?php echo $session_user['school']['School_Name']; ?></h3></div>
         <?php } ?>
 		

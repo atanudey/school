@@ -733,6 +733,9 @@ color:#fff !important;
 	}
 .paddingBtm40{
 	padding-bottom:40px;
+	max-width: 1150px;
+	margin: 0 auto;
+	position: relative;
 	}
 .paddingBtm20{
 	padding-bottom:20px;
@@ -878,7 +881,7 @@ color:#fff !important;
 .admin_common_dd #school_id{
 	width: 250px;
 	position: absolute;
-    right: 0;
+    right: 16px;
     top: 50px;
     padding: 10px;
     border: 0;

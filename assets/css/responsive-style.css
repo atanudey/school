@@ -121,9 +121,15 @@
 	}
 .homePage .themeSelect li a{
 	margin-top: 7px;
-}
+	}
 .logo{
 	text-align:center;
+	}
+	.reportInner{
+		padding: 10px;
+	}
+	.reportHeading{
+		padding: 20px 10px;
 	}
 }
 @media (max-width: 680px) {
@@ -138,6 +144,18 @@
 .adminDropdown{
 	left: -55px!important;
 	right: auto;
+	}
+	.paddingBtm40{
+		height: 100px;
+	}
+	.admin_common_dd #school_id{
+		left: 0;
+		right: 0;
+		margin: 0 auto;
+		top: 95px;
+	}
+	.paddingBtm40 h2{
+		text-align: center;
 	}
 }
 @media (max-width: 470px) {

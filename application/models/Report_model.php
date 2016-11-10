@@ -44,8 +44,8 @@ class Report_model extends CI_Model {
 	public function get_missing($date, $school_id) {
 
 		if (!empty($school_id)) {
-			$candidate_table = $school_id."_Candidate";
-			$attendance_table = $school_id."_Attendance";
+			//$candidate_table = $school_id."_Candidate";
+			//$attendance_table = $school_id."_Attendance";
 
 			/*$SQL = "SELECT C.`Roll_No`, C.`RFID_NO`, C.`Candidate_Name`, CONCAT(CL.`Name`, ' - ', CL.`Section`) ClassSection, C.`Guardian_Name`, C.`Mob1`, CONCAT(C.`Address1`, ' ', C.`Address2`) Address, A.IN_Time 
 					FROM ".$candidate_table." C 
@@ -53,7 +53,7 @@ class Report_model extends CI_Model {
 					JOIN ".$attendance_table." A ON C.Candidate_ID = A.Candidate_ID 
 					WHERE Date_Attendance = '" . $date . "' AND OUT_Time IS NULL";*/
 
-			$SQL = "CALL educare_db.MissingStudents('".$school_id."', '".$date."')";
+			$SQL = "CALL MissingStudents('".$school_id."', '".$date."')";
 			$query = $this->db->query($SQL);	
 			$this->db->freeDBResource($this->db->conn_id);
 			return $query->result_array();
@@ -61,5 +61,18 @@ class Report_model extends CI_Model {
 		} else {
 			return array();
 		}
+	}
+
+	public function get_adjustment($school_id, $class_id, $correction_date) {
+		$result = array();
+		if (!empty($school_id)) {
+			$SQL = "CALL SP_AbsentListForSection('".$school_id."', '".$class_id."', '".$correction_date."')";
+			$query = $this->db->query($SQL);	
+			$this->db->freeDBResource($this->db->conn_id);			
+
+			$result = $query->result_array();
+		}
+		
+		return $result;
 	}
 }

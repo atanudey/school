@@ -299,7 +299,7 @@ class Report extends MY_Controller {
 	}
 
 	function adjustment() {
-		//print_r($_REQUEST); die;
+		//print_r($_REQUEST); 
 
 		$data = $this->data;
 		if (!empty($this->school_id))
@@ -320,6 +320,9 @@ class Report extends MY_Controller {
 				}	
 			}
 		}
+
+		$report_date = convert_to_mysql_date($this->input->post('report_date'));
+		$data["report"] = $this->report_model->get_adjustment($this->school_id, 3, $report_date);
 
 		$this->load->template('report/adjustment', $data);
 	}

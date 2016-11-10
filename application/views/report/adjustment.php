@@ -356,8 +356,7 @@
                     <th>Class Section</th>
                     <th>Guardian Name</th>
                     <th>Contact</th>
-                    <th>Address</th>                    
-                    <th>In Time</th>
+                    <th>Address</th>
                 </tr>
             </thead>
             <tbody>
@@ -370,7 +369,6 @@
                     <td><?php echo $s['Guardian_Name']; ?></td>
                     <td><?php echo $s['Mob1']; ?></td>
                     <td><?php echo $s['Address']; ?></td>
-                    <td><?php echo $s['IN_Time']; ?></td>
                 </tr>                    
             <?php endforeach; ?>
             </tbody> 

@@ -35,9 +35,9 @@ class Report_model extends CI_Model {
 
 		//echo "CALL " . $sp_name . "('".implode("','", $params)."')"; die;
 
-		$this->db->query("CALL " . $sp_name . "('".implode("','", $params)."')");
-		$query = $this->db->query("SELECT * FROM ". $table_name);	
-			
+		$query = $this->db->query("CALL " . $sp_name . "('".implode("','", $params)."')");
+		//$query = $this->db->query("SELECT * FROM ". $table_name);	
+		$this->db->freeDBResource($this->db->conn_id);
 		return $query->result_array();
 	}
 
@@ -47,14 +47,17 @@ class Report_model extends CI_Model {
 			$candidate_table = $school_id."_Candidate";
 			$attendance_table = $school_id."_Attendance";
 
-			$SQL = "SELECT C.`Roll_No`, C.`RFID_NO`, C.`Candidate_Name`, CONCAT(CL.`Name`, ' - ', CL.`Section`) ClassSection, C.`Guardian_Name`, C.`Mob1`, CONCAT(C.`Address1`, ' ', C.`Address2`) Address, A.IN_Time 
+			/*$SQL = "SELECT C.`Roll_No`, C.`RFID_NO`, C.`Candidate_Name`, CONCAT(CL.`Name`, ' - ', CL.`Section`) ClassSection, C.`Guardian_Name`, C.`Mob1`, CONCAT(C.`Address1`, ' ', C.`Address2`) Address, A.IN_Time 
 					FROM ".$candidate_table." C 
 					JOIN Class CL ON C.Class_ID = CL.ID 
 					JOIN ".$attendance_table." A ON C.Candidate_ID = A.Candidate_ID 
-					WHERE Date_Attendance = '" . $date . "' AND OUT_Time IS NULL";
+					WHERE Date_Attendance = '" . $date . "' AND OUT_Time IS NULL";*/
 
+			$SQL = "CALL educare_db.MissingStudents('".$school_id."', '".$date."')";
 			$query = $this->db->query($SQL);	
+			$this->db->freeDBResource($this->db->conn_id);
 			return $query->result_array();
+			
 		} else {
 			return array();
 		}

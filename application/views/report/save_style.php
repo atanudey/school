@@ -1,16 +1,21 @@
 .pdf{
-	font-family: Arial;
+	font-family: <?php echo $font ?>;
 }
 .pdf .headingText{
 	text-align: center;
 	padding-bottom: 15px;
 }
-table.attablePdf {border-spacing: 0; width:100%; font-family: Arial;}
+
+.headingText p{
+	font-size: 12px;
+}
+
+table.attablePdf {border-spacing: 0; width:100%; font-family: <?php echo $font ?>;}
 table.attablePdf {
-	width:70%;
+	width:90%;
 	margin:0 auto;
 	background: #FFF;
-	font-family: DejaVuSans;
+	font-family: <?php echo $font ?>;
 	border: 1px solid #ccc;
 	font-size: 8px;
 
@@ -20,11 +25,11 @@ table.attablePdf th.th{
 	font-size:14px;
 	border-left: 1px solid #ccc;
 	border-bottom: 1px solid #ccc;
-	font-family: Arial;
+	font-family: <?php echo $font ?>;
 	
 }
 table.attablePdf tr td.td{
-	font-family: Arial;
+	font-family: <?php echo $font ?>;
 	padding:8px 5px;
 	font-size:12px;
 	border-bottom:1px solid #ddd;
@@ -51,12 +56,12 @@ div.pdf > table td, th{padding: 0;}
 
 div.pdf table tr th {
 	font-size: 12px;
-	font-family: DejaVuSans;
+	font-family: <?php echo $font ?>;
 }
 
 div.pdf table tr td {
 	font-size: 10px;
-	font-family: DejaVuSans;
+	font-family: <?php echo $font ?>;
 }
 
 div.pdf table tr.topBar th{

@@ -136,7 +136,7 @@ class Candidate_model extends CI_Model
 		    $this->db->limit($_POST['length'], $_POST['start']);
 		
         $query = $this->db->get();
-        file_put_contents("queries.txt", $this->db->last_query() . "\n\n", FILE_APPEND);
+        //file_put_contents("queries.txt", $this->db->last_query() . "\n\n", FILE_APPEND);
 		return $query->result();
 	}
 

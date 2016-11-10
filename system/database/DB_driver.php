@@ -1003,6 +1003,22 @@ abstract class CI_DB_driver {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Free resources before executing a new query
+	 *
+	 * @return	bool
+	 */
+
+	function freeDBResource($dbh){
+		while(mysqli_more_results($dbh) && mysqli_next_result($dbh)){
+			if($l_result = mysqli_store_result($dbh)){
+				mysqli_free_result($l_result);
+			}
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * "Smart" Escape String
 	 *
 	 * Escapes data based on type

@@ -197,15 +197,18 @@ class Report extends MY_Controller {
 	}
 
 	function prnt() {
+		$this->data["font"] = "Arial";
 		echo $this->getReportContent('prnt');
 	}
 
-	function pdf() {		
+	function pdf() {	
+		$this->data["font"] = "DejaVuSans";	
 		$content = $this->getReportContent();
 		$this->getReport($content);
 	}
 
 	function excel() {
+		$this->data["font"] = "Arial";
 
 		$content = $this->getReportContent();
 		$inputFileName = tempnam(sys_get_temp_dir(), "excel_report");
@@ -277,7 +280,7 @@ class Report extends MY_Controller {
 		if (empty($date))
 			$date = date('d/m/Y');
 		
-		$this->data["report"] = $this->report_model->get_missing(implode("-", array_reverse(explode("/", $date))), $this->school_id);		
+		$this->data["report"] = $this->report_model->get_missing(implode("-", array_reverse(explode("/", $date))), $this->school_id);	
 
 		$params = array(
 			'type' => 'missing',

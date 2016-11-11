@@ -4,7 +4,7 @@
         <?php //print_r($report); ?>
         <h3><?php echo $school["School_Name"]; ?></h3>
         <p><?php echo $school['Address1'] . ", " . $school['Address2'] . " - ". $school['Pin']; ?></p>
-        <?php if ($report_parameters['type'] == "missing") { ?> 
+        <?php if ($report_parameters['type'] == "missing" || $report_parameters['type'] == "adjustment") { ?> 
             <p>Report For Date: <?php echo $report_parameters['date']; ?></p>
         <?php } else { ?>
             <p>Date Range: <?php echo $report_parameters['start_date']; ?> - <?php echo $report_parameters['end_date']; ?></p>
@@ -86,6 +86,36 @@
                     <td align="left" class="td"><?php echo $s['Mob1']; ?></td>
                     <td align="left" class="td"><?php echo $s['Address']; ?></td>
                     <td align="left" class="td"><?php echo $s['IN_Time']; ?></td>
+                </tr>                    
+            <?php endforeach; ?>
+            </tbody> 
+        </table>
+    <?php } else if ($report_parameters['type'] == "adjustment"){ ?>
+        <h2>Attendance Adjustment Report</h2>
+        <table id="example" class="table table-striped table-bordered attablePdf" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th class="th">Roll #</th>		
+                    <th class="th">RFID #</th>			
+                    <th class="th">Candidate Name</th>                    
+                    <th class="th">Class Section</th>
+                    <th class="th">Guardian Name</th>
+                    <th class="th">Contact</th>
+                    <th class="th">Address</th>
+                    <th class="th">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php foreach($report as $s): ?>	
+                <tr>                             
+                    <td class="td"><?php echo $s['Roll_No']; ?></td>
+                    <td class="td"><?php echo $s['RFID_NO']; ?></td>
+                    <td class="td"><?php echo $s['Candidate_Name']; ?></td>
+                    <td class="td"><?php echo $s['Class']; ?></td>
+                    <td class="td"><?php echo $s['Guardian_Name']; ?></td>
+                    <td class="td"><?php echo $s['Mob1']; ?></td>
+                    <td class="td"><?php echo $s['Address']; ?></td>
+                    <td class="td"></td>
                 </tr>                    
             <?php endforeach; ?>
             </tbody> 

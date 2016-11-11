@@ -324,7 +324,7 @@
                 <label>Date </label>
                 <div class="well">
                     <div id="reportdate" class="input-append startdatetime-from">
-                    <input name="report_date" value="<?php echo $report_parameters["date"]; ?>" data-format="dd/MM/yyyy" type="text" class="datetimepicker-input"></input>
+                    <input name="report_date" value="<?php echo (!empty($_REQUEST["report_date"])) ? $_REQUEST["report_date"]:date('d/m/Y'); ?>" data-format="dd/MM/yyyy" type="text" class="datetimepicker-input"></input>
                     <span class="add-on">
                         <span class="glyphicon glyphicon-calendar"></span>
                     </span>
@@ -357,6 +357,7 @@
                     <th>Guardian Name</th>
                     <th>Contact</th>
                     <th>Address</th>
+                    <th>Option</th>
                 </tr>
             </thead>
             <tbody>
@@ -365,10 +366,11 @@
                     <td><?php echo $s['Roll_No']; ?></td>
                     <td><?php echo $s['RFID_NO']; ?></td>
                     <td><?php echo $s['Candidate_Name']; ?></td>
-                    <td><?php echo $s['ClassSection']; ?></td>
+                    <td><?php echo $s['Class']; ?></td>
                     <td><?php echo $s['Guardian_Name']; ?></td>
                     <td><?php echo $s['Mob1']; ?></td>
                     <td><?php echo $s['Address']; ?></td>
+                    <td><a href="javascript:void(0)" class="btn btn-info adjust">Adjust</a></td>
                 </tr>                    
             <?php endforeach; ?>
             </tbody> 

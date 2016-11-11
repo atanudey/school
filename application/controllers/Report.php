@@ -324,6 +324,14 @@ class Report extends MY_Controller {
 		$report_date = convert_to_mysql_date($this->input->post('report_date'));
 		$data["report"] = $this->report_model->get_adjustment($this->school_id, 3, $report_date);
 
+		$params = array(
+			"date" => $this->input->post('report_date'),
+			"type" => 'adjustment'
+		);
+
+		$this->session->set_userdata('report', $data['report']);
+		$this->session->set_userdata('report_parameters', $params);
+
 		$this->load->template('report/adjustment', $data);
 	}
 }

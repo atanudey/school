@@ -18,7 +18,7 @@ class Candidate_model extends CI_Model
      */
     function get_candidate($Candidate_ID)
     {
-        return $this->db->get_where($this->school_id . '_Candidate',array('Candidate_ID'=>$Candidate_ID))->row_array();
+        return $this->db->get_where($this->school_id . '_Candidate', array('Candidate_ID'=>$Candidate_ID))->row_array();
     }
 
     /*
@@ -68,7 +68,7 @@ class Candidate_model extends CI_Model
      */
     function add_candidate($params)
     {
-        $this->db->insert($this->school_id . '_Candidate',$params);
+        $this->db->insert($this->school_id . '_Candidate', $params);
         return $this->db->insert_id();
     }
     

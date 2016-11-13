@@ -124,8 +124,6 @@ class Report extends MY_Controller {
 		if (!empty($this->school_id)) {
 			$data = $this->data;
 
-			//print_r($_REQUEST);
-
 			$start_date = explode("/",$this->input->post('start_date'));
 			$end_date = explode("/",$this->input->post('end_date'));
 
@@ -171,18 +169,20 @@ class Report extends MY_Controller {
 
 			//print_r($params); die;
 
-			$this->data['report'] = $this->report_model->get_attendance($params);
-			$this->data["report_parameters"] = $params;
+			$data['report'] = $this->report_model->get_attendance($params);
+			$data["report_parameters"] = $params;
 
 			//Modifying date format to show in pdf report			
 			$params['start_date'] = $this->input->post('start_date');
 			$params['end_date'] = $this->input->post('end_date');
 
 			$this->session->set_userdata('report_parameters', $params);
-			$this->session->set_userdata('report', $this->data['report']);
+			$this->session->set_userdata('report', $data['report']);
 		}
 
-		$this->load->template('report/output', $this->data);
+		//print_r($data); die;
+
+		$this->load->template('report/output', $data);
 	}
 
 	function getReportContent($type = ""){
@@ -299,11 +299,25 @@ class Report extends MY_Controller {
 	}
 
 	function adjustment() {
-		//print_r($_REQUEST); 
+		$data = $this->get_adjustments();
+		$this->load->template('report/adjustment', $data);
+	}
 
+	function do_adjustment_ajax() {
+		$response = $this->report_model->do_adjustment($this->input->post(NULL, TRUE));
+		echo json_encode(array("success" => true));
+	}
+
+	function adjustment_list_ajax() {
+		$data = $this->get_adjustments();
+		echo json_encode($data['report']);
+	}
+
+	function get_adjustments() {
 		$data = $this->data;
-		if (!empty($this->school_id))
+		if (!empty($this->school_id)) {
 			$classes = $this->edu_class_model->get_all_class_by_school($this->school_id);
+		}
 
 		$data['classes'] = array();
 		$data['sections'] = array();
@@ -321,8 +335,12 @@ class Report extends MY_Controller {
 			}
 		}
 
-		$report_date = convert_to_mysql_date($this->input->post('report_date'));
-		$data["report"] = $this->report_model->get_adjustment($this->school_id, 3, $report_date);
+		$sp_params["school_id"] = $this->school_id;
+		$sp_params = array_merge($sp_params, $this->input->post(NULL, TRUE));
+
+		$sp_params['correction_date'] = convert_to_mysql_date($this->input->post('correction_date'));
+
+		$data["report"] = $this->report_model->get_adjustment($sp_params);
 
 		$params = array(
 			"date" => $this->input->post('report_date'),
@@ -332,7 +350,7 @@ class Report extends MY_Controller {
 		$this->session->set_userdata('report', $data['report']);
 		$this->session->set_userdata('report_parameters', $params);
 
-		$this->load->template('report/adjustment', $data);
+		return $data;
 	}
 }
 ?>

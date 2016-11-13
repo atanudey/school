@@ -1,6 +1,7 @@
 <script type="text/javascript" language="javascript">
+    var dtable = null;
 	$(document).ready(function(){
-		$('#example').DataTable({
+		dtable = $('#example').DataTable({
             "ordering": false,
             "columns": [
                 { "width": "6%" },
@@ -12,7 +13,8 @@
                 { "width": "24%" },
                 { "width": "6%" },
             ],
-            "searching": false
+            "searching": false,
+            "processing": true
         });
 
         $('#reportdate').datetimepicker({
@@ -20,10 +22,6 @@
             format: 'dd/MM/yyyy',
         }).on('changeDate', function(ev){
             $(this).datetimepicker('hide');             
-        });
-
-        $("#view_report").on("click", function(){
-            $('#adjustment_frm').submit();
         });
 	});
 </script>
@@ -41,6 +39,7 @@
 
         $("#report_type_all").on('click', function(){
             //$(this).closest('.reportInner').find('.row').hide();
+            $('#student_block').hide();
             $(this).closest('.reportInner').find( "[type=checkbox]" ).prop('checked', false);
 
             $("#class_section_block").find('input').each(function () {
@@ -54,8 +53,6 @@
 					$(this).prop('checked', true);					
 				}
 			});
-			
-			$.fn.changeCalendar('mly');
         });
 
         $("#report_type_class").on('click', function(){
@@ -78,8 +75,6 @@
 					$(this).prop('checked', true);					
 				}
 			});
-			
-			$.fn.changeCalendar('mly');
         });
 
         $("#report_type_student").on('click', function(){
@@ -99,9 +94,7 @@
 				} else {
 					$(this).prop('checked', true);					
 				}
-			});
-			
-			$.fn.changeCalendar('mly');			
+			});		
         });
 
         $("#class_section_block").find(".select_all").on('change', function(){             
@@ -129,127 +122,165 @@
 <!-- Bootstrap Datepicker Script -->
 <script type="text/javascript">
     $(document).ready(function() {
-        $.fn.changeCalendar = function(type) { 
-            var offset;
-            switch(type) {
-                case "mly":
-                    offset = 1;
-                    break;
-                case "qly":
-                    offset = 3;
-                    break;
-                case "hly":
-                    offset = 6;
-                    break;
-                case "yly":
-                    offset = 12;
-                    break;
-            }
 
-            var d = new Date();
-            var currentmonth = function(){
-                var month = d.getMonth()+1;
-                var day = d.getDate();
-                var output = (day<10 ? '0' : '') + day + '/' + 
-                (month<10 ? '0' : '') + month + '/' +
-                d.getFullYear();
-                return output;
-            };
-
-            var prevmonth = function(){
-                var month = (d.getMonth()+1) - offset;
-                var day = d.getDate();
-                if (month < 1) {
-                    month = 1;
-                    day = 1;
-                }
-                var output = (day<10 ? '0' : '') + day + '/' + 
-                (month<10 ? '0' : '') + month + '/' +
-                d.getFullYear();
-                return output;
-            };        
-
-            $("#fromdate .datetimepicker-input").val(prevmonth);
-            $("#todate .datetimepicker-input").val(currentmonth);
-
-            var formfirstDate = new Date(d.getFullYear(), 0, 1);       
-
-            var first = prevmonth().split("/");
-            var last = currentmonth().split("/");            
-
-            var firstDate = new Date(first[1] + "/" + first[0] + "/" + first[2]);
-            var lastDate = new Date(last[1]  + "/" + last[0]  + "/" + last[2]);
-
-            $('#todate').datetimepicker({
-                language: 'en',
-                format: 'dd/MM/yyyy',
-                startDate: firstDate,
-                endDate: lastDate
-            });
-
-            $('#fromdate').datetimepicker({
-                language: 'en',
-                format: 'dd/MM/yyyy',
-                startDate: formfirstDate,
-                endDate: lastDate
-            });
-        }
-
-        $('input[name=report_range_type]:radio').on('change', function() { 
-            $.fn.changeCalendar($(this).val());            
-        });
-
-        $.fn.changeCalendar('mly');  
+        var classes = [], sections = [], students = [];
+        var candidate_ids = [];
 
         // Initially when all selected user should not be able to select any options for class and section
         $("#class_section_block").find('input').each(function () {
             $(this).prop('disabled', true);
         });
                 
-        $('.checkbox_cst').on('change', function() {
-            if ($('#report_type_student').prop('checked')) {            
-                var classes = [], sections = [];				
-				
-                $.each($('input[name=class\\[\\]]:checked'), function(){
-                    classes.push($(this).val());
-                });
+        $('.select_all').on('change', function() {
+            $.fn.get_selection();
+        });
 
-                $.each($('input[name=section\\[\\]]:checked'), function(){
-                    sections.push($(this).val());
-                });
-				
-				if (classes.length > 0 && $(this).prop('checked') == true) {
-					$("#class_section_block").find('.section_block').find('input').each(function () {				
-						$(this).prop('disabled', false);
-						$(this).prop('checked', true);
-					});
-				} else if (classes.length == 0 && $(this).prop('checked') == false) {					
-					$("#class_section_block").find('.section_block').find('input').each(function () {		
-						$(this).prop('checked', false);
-						$(this).prop('disabled', true);
-					});
-					
-					classes = sections = [];
-				}
+        $('.reportBlockContent').on('change', 'input[type="checkbox"]', function() {
+            $.fn.get_selection();
 
+            if (classes.length > 0 && $(this).prop('checked') == true) {
+                $("#class_section_block").find('.section_block').find('input').each(function () {				
+                    $(this).prop('disabled', false);
+                    $(this).prop('checked', true);
+                });
+            } else if (classes.length == 0 && $(this).prop('checked') == false) {					
+                $("#class_section_block").find('.section_block').find('input').each(function () {		
+                    $(this).prop('checked', false);
+                    $(this).prop('disabled', true);
+                });
+                
+                classes = sections = students = [];
+            }
+
+            if ($('#report_type_student').prop('checked') && $(this).attr('name') != 'student[]') {
                 $("#student_container").empty();
                 $("#student_container").append("<div class='wait'> Getting list of students. Be Patient! </div>");
 
                 $.get("<?php echo base_url(); ?>report/get_candidate", {"classes": classes.join(","), "sections": sections.join(",")}).done(function( data ) {                
                     $("#student_container").empty();
                     $.each(JSON.parse(data), function(item, user) {
-                        $("#student_container").append('<input type="checkbox" name="student[]" class="checkbox_cst" value="' + user.Candidate_ID + '"><label>' + user.Candidate_Name + '</label></div>')
+                        $("#student_container").append('<div class="fldRowInline"><input type="checkbox" name="student[]" class="checkbox_cst" value="' + user.Candidate_ID + '"><label>' + user.Candidate_Name + '</label></div></div>')
                     });
-                });            
+                });
             }
         });
 
-        $('#report_frm').on('submit', function() {
-            if ($('#report_type_student').is(":checked") && $('input[name=student\\[\\]]:checked').length == 0) {
-                alert("Please select atleast one student.");
-                return false;
-            }       
+        $.fn.get_selection = function() {
+            classes = [];
+            sections = [];
+            students = [];
+
+            $.each($('input[name=class\\[\\]]:checked'), function(){
+                classes.push($(this).val());
+            });
+
+            $.each($('input[name=section\\[\\]]:checked'), function(){
+                sections.push($(this).val());
+            });    
+
+            $.each($('input[name=student\\[\\]]:checked'), function(){
+                students.push($(this).val());
+            });        
+        }
+
+        $("#view_report").on("click", function(){
+            var parameters = {"classes": classes.join(","), "sections": sections.join(","), "students": students.join(","), "correction_date": $("#report_date").val() };
+    
+            $(".dataTables_processing").show();
+
+            //Clearing currently listed rows
+            dtable.rows().remove().draw();
+
+            $.ajax({
+                method: "POST",
+                url: "<?php echo base_url(); ?>report/adjustment_list_ajax",
+                data: parameters
+            })
+            .done(function( data ) {
+                var data = JSON.parse(data);
+                $.each(data, function(item, value){
+                    var row_data = $.map( value, function( v, k ) {
+                        return v;
+                    });
+                    buttonHtml = '<a href="javascript:void(0)" rel="'+ row_data[0] +'" class="btn btn-info adjust">Adjust</a>';
+                    row_data.push(buttonHtml);
+
+                    //Removing first element, which is candidate_id. This will not be in the list.
+                    row_data.shift();
+
+                    dtable.row.add(row_data).draw();
+                });
+
+                $(".dataTables_processing").hide();
+            });
+            
+            //console.log(parameters);
         });
+
+        $('#example').on('click', 'a.btn', function(){
+            if ($(this).hasClass('adjust')) {
+                $(this).removeClass('adjust');
+                $(this).addClass('btn-cancel');
+                $(this).html('Absent');
+                $.fn.do_adjust($(this).attr('rel'), 'adjust');
+            } else {
+                $(this).removeClass('btn-cancel');
+                $(this).addClass('adjust');
+                $(this).html('Adjust');
+                $.fn.do_adjust($(this).attr('rel'), 'absent');
+            }
+        });
+
+        $.fn.do_adjust = function(candidate_id, type) {
+            var op = "";
+            if (type == 'adjust') {
+                candidate_ids.push(candidate_id);
+                op = 'IN';
+            }
+            else {
+                candidate_ids.remove(candidate_id);
+                op = 'OUT';
+            }
+
+            $.ajax({
+                method: "POST",
+                url: "<?php echo base_url(); ?>report/do_adjustment_ajax",
+                data: { "school_id": "<?php echo $session_user["school_id"]; ?>", "candidate_id": candidate_id, "op": op, "correction_date": $("#report_date").val() }
+            })
+            .done(function( data ) {
+            }); 
+        }
+
+        Array.prototype.remove = function() {
+            var what, a = arguments, L = a.length, ax;
+            while (L && this.length) {
+                what = a[--L];
+                while ((ax = this.indexOf(what)) !== -1) {
+                    this.splice(ax, 1);
+                }
+            }
+            return this;
+        };
+
+
+        /*$('#report_frm').on('click', function() {
+            //if ($('#report_type_student').is(":checked") && $('input[name=student\\[\\]]:checked').length == 0) {
+            //    alert("Please select atleast one student.");
+            //}
+
+            $.ajax({
+                method: "POST",
+                url: "<?php echo base_url(); ?>report/do_adjustment_ajax",
+                data: { "school_id": "<?php echo $session_user["school_id"]; ?>", "candidate_ids": candidate_ids.join(','), "op": , "correction_date": $("#report_date").val() }
+            })
+            .done(function( data ) {
+            });    
+
+            return false;
+        });*/
+
+        //Triggering to fetch todays report beforehand
+        $('#view_report').trigger('click');
     });
 </script>
 <div class="bodyPanel">
@@ -324,7 +355,7 @@
                 <label>Date </label>
                 <div class="well">
                     <div id="reportdate" class="input-append startdatetime-from">
-                    <input name="report_date" value="<?php echo (!empty($_REQUEST["report_date"])) ? $_REQUEST["report_date"]:date('d/m/Y'); ?>" data-format="dd/MM/yyyy" type="text" class="datetimepicker-input"></input>
+                    <input name="report_date" id="report_date" value="<?php echo (!empty($_REQUEST["report_date"])) ? $_REQUEST["report_date"]:date('d/m/Y'); ?>" data-format="dd/MM/yyyy" type="text" class="datetimepicker-input"></input>
                     <span class="add-on">
                         <span class="glyphicon glyphicon-calendar"></span>
                     </span>
@@ -333,7 +364,6 @@
             </div>
             <a href="javascript:void(0)" id="view_report" class="btn btn-success">View Report</a>
         </div>
-        </form>
         <hr />
         <?php if (!empty($school["School_Name"])) { ?>
         <div class="headingText school_center">
@@ -376,4 +406,9 @@
             </tbody> 
         </table>
     </div>
+    <div>&nbsp;</div>
+    <div class="reportBtnsBtm">
+        <input type="button" id="report_frm" name="process" value="Process" class="processBtn">
+    </div>
 </div>
+</form>

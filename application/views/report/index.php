@@ -19,6 +19,7 @@
 
         $("#report_type_all").on('click', function(){
             //$(this).closest('.reportInner').find('.row').hide();
+            $('#student_block').hide();
             $(this).closest('.reportInner').find( "[type=checkbox]" ).prop('checked', false);
 
             $("#class_section_block").find('input').each(function () {

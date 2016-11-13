@@ -55,10 +55,10 @@
         <tr>
           <td>RFID #</td>
           <td>Roll #</td>
-          <td>Candidate Name</td>
+          <td>Name</td>
           <td>Address1</td>
           <td>Address2</td>
-          <td>Guardian Name</td>
+          <td>Guardian</td>
           <td>Mobile</td>
           <td>Gender</td>
           <td>Age</td>

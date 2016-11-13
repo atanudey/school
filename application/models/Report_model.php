@@ -63,12 +63,33 @@ class Report_model extends CI_Model {
 		}
 	}
 
-	public function get_adjustment($school_id, $class_id, $correction_date) {
+	public function get_adjustment($params) {
 		$result = array();
-		if (!empty($school_id)) {
-			$SQL = "CALL SP_AbsentListForSection('".$school_id."', '".$class_id."', '".$correction_date."')";
+		//print_r($params); die;
+		if (!empty($params['school_id']) && count($params) == 5) {
+			//$SQL = "CALL SP_AbsentListForSection('".$school_id."', '".$class_id."', '".$correction_date."')";
+			$SQL = "CALL SP_AbsentListForSection('".implode("','", $params)."')";
+			
 			$query = $this->db->query($SQL);	
 			$this->db->freeDBResource($this->db->conn_id);			
+
+			$result = $query->result_array();
+		}
+		
+		return $result;
+	}
+
+	public function do_adjustment($params) {
+		$result = array();
+		$params['correction_date'] = convert_to_mysql_date($this->input->post('correction_date'));
+		if (!empty($params['school_id']) && count($params) == 4) {			
+			$SQL = "CALL SP_CorrectionAttendance('".implode("','", $params)."', @response)";
+			$query = $this->db->query($SQL);	
+
+			$this->db->freeDBResource($this->db->conn_id);	
+
+			$SQL = "SELECT @response";
+			$query = $this->db->query($SQL);		
 
 			$result = $query->result_array();
 		}

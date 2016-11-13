@@ -41,7 +41,8 @@ class Candidate extends MY_Controller
 				$row[] = $candidate->Address2;
 				$row[] = $candidate->Guardian_Name;
 				$row[] = $candidate->Mob1;
-				$row[] = ($candidate->Gender == "M") ? "Male":"Female";
+				//$row[] = ($candidate->Gender == "M") ? "Male":"Female";
+				$row[] = $candidate->Gender;
 				$row[] = $candidate->Age;
 
 				//add html for action

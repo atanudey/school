@@ -20,7 +20,8 @@ class Event extends MY_Controller
 		$data['event'] = $this->Event_model->get_all_event();
         $i = 0;
         foreach($data['event'] as $event) {
-            $data['event'][$i]['Event_Type'] = $this->Event_type_model->get_event_type($event['Event_Type_ID'])['Type_Name'];
+            $event_type = $this->Event_type_model->get_event_type($event['Event_Type_ID']);
+            $data['event'][$i]['Event_Type'] = $event_type['Type_Name'];
             $i++;
         }
 
@@ -50,7 +51,7 @@ class Event extends MY_Controller
 
         //print_r($_FILES); print_r($params); die;    
 
-        if (!empty($_FILES)) {
+        /*if (!empty($_FILES)) {
             $config['upload_path']   = './assets/sitedata/'. $this->school_id . "/events/";
             $config['allowed_types'] = 'gif|jpg|png|pdf|doc|docx';
 
@@ -72,19 +73,31 @@ class Event extends MY_Controller
             {
                 $data = array('upload_data' => $this->upload->data());                
             }
-        }
+        }*/
+
+        $upload_params = array(
+            "path" => "./assets/sitedata/". $this->school_id . "/events/",
+            "files" => $_FILES,
+            "prefix" => $params["Title"],
+            "input_name" => "event_file",
+            "upload_for" => "event",
+            "allowed_types" => "pdf|doc|docx|ppt|pptx|xls|xlsx"
+        );
+
+        $upload_info = upload_file($upload_params);
+
+        $params["File_Name"] = $upload_info["file_name"];
         
         if ($mode == 'add') {
             if($this->form_validation->run())     
             {
                 $result = $this->Event_model->add_event($params);
 
-                if ($result)
-                    $this->session->set_flashdata('flashInfo', 'Event added sucessfully.');  
-            }   
-
-            redirect('event/index');
-
+                if ($result) {
+                    $this->session->set_flashdata('flashInfo', 'Event added sucessfully.');
+                    redirect('event/index');
+                }  
+            }
         } else if (!empty($params["Title"])) {   
             if($this->form_validation->run())     
             {                 

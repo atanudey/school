@@ -18,7 +18,7 @@ if(!function_exists('upload_file'))
             $config['upload_path']   = $params['path'];
 
             if ($params["upload_for"] == "candidate") {
-                $config['allowed_types'] = CANDIDATE_MEDIA_TYPES;
+                $config['allowed_types'] = $params['allowed_types'];
 
                 /*$config['max_size']             = 100;
                 $config['max_width']            = 1024;
@@ -26,7 +26,7 @@ if(!function_exists('upload_file'))
 
                 $config['file_name'] = str_replace(" ", "_", $params['prefix']) . "." . pathinfo($params["files"][$params["input_name"]]['name'], PATHINFO_EXTENSION);
             } else {
-                $config['allowed_types'] = CANDIDATE_MEDIA_TYPES;
+                $config['allowed_types'] = $params['allowed_types'];
                 $config['file_name'] = str_replace(" ", "_", $params['prefix']). "_" . time(). "." . pathinfo($params["files"][$params["input_name"]]['name'], PATHINFO_EXTENSION);
             }
 

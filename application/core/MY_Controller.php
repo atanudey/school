@@ -83,4 +83,22 @@ class MY_Controller extends CI_Controller {
 		$this->load->library('controllerlist'); // Load the library
 		$this->config->set_item('controller_methods', $this->controllerlist->getControllers());
 	}*/
+
+    function get_candidate_ajax() {
+		$classes = array();
+		$sections = array();
+
+		$class_input = $this->input->get('classes');
+		$section_input = $this->input->get('sections');
+
+		if (!empty($class_input))
+			$classes = explode(",", $class_input);
+		if (!empty($section_input))
+			$sections = explode(",", $section_input);
+
+		$this->load->model("candidate_model");
+		$data = $this->candidate_model->get_candidate_by_class_section($classes, $sections);
+
+		echo json_encode($data);
+	}
 }

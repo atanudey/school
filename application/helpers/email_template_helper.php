@@ -17,9 +17,18 @@ if (!function_exists('send_email'))
         $ci->email->subject($params["subject"]);
         $ci->email->message($message);
 
+        if (!empty($params['attachment'])) {
+            $ci->email->attach($params['attachment']);
+        }
+
         //print_r($ci->email); die;
 
         $result = $ci->email->send();
+        
+        //Clear attachments
+        if (!empty($params['attachment'])) {
+            $ci->email->clear(true);
+        }
 
         return $result;
     }

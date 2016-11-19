@@ -19,13 +19,14 @@ class Event extends MY_Controller
     {        
 		$data['event'] = $this->Event_model->get_all_event();
         $i = 0;
+        
         foreach($data['event'] as $event) {
             $event_type = $this->Event_type_model->get_event_type($event['Event_Type_ID']);
             $data['event'][$i]['Event_Type'] = $event_type['Type_Name'];
             $i++;
         }
 
-        $this->load->template('event/index',$data);
+        $this->load->template('event/index', $data);
     }
 
     /*
@@ -35,10 +36,11 @@ class Event extends MY_Controller
     {  
         $this->load->library('form_validation');
 
+        $this->form_validation->set_rules('Event_Type_ID','Event Type','required');
 		$this->form_validation->set_rules('Title','Title','required');
-		$this->form_validation->set_rules('Description','Description','required');
+		//$this->form_validation->set_rules('Description','Description','required');
 		$this->form_validation->set_rules('Date','Date','required');
-		$this->form_validation->set_rules('School_ID','School ID','required');
+		$this->form_validation->set_rules('School_ID','School','required');
 
         $params = array(
             'Title' => $this->input->post('Title'),
@@ -47,33 +49,7 @@ class Event extends MY_Controller
             'Date' => convert_to_mysql_date($this->input->post('Date')),
             'School_ID' => $this->input->post('School_ID'),
             'Event_Type_ID' => $this->input->post('Event_Type_ID'),
-        ); 
-
-        //print_r($_FILES); print_r($params); die;    
-
-        /*if (!empty($_FILES)) {
-            $config['upload_path']   = './assets/sitedata/'. $this->school_id . "/events/";
-            $config['allowed_types'] = 'gif|jpg|png|pdf|doc|docx';
-
-            $config['file_name'] = str_replace(" ", "_", $params['Title']). "_" . time(). "." . pathinfo($_FILES['event_file']['name'], PATHINFO_EXTENSION);
-
-            $params['File_Name'] = $config['file_name'];
-
-            //$config['max_size']             = 100;
-            //$config['max_width']            = 1024;
-            //$config['max_height']           = 768;
-
-            $this->load->library('upload', $config);
-
-            if ( ! $this->upload->do_upload('event_file'))
-            {
-                $error = array('error' => $this->upload->display_errors());              
-            }
-            else
-            {
-                $data = array('upload_data' => $this->upload->data());                
-            }
-        }*/
+        );
 
         $upload_params = array(
             "path" => "./assets/sitedata/". $this->school_id . "/events/",
@@ -84,9 +60,11 @@ class Event extends MY_Controller
             "allowed_types" => "pdf|doc|docx|ppt|pptx|xls|xlsx"
         );
 
-        $upload_info = upload_file($upload_params);
-
-        $params["File_Name"] = $upload_info["file_name"];
+        $params["File_Name"] = "";
+        if (!empty($_FILES)) {
+            $upload_info = upload_file($upload_params);
+            $params["File_Name"] = $upload_info["file_name"];
+        }
         
         if ($mode == 'add') {
             if($this->form_validation->run())     
@@ -135,11 +113,122 @@ class Event extends MY_Controller
         if(isset($event['ID']))
         {
             $this->Event_model->delete_event($ID);
+
+            $path = "./assets/sitedata/". $this->school_id . "/events/";
+
+            $check_file = $path . $event['File_Name'];
+            if (file_exists($check_file)){
+                unlink($check_file);
+            }
+
             $this->session->set_flashdata('flashInfo','Event deleted successfully.');
             redirect('event/index');
         }
         else
             $this->session->set_flashdata('flashInfo','The event you are trying to delete does not exist.');
     }
-    
+
+    function notify($Event_ID) {
+
+        $this->load->model('report_model');	
+		$this->load->model('school_model');
+		$this->load->model('edu_class_model');
+
+		if (!empty($this->school_id)) {
+			$classes = $this->edu_class_model->get_all_class_by_school($this->school_id);
+		}
+
+		$data['classes'] = array();
+		$data['sections'] = array();
+		if (!empty($classes)) {
+			foreach($classes as $class) {
+				if (!in_array($class['Name'], $data['classes'])) {
+					$data['classes'][] = $class['Name'];
+				}	
+			}
+
+			foreach($classes as $class) {
+				if (!in_array($class['Section'], $data['sections'])) {
+					$data['sections'][] = $class['Section'];
+				}	
+			}
+		}
+
+        $data['Event_ID'] = $Event_ID;
+
+        $this->load->template('event/notify', $data);
+    }
+
+    function do_notify_ajax() {
+        $this->load->model('candidate_model');
+        $students = array();
+        
+        switch ($this->input->post('type')) {
+            case "all":
+                $students = $this->candidate_model->get_all_candidate();
+                break;
+
+            case "class":
+                $classes = explode(",", $this->input->post('classes'));
+                $sections = explode(",", $this->input->post('sections'));
+                $students = $this->candidate_model->get_candidate_by_class_section($classes, $sections);
+                break;
+
+            case "student":
+                $students_param = explode(",", $this->input->post('students'));
+                $students = $this->candidate_model->get_candidate_multiple($students_param);
+                break;
+        }
+
+        //print_r($students);
+
+        $formdata = explode("&", $this->input->post('formdata'));
+        foreach ($formdata as $data) {
+            list($key, $val) = explode("=", $data);
+            $notify_param[$key] = preg_replace('/<[^<]+?>/', ' ', urldecode($val));
+        }
+
+        switch($notify_param["notification_type"]) {
+            case "email":
+                if ($this->send_email_notification($students, $notify_param))
+                    echo json_encode(array("success" => true));
+
+                break;
+
+            case "sms":
+                $this->send_sms_notification($students, $notify_param);
+                break;
+        }
+    }
+
+    function send_email_notification($students, $notify_param) {
+        $event = $this->Event_model->get_event($notify_param['Event_ID']);
+        
+        foreach ($students as $student) {
+
+            $SITE_EMAIL = $this->config->item('site_email');
+			$SITE_EMAIL_NAME = $this->config->item('site_email_name');
+            
+            $data = array_merge($student, $notify_param);
+            
+            $email_params = array(			
+                "template_path" => 'templates/event_notify_email',
+                "template_data" => $data,
+                "from" => $SITE_EMAIL,
+                "from_name" => $SITE_EMAIL_NAME,
+                "to" => $data['Email_ID'],
+                "to_name" => $data['Guardian_Name'],
+                "subject" => $data["Title"],
+                "attachment" => "./assets/sitedata/". $this->school_id . "/events/" . $event['File_Name'],			
+            );
+            
+            send_email($email_params);
+        }
+
+        return true;
+    }
+
+    function send_sms_notification($students, $notify_param) {
+
+    }
 }

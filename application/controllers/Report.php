@@ -237,24 +237,6 @@ class Report extends MY_Controller {
 		unlink($outputFileName);
 	}
 
-	function get_candidate() {
-		$classes = array();
-		$sections = array();
-
-		$class_input = $this->input->get('classes');
-		$section_input = $this->input->get('sections');
-
-		if (!empty($class_input))
-			$classes = explode(",", $class_input);
-		if (!empty($section_input))
-			$sections = explode(",", $section_input);
-
-		$this->load->model("candidate_model");
-		$data = $this->candidate_model->get_candidate_by_class_section($classes, $sections);
-
-		echo json_encode($data);
-	}
-
 	function getReport($content, $output = 'download')
 	{
 	    $this->mpdf->SetDisplayMode('fullpage');

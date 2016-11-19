@@ -266,7 +266,11 @@ class User extends MY_Controller {
 		redirect('login');		
 	}
 
-	public function home() {		
+	public function home() {
+
+		$this->load->model('Event_model');
+		$data['event'] = $this->Event_model->get_all_event(array('YEAR(Date)' => date('Y')));
+
 		$template = "admin_staff";
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 			switch(intval($_SESSION['user']->User_Type_ID)) {
@@ -279,7 +283,7 @@ class User extends MY_Controller {
 				case 4: $template = "admin_staff";
 						break;				
 			}			
-			$this->load->template('user/home/'.$template);	
+			$this->load->template('user/home/'.$template, $data);	
 		} else {
 			redirect('login');
 		}

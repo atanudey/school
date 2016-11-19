@@ -41,7 +41,7 @@
         <tr>          
           <td><?php echo $e['Event_Type']; ?></td>
           <td><?php echo $e['Title']; ?></td>
-          <td><?php echo $e['Description']; ?></td>          
+          <td><?php echo word_limiter($e['Description'], 30); ?></td>          
           <td><?php echo $e['Date']; ?></td>          
           <td>
             <a href="<?php echo site_url('event/addedit/edit/'.$e['ID']); ?>" class="btn btn-info">Edit</a>

@@ -22,18 +22,28 @@ class Candidate_model extends CI_Model
     }
 
     /*
-     * Get candidate by Candidate_ID
+     * Get candidate by multiple conditions given in parameter
      */
     function get_candidate_filter($param = array())
     {
         return $this->db->get_where($this->school_id . '_Candidate', $param)->row_array();
     }
 
+    /*
+     * Get candidate by multiple candidate ids
+     */
+    function get_candidate_multiple($candidate_ids)
+    {
+        $this->db->where_in('Candidate_ID', $candidate_ids);
+        $result = $this->db->get_where($this->school_id . '_Candidate')->result_array();
+        return $result;
+    }
+
     function get_candidate_by_class_section($class, $section, $candidate_type = 1) {
         
         $candidate = $this->school_id.'_Candidate';
 
-        $this->db->select('cd.Candidate_Name, cd.Candidate_ID');
+        $this->db->select('cd.*');
         $this->db->from('Class cl');
         $this->db->join($candidate . ' as cd', 'cl.ID = cd.Class_ID');
 
@@ -49,7 +59,6 @@ class Candidate_model extends CI_Model
         }
 
         $this->db->where('Candidate_Type_ID', $candidate_type);
-
         $result = $this->db->get()->result_array();
 
         return $result;
@@ -58,9 +67,12 @@ class Candidate_model extends CI_Model
     /*
      * Get all candidate
      */
-    function get_all_candidate()
+    function get_all_candidate($candidate_type = 1)
     {
-        return $this->db->get($this->school_id . '_Candidate')->result_array();
+        $this->db->where('Candidate_Type_ID', $candidate_type);
+        $result = $this->db->get($this->school_id . '_Candidate')->result_array();
+
+        return $result;
     }
     
     /*

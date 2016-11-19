@@ -15,7 +15,11 @@
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/css/font-awesome.min.css') ?>" />
 		<link href='https://fonts.googleapis.com/css?family=Roboto:400,300,500,700,900,900italic|Open+Sans' rel='stylesheet' type='text/css'>
 		<link rel="shortcut icon" href="<?= base_url('assets/images/favicon.ico') ?>" type="image/x-icon">
-		
+
+        <script language="javascript">
+            var base_path = '<?php echo base_url(); ?>';
+		</script>
+
 		<script type="text/javascript" language="javascript" src="<?= base_url('assets/js/jquery-1.12.3.js') ?>"></script>
         <script type="text/javascript" language="javascript" src="<?= base_url('assets/js/jquery.cookie.min.js') ?>"></script>        
 		<script type="text/javascript" language="javascript" src="<?= base_url('assets/js/jquery-ui.js') ?>"></script>
@@ -26,6 +30,7 @@
         <script type="text/javascript" language="javascript" src="<?= base_url('assets/js/bootstrap-datetimepicker.min.js') ?>"></script>
 		<script type="text/javascript" src="<?= base_url('assets/js/slider.js') ?>"></script>
         <script type="text/javascript" src="<?= base_url('assets/js/script.js') ?>"></script>
+        <script type="text/javascript" language="javascript" src="<?= base_url('assets/js/common.js') ?>"></script>
 
         <script language="javascript">
             $(document).ready(function() {
@@ -171,7 +176,9 @@
             <button type="submit" id="school_choose_submit" class="btn btn-success" style="display:none">Select</button>
             </form>
         </div>
-        <?php } else if (!empty($session_user['user']) && ($session_user['user']->User_Type_ID == "2" || $session_user['user']->User_Type_ID == "3")) { ?>           
-            <div class="school_dd"><h3><?php echo $session_user['school']['School_Name']; ?></h3></div>
+        <?php } else if (!empty($session_user['user']) && ($session_user['user']->User_Type_ID == "2" || $session_user['user']->User_Type_ID == "3")) { ?>
+            <?php if($this->router->fetch_method() != 'home') { ?>           
+                <div class="school_dd"><h3><?php echo $session_user['school']['School_Name']; ?></h3></div>
+            <?php } ?>
         <?php } ?>
 		

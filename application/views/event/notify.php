@@ -86,9 +86,9 @@
             }); 
 
             $('#select_all_class').prop('disabled', true);
-            $('#select_all_section').prop('disabled', true);  
+            $('#select_all_section').prop('disabled', true);
 
-            $('#select_all_student').prop('disabled', false);
+            $('#select_all_student').prop('disabled', false);  
 
             $('.dateOption').find('input').each(function(){
                 if ($(this).val() != 'mly') {
@@ -158,7 +158,7 @@
                 $("#student_container").empty();
                 $("#student_container").append("<div class='wait'> Getting list of students. Be Patient! </div>");
 
-                $.get("<?php echo base_url(); ?>report/get_candidate_ajax", {"classes": classes.join(","), "sections": sections.join(",")}).done(function( data ) {                
+                $.get("<?php echo base_url(); ?>event/get_candidate_ajax", {"classes": classes.join(","), "sections": sections.join(",")}).done(function( data ) {
                     $("#student_container").empty();
                     $.each(JSON.parse(data), function(item, user) {
                         $("#student_container").append('<div class="fldRowInline"><input type="checkbox" name="student[]" class="checkbox_cst" value="' + user.Candidate_ID + '"><label>' + user.Candidate_Name + '</label></div></div>')
@@ -185,112 +185,38 @@
             });        
         }
 
-        $("#view_report").on("click", function(){
-            var parameters = {"classes": classes.join(","), "sections": sections.join(","), "students": students.join(","), "correction_date": $("#report_date").val() };
-    
-            $(".dataTables_processing").show();
+        $('#notify_submit').on('click', function() { 
+            if ($('#Title')[0].checkValidity() && $('#Message')[0].checkValidity()) {
+                if ($('#report_type_student').is(":checked") && $('input[name=student\\[\\]]:checked').length == 0) {
+                    alert("Please select atleast one student.");
+                }
 
-            //Clearing currently listed rows
-            dtable.rows().remove().draw();
-
-            $.ajax({
-                method: "POST",
-                url: "<?php echo base_url(); ?>report/adjustment_list_ajax",
-                data: parameters
-            })
-            .done(function( data ) {
-                var data = JSON.parse(data);
-                $.each(data, function(item, value){
-                    var row_data = $.map( value, function( v, k ) {
-                        return v;
-                    });
-                    buttonHtml = '<a href="javascript:void(0)" rel="'+ row_data[0] +'" class="btn btn-info adjust">Adjust</a>';
-                    row_data.push(buttonHtml);
-
-                    //Removing first element, which is candidate_id. This will not be in the list.
-                    row_data.shift();
-
-                    dtable.row.add(row_data).draw();
+                $.ajax({
+                    method: "POST",
+                    url: "<?php echo base_url(); ?>event/do_notify_ajax",
+                    data: {type: $('input:radio[name=student_report_type]:checked').val(),"classes": classes.join(','), "sections": sections.join(','), "students": students.join(','), "formdata": $('#notify_frm').serialize() },
+                    dataType: "json"
+                })
+                .done(function( data ) {
+                    if (data.success) {
+                        $('#Title').val("");
+                        $('#Message').val("");
+                        $('.flashInfo').text("Event notification has been sent.");
+                        $('.flashInfo').show();
+                    }
                 });
 
-                $(".dataTables_processing").hide();
-            });
-            
-            //console.log(parameters);
+                return false;
+            }   
         });
-
-        $('#example').on('click', 'a.btn', function(){
-            if ($(this).hasClass('adjust')) {
-                $(this).removeClass('adjust');
-                $(this).addClass('btn-cancel');
-                $(this).html('Absent');
-                $.fn.do_adjust($(this).attr('rel'), 'adjust');
-            } else {
-                $(this).removeClass('btn-cancel');
-                $(this).addClass('adjust');
-                $(this).html('Adjust');
-                $.fn.do_adjust($(this).attr('rel'), 'absent');
-            }
-        });
-
-        $.fn.do_adjust = function(candidate_id, type) {
-            var op = "";
-            if (type == 'adjust') {
-                candidate_ids.push(candidate_id);
-                op = 'IN';
-            }
-            else {
-                candidate_ids.remove(candidate_id);
-                op = 'OUT';
-            }
-
-            $.ajax({
-                method: "POST",
-                url: "<?php echo base_url(); ?>report/do_adjustment_ajax",
-                data: { "school_id": "<?php echo $session_user["school_id"]; ?>", "candidate_id": candidate_id, "op": op, "correction_date": $("#report_date").val() }
-            })
-            .done(function( data ) {
-            });
-        }
-
-        Array.prototype.remove = function() {
-            var what, a = arguments, L = a.length, ax;
-            while (L && this.length) {
-                what = a[--L];
-                while ((ax = this.indexOf(what)) !== -1) {
-                    this.splice(ax, 1);
-                }
-            }
-            return this;
-        };
-
-
-        $('#report_frm').on('click', function() {
-            if ($('#report_type_student').is(":checked") && $('input[name=student\\[\\]]:checked').length == 0) {
-               alert("Please select atleast one student.");
-            }
-
-            $.ajax({
-                method: "POST",
-                url: "<?php echo base_url(); ?>report/do_adjustment_ajax",
-                data: { "school_id": "<?php echo $session_user["school_id"]; ?>", "candidate_id": candidate_ids.join(','), "op": 'IN', "correction_date": $("#report_date").val() }
-            })
-            .done(function( data ) {
-            });    
-
-            return false;
-        });
-
-        //Triggering to fetch todays report beforehand
-        $('#view_report').trigger('click');
     });
 </script>
 <div class="bodyPanel">
     <div class="container headingText">
-    	<h1>Daily Absent Student & Adjustment</h1>
+    	<h1>Notify Event</h1>
     </div>
     <div class="container tblwrap">            
-        <?php echo form_open('report/adjustment', array('name' => 'adjustment_frm', 'id' => 'adjustment_frm'));?>
+        <?php echo form_open(base_url('event/do_notify'), array('name' => 'notify_frm', 'id' => 'notify_frm', 'class' => 'form-horizontal'));?>
         <div class="reportWhiteBox">
             <div class="reportInner panel" id="student">
                 <div class="paddingBtm20">
@@ -352,65 +278,36 @@
                 </div>
             </div>
         </div>
-        <div class="fldRowInline inlineDateFlds datarange">
-            <div class="fldRowInline dateFld">
-                <label>Date </label>
-                <div class="well">
-                    <div id="reportdate" class="input-append startdatetime-from">
-                    <input name="report_date" id="report_date" value="<?php echo (!empty($_REQUEST["report_date"])) ? $_REQUEST["report_date"]:date('d/m/Y'); ?>" data-format="dd/MM/yyyy" type="text" class="datetimepicker-input"></input>
-                    <span class="add-on">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                    </span>
+        <div><p class='flashMsg flashInfo'></p></div>
+        <input type="hidden" name="Event_ID" value="<?php echo $Event_ID; ?>">
+        <div class="innerPanel">
+            <div class="form-group"> 
+                <label for="Notification Type" class="col-md-3">* Notification Type</label>               
+                <div class="col-md-8">
+                    <div class="fldRowInline">
+                        <label><input type="radio" name="notification_type" id="notification_type_email" value="email" checked="checked"> Email</label>
+                        <label><input type="radio" name="notification_type" id="notification_type_sms" value="sms"> SMS</label>
                     </div>
                 </div>
             </div>
-            <a href="javascript:void(0)" id="view_report" class="btn btn-success">View Report</a>
+            <div class="form-group">
+                <label for="Title" class="col-md-3">* Title</label>
+                <div class="col-md-8">
+                <input type="text" name="Title" id="Title" value="<?php echo ($this->input->post('Title') ? $this->input->post('Title') : ""); ?>" class="form-control" id="School_Name" required="required" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="Message" class="col-md-3">* Message</label>
+                <div class="col-md-8">
+                <textarea name="Message" id="Message" class="form-control" required="required"><?php echo ($this->input->post('Message') ? $this->input->post('Message') : ""); ?></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-6">
+                <button id="notify_submit" type="submit" class="btn btn-success school_choose_submit">Notify</button>
+                <a href="<?= base_url('event'); ?>" class="btn btn-cancel" >Cancel</a> </div>
+            </div>
         </div>
-        <hr />
-        <?php if (!empty($school["School_Name"])) { ?>
-        <div class="headingText school_center">
-            <h3><?php echo $school["School_Name"]; ?></h3>
-            <p><?php echo $school['Address1'] . ", " . $school['Address2'] . " - ". $school['Pin']; ?></p>
-        </div>
-        <?php } ?>
-        <div class="pull-right">
-            <a href="<?php echo site_url('report/prnt'); ?>" target="__blank" class="btn btn-success">Print</a> 
-            <a href="<?php echo site_url('report/pdf'); ?>" target="__blank" class="btn btn-success">PDF</a>
-            <a href="<?php echo site_url('report/excel'); ?>" class="btn btn-success">Excel</a>
-        </div>
-
-        <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
-            <thead>
-                <tr>
-                    <th>Roll #</th>		
-                    <th>RFID #</th>			
-                    <th>Candidate Name</th>                    
-                    <th>Class Section</th>
-                    <th>Guardian Name</th>
-                    <th>Contact</th>
-                    <th>Address</th>
-                    <th>Option</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php foreach($report as $s): ?>	
-                <tr>                             
-                    <td><?php echo $s['Roll_No']; ?></td>
-                    <td><?php echo $s['RFID_NO']; ?></td>
-                    <td><?php echo $s['Candidate_Name']; ?></td>
-                    <td><?php echo $s['Class']; ?></td>
-                    <td><?php echo $s['Guardian_Name']; ?></td>
-                    <td><?php echo $s['Mob1']; ?></td>
-                    <td><?php echo $s['Address']; ?></td>
-                    <td><a href="javascript:void(0)" class="btn btn-info adjust">Adjust</a></td>
-                </tr>                    
-            <?php endforeach; ?>
-            </tbody> 
-        </table>
-    </div>
-    <div>&nbsp;</div>
-    <div class="reportBtnsBtm">
-        <input type="button" id="report_frm" name="process" value="Process" class="processBtn">
     </div>
 </div>
 </form>

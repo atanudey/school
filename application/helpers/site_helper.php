@@ -9,12 +9,21 @@ if(!function_exists('convert_to_mysql_date'))
     }
 }
 
+if(!function_exists('convert_to_default_date'))
+{
+    //convert date from dd/mm/yyyy to yyyy-mm-dd
+    function convert_to_default_date($value)
+    {
+        return implode("/", array_reverse(explode("-", $value))); 
+    }
+}
+
 if(!function_exists('upload_file'))
 {
     //upload a file
     function upload_file($params)
     {
-        if (!empty($params["files"])) {
+        if (!empty($params["files"]["event_file"]["name"])) {
             $config['upload_path']   = $params['path'];
 
             if ($params["upload_for"] == "candidate") {
@@ -35,7 +44,7 @@ if(!function_exists('upload_file'))
             $CI =& get_instance();
             $CI->load->library('upload', $config);
 
-            $check_file = $params['path'] . DS . $config['file_name'];
+            $check_file = $params['path'] . $config['file_name'];
             if ($params["upload_for"] == "candidate" && file_exists($check_file)){
                 unlink($check_file);
             }

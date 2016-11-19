@@ -27,6 +27,7 @@ class Event_model extends CI_Model
      */
     function get_all_event($params = array())
     {
+        $this->db->order_by("Date", "DESC");
         return $this->db->get_where('Event', $params)->result_array();
     }
     

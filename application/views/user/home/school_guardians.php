@@ -26,45 +26,25 @@ $school = $this->session->userdata('school');
                 </div>
                 <div class="col-sm-4">
                 	<div class="rightContentBlock">
-                    	<h3><span class="eventIcon"></span>Upcomming Events 2016</h3>
+                    	<h3><span class="eventIcon"></span>Upcomming Events <?php echo date('Y') ?></h3>
                         <div class="blockContentOuter eventContentPanelOuter">
                         	<div class="blockContent eventContentPanel">
+                                <?php foreach($event as $e) { ?>
                             	<div class="eventRow floatHolder">
                                 	<div class="dateBlock">
-                                    	<p>AUG <strong>15</strong> <span>Monday</span></p>
+                                        <?php
+                                            $month = strtoupper(date("M", strtotime($e["Date"])));
+                                            $day = strtoupper(date("j", strtotime($e["Date"])));
+                                            $weekday = strtoupper(date("l", strtotime($e["Date"])));
+                                        ?>
+                                    	<p><?=$month?> <strong><?=$day?></strong> <span><?=$weekday?></span></p>
                                     </div>
                                     <div class="eventContent">
-                                    	<h4>Independence Day Celebration</h4>
-                                        <p>Flag hostiong at 7.30 a.am National anthen song at 7.45 a.m Parred from  8 a.m to 8.30 a.m. Breakfast from 8.30 a.m. All guardians are requested to attend the function.</p>
+                                    	<h4><?php echo word_limiter($e["Title"], 30); ?></h4>
+                                        <p><?php echo (!empty($e["Description"])) ? word_limiter($e["Description"], 30) : "No information available" ?></p>
                                     </div>
                                 </div>
-                                <div class="eventRow floatHolder">
-                                	<div class="dateBlock">
-                                    	<p>AUG <strong>15</strong> <span>Monday</span></p>
-                                    </div>
-                                    <div class="eventContent">
-                                    	<h4>Independence Day Celebration</h4>
-                                        <p>Flag hostiong at 7.30 a.am National anthen song at 7.45 a.m Parred from  8 a.m to 8.30 a.m. Breakfast from 8.30 a.m. All guardians are requested to attend the function.</p>
-                                    </div>
-                                </div>
-                                <div class="eventRow floatHolder">
-                                	<div class="dateBlock">
-                                    	<p>AUG <strong>15</strong> <span>Monday</span></p>
-                                    </div>
-                                    <div class="eventContent">
-                                    	<h4>Independence Day Celebration</h4>
-                                        <p>Flag hostiong at 7.30 a.am National anthen song at 7.45 a.m Parred from  8 a.m to 8.30 a.m. Breakfast from 8.30 a.m. All guardians are requested to attend the function.</p>
-                                    </div>
-                                </div>
-                                <div class="eventRow floatHolder">
-                                	<div class="dateBlock">
-                                    	<p>AUG <strong>15</strong> <span>Monday</span></p>
-                                    </div>
-                                    <div class="eventContent">
-                                    	<h4>Independence Day Celebration</h4>
-                                        <p>Flag hostiong at 7.30 a.am National anthen song at 7.45 a.m Parred from  8 a.m to 8.30 a.m. Breakfast from 8.30 a.m. All guardians are requested to attend the function.</p>
-                                    </div>
-                                </div>
+                                <?php } ?>
                             </div>
                         </div>
                     </div>

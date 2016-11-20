@@ -124,7 +124,7 @@
                             <?php } ?>
                         </div>
                     </div>                    
-                    <div class="col-xs-6">                        
+                    <div class="col-xs-6">            
 						<?php if (!empty($session_user['logged_in']) 
                                     && $session_user['logged_in'] === true
                                     && $session_user["user"]->User_Type_ID != 3) { ?>     

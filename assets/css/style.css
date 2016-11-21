@@ -1083,10 +1083,13 @@ color:#fff !important;
 .homePage .dropDownMenu ul li ul li a{
 	padding-left:30px;
 	}
+
 .homePage .dropDownMenu ul li ul{
 	display:none;
 	}
-
+.homePage .dropDownMenu ul li ul.active{
+	display: block;
+}
 .homePage .dropDownMenu ul li.subMenu > a{
 	background-image:url(../images/submenu-arrow.png);
 	background-repeat:no-repeat;
@@ -1528,4 +1531,14 @@ color:#fff !important;
 #candidate_frm .form-group img{
 	border: 1px solid #ccc;
 	margin-bottom: 15px;
+}
+
+.event_date .form-control{
+	float: left;
+}
+.event_date .add-on{
+	float: left;
+	margin-top: 8px;
+	cursor: pointer;
+	margin-left: -27px;
 }

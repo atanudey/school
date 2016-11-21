@@ -13,7 +13,7 @@ class Menu {
         
         $privileges = $this->ci->user_privilege_model->get_allowed_screens($user_type_id);
         
-        $menu = '<ul>';
+        $menu = '<ul class="sub-menu">';
         foreach($privileges as $val) {
             $url = "#";
             if (!empty($val['URI'])) {
@@ -21,8 +21,8 @@ class Menu {
             }
 
             if (!empty($val['children'])) {
-                $menu .= '<li><a href="' . $url . '">' . $val['SN'] . '</a>';
-                    $menu .= '<ul>';
+                $menu .= '<li class="sub-btn"><a href="' . $url . '">' . $val['SN'] . '</a>';
+                    $menu .= '<ul class="sub-menu-section">';
                     foreach($val['children'] as $child) {
                         $url = "#";
                         if (!empty($child['URI'])) {

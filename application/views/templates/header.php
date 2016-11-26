@@ -158,7 +158,7 @@
         <?php
             //print_r($session_user);            
             if (!empty($session_user['user']) 
-                && $this->router->fetch_class() != "user" 
+                && $school_dropdown_view == true 
                 && $this->router->fetch_method() != "generate" 
                 && ($session_user['user']->User_Type_ID == "1" || $session_user['user']->User_Type_ID == "4")) {
         ?>

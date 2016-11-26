@@ -117,15 +117,16 @@ class Event extends MY_Controller
             $path = "./assets/sitedata/". $this->school_id . "/events/";
 
             $check_file = $path . $event['File_Name'];
-            if (!empty($check_file) && file_exists($check_file)){
+            if (!empty($event['File_Name']) && file_exists($check_file)){
                 unlink($check_file);
             }
 
-            $this->session->set_flashdata('flashInfo','Event deleted successfully.');
-            redirect('event/index');
+            $this->session->set_flashdata('flashInfo', 'Event deleted successfully.');            
         }
         else
             $this->session->set_flashdata('flashInfo','The event you are trying to delete does not exist.');
+
+        redirect('event/index');
     }
 
     function notify($Event_ID) {

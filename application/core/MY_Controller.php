@@ -72,9 +72,16 @@ class MY_Controller extends CI_Controller {
 
         $this->school_id = $this->session->userdata('school_id');
 
+        $allowed_school_dropdown = array('user', 'edu_class', 'school', 'privilege');
+        $school_dropdown_view = true;
+        if (in_array($this->router->fetch_class(), $allowed_school_dropdown)) {
+            $school_dropdown_view = false;
+        }
+
         $this->load->vars( array(
                 'school_list' => $this->school_model->get_all_school(),
-                'session_user' => $this->session->userdata()
+                'session_user' => $this->session->userdata(),
+                'school_dropdown_view' => $school_dropdown_view
             )
         );        
     }

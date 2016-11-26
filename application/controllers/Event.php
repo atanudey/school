@@ -193,25 +193,22 @@ class Event extends MY_Controller
 
         $params = array(
             "Message" => $notify_param["Message"],
-            "Notification_Type" => $notify_param["notification_type"]
+            "Message_Type" => $notify_param["notification_type"]
         );
+
+        $params["No_Message_Sent"] = count($students);
+        $this->Event_model->update_event($notify_param['Event_ID'], $params);
 
         //print_r($params); die;
 
         switch($notify_param["notification_type"]) {
             case "email":
-                $params["SMS_Count"] = 0;
-                $this->Event_model->update_event($notify_param['Event_ID'], $params);
-
                 if ($this->send_email_notification($students, $notify_param))
                     echo json_encode(array("success" => true));
 
                 break;
 
             case "sms":
-                $params["SMS_Count"] = count($students);
-                $this->Event_model->update_event($notify_param['Event_ID'], $params);
-
                 if ($this->send_sms_notification($students, $notify_param))
                     echo json_encode(array("success" => true));
 

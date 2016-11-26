@@ -314,9 +314,11 @@
                 </div>
             </div>
             <div class="form-group">
+                <input type="hidden" name="Title" id="Title" value="<?php echo ($this->input->post('Title') ? $this->input->post('Title') : $event['Title']); ?>">
                 <label for="Title" class="col-md-3">* Title</label>
                 <div class="col-md-8">
-                <input type="text" name="Title" disabled="disabled" id="Title" value="<?php echo ($this->input->post('Title') ? $this->input->post('Title') : $event['Title']); ?>" class="form-control" id="School_Name" required="required" />
+                    <!--<input type="text" name="Title" disabled="disabled" id="Title" value="" class="form-control" id="School_Name" required="required" />-->
+                    <label for="Title" class="col-md-3"><?php echo ($this->input->post('Title') ? $this->input->post('Title') : $event['Title']); ?></label>
                 </div>
             </div>
             <div class="form-group">

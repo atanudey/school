@@ -5,7 +5,7 @@ class Privilege extends MY_Controller
     function __construct()
     {
         parent::__construct();
-        $this->load->model('Privilege_model');
+        $this->load->model('User_privilege_model');
     } 
 
     /*
@@ -13,7 +13,7 @@ class Privilege extends MY_Controller
      */
     function index()
     {
-        $data['privilege'] = $this->Privilege_model->get_all_privilege();
+        $data['privilege'] = $this->User_privilege_model->get_all_privilege();
 
         $i = 0;
         foreach($data['privilege'] as $privilege) {
@@ -54,9 +54,9 @@ class Privilege extends MY_Controller
         if($this->form_validation->run())     
         {
             if ($mode == 'add') {
-                $privilege_id = $this->Privilege_model->add_privilege($params);                                           
+                $privilege_id = $this->User_privilege_model->add_privilege($params);                                           
             } else if ($mode == 'edit') {
-                $this->Privilege_model->update_privilege($ID,$params); 
+                $this->User_privilege_model->update_privilege($ID,$params); 
             }
 
             redirect('privilege/index');
@@ -70,7 +70,7 @@ class Privilege extends MY_Controller
             $data['all_user_type'] = $this->User_type_model->get_all_user_type();
 
             // check if the privilege exists before trying to edit it
-            $data['privilege'] = $this->Privilege_model->get_privilege($ID);
+            $data['privilege'] = $this->User_privilege_model->get_privilege($ID);
             $data['privilege']['Screen_Name'] = $data['all_screen_master'];
     
             if (empty($data['privilege']) && $mode == 'edit') {
@@ -88,12 +88,12 @@ class Privilege extends MY_Controller
      */
     function remove($ID)
     {
-        $privilege = $this->Privilege_model->get_privilege($ID);
+        $privilege = $this->User_privilege_model->get_privilege($ID);
 
         // check if the privilege exists before trying to delete it
         if(isset($privilege['ID']))
         {
-            $this->Privilege_model->delete_privilege($ID);
+            $this->User_privilege_model->delete_privilege($ID);
             redirect('privilege/index');
         }
         else

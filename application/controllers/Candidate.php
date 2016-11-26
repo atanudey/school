@@ -133,11 +133,11 @@ class Candidate extends MY_Controller
 				"files" => $_FILES,
 				"prefix" => $params["RFID_NO"],
 				"input_name" => "Image_Name",
-				"upload_for" => "candidate"
+				"upload_for" => "candidate",
+            	"allowed_types" => CANDIDATE_MEDIA_TYPES
 			);
 
 			$upload_info = upload_file($upload_params);
-
 			$params["Image_Name"] = $upload_info["file_name"];
 
 			if (!empty($mode) && $mode == "edit") {				

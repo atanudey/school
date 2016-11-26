@@ -5,6 +5,7 @@ class Poc_model extends CI_Model
     function __construct()
     {
         parent::__construct();
+        $this->school_id = $this->session->userdata('school_id');
     }
     
     /*
@@ -20,6 +21,7 @@ class Poc_model extends CI_Model
      */
     function get_all_poc()
     {
+        $this->db->where('School_ID', $this->school_id);
         return $this->db->get('School_PointOfContact')->result_array();
     }
     

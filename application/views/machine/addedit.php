@@ -19,9 +19,9 @@
 		<?php echo form_open('machine/addedit/', array("class"=>"form-horizontal")); ?>
 		<?php } ?>
 		<div class="form-group">
-			<label for="SIM_No" class="col-md-4 control-label">SIM No</label>
+			<label for="SIM_No" class="col-md-4 control-label">* SIM No</label>
 			<div class="col-md-8">
-				<input type="text" name="SIM_No" value="<?php echo ($this->input->post('SIM_No') ? $this->input->post('SIM_No') : $machine['SIM_No']); ?>" class="form-control" id="SIM_No" />
+				<input type="text" name="SIM_No" value="<?php echo ($this->input->post('SIM_No') ? $this->input->post('SIM_No') : $machine['SIM_No']); ?>" class="form-control" id="SIM_No" required="required" />
 			</div>
 		</div>
 		<div class="form-group">
@@ -34,7 +34,7 @@
 			<label for="Is_Active" class="col-md-4 control-label">Is Active</label>
 			<div class="col-md-8">
 				<select name="Is_Active" class="form-control">
-					<option value="">select</option>
+					<option value="">--- Select ---</option>
 					<?php 
 					$Is_Active_values = array(
 						'1'=>'Active',
@@ -51,7 +51,8 @@
 				</select>
 			</div>
 		</div>
-		<div class="form-group">
+		<input type="hidden" name="School_ID" value="<?php echo (!empty($session_user["school_id"])) ? $session_user["school_id"]:"" ?>">
+		<!--<div class="form-group">
 			<label for="School_ID" class="col-md-4 control-label">School ID</label>
 			<div class="col-md-8">
 				<select name="School_ID" class="form-control">
@@ -66,10 +67,10 @@
 					?>
 				</select>
 			</div>
-		</div>
+		</div>-->
 		<div class="form-group">
 			<div class="col-sm-offset-4 col-sm-8">
-				<button type="submit" class="btn btn-success">Save</button>
+				<button type="submit" class="btn btn-success school_choose_submit">Save</button>
 				<a href="<?= base_url('machine'); ?>" class="btn btn-cancel" >Cancel</a> </div>
 			</div>
 		</div>

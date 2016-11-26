@@ -52,21 +52,15 @@ $school = $this->session->userdata('school');
                     	<h3><span class="noticeIcon"></span>Notice Board</h3>
                         <div class="blockContentOuter noticeContentPanelOuter">
                         	<div class="blockContent noticeContentPanel">
+                                <?php foreach($notice as $n) { ?>
                         		<div class="noticeBoardRow">
-                                	<h4>Routine</h4>
-                                    <p>Class 9 routine for final examination for the year of 2015-2016.</p>
-                                    <h5><span><a href="#"><img src="<?php echo base_url('assets/images/pdf-icon.png') ?>" /></span>Click the icon to download the routine</a></h5>
+                                	<h4><?php echo word_limiter($n["Title"], 30); ?></h4>
+                                    <p><?php echo (!empty($n["Description"])) ? word_limiter($n["Description"], 30) : "No information available" ?></p>
+                                    <?php if (!empty($n['File_Name'])) { ?>
+                                        <h5><span><a href="<?php echo base_url("assets/sitedata/".$this->session->userdata('school_id')."/events/".$n['File_Name']); ?>"><img src="<?php echo base_url('assets/images/pdf-icon.png') ?>" /></span>Click the icon to download the routine</a></h5>
+                                    <?php } ?>
                                 </div>
-                                <div class="noticeBoardRow">
-                                	<h4>Routine</h4>
-                                    <p>Class 9 routine for final examination for the year of 2015-2016.</p>
-                                    <h5><span><a href="#"><img src="<?php echo base_url('assets/images/pdf-icon.png') ?>" /></span>Click the icon to download the routine</a></h5>
-                                </div>
-                                <div class="noticeBoardRow">
-                                	<h4>Routine</h4>
-                                    <p>Class 9 routine for final examination for the year of 2015-2016.</p>
-                                    <h5><span><a href="#"><img src="<?php echo base_url('assets/images/pdf-icon.png') ?>" /></span>Click the icon to download the routine</a></h5>
-                                </div>
+                                <?php } ?>
                        		 </div>
                         </div>
                     </div>

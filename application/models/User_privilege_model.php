@@ -71,4 +71,62 @@ Class User_privilege_model extends CI_Model {
 
         return $controllers;
     }
+
+    /*
+     * Get privilege by ID
+     */
+    function get_privilege($ID)
+    {
+        return $this->db->get_where('User_Privilege',array('ID'=>$ID))->row_array();
+    }
+    
+    /*
+     * Get all privilege
+     */
+    function get_all_privilege()
+    {
+        return $this->db->get('User_Privilege')->result_array();
+    }
+    
+    /*
+     * function to add new privilege
+     */
+    function add_privilege($params)
+    {
+        $this->db->insert('User_Privilege',$params);
+        return $this->db->insert_id();
+    }
+    
+    /*
+     * function to update privilege
+     */
+    function update_privilege($ID,$params)
+    {
+        $this->db->where('ID',$ID);
+        $response = $this->db->update('User_Privilege',$params);
+        if($response)
+        {
+            return "privilege updated successfully";
+        }
+        else
+        {
+            return "Error occuring while updating privilege";
+        }
+    }
+    
+    /*
+     * function to delete privilege
+     */
+    function delete_privilege($ID)
+    {
+        $response = $this->db->delete('User_Privilege',array('ID'=>$ID));
+        if($response)
+        {
+            return "privilege deleted successfully";
+        }
+        else
+        {
+            return "Error occuring while deleting privilege";
+        }
+    }
 }

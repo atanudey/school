@@ -5,6 +5,7 @@ class Event_model extends CI_Model
     function __construct()
     {
         parent::__construct();
+        $this->school_id = $this->session->userdata('school_id');
     }
 
     /*
@@ -28,6 +29,7 @@ class Event_model extends CI_Model
     function get_all_event($params = array())
     {
         $this->db->order_by("Date", "DESC");
+        $this->db->where('School_ID', $this->school_id);
         return $this->db->get_where('Event', $params)->result_array();
     }
     
@@ -43,9 +45,9 @@ class Event_model extends CI_Model
     /*
      * function to update event
      */
-    function update_event($ID,$params)
+    function update_event($ID, $params)
     {
-        $this->db->where('ID',$ID);
+        $this->db->where('ID',$ID);        
         $result = $this->db->update('Event',$params);
 
         return $result;

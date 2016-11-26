@@ -1,3 +1,22 @@
+<script language="javascript">
+    $(document).ready(function() {
+      $.fn.readURL = function(input) {
+          if (input.files && input.files[0]) {
+              var reader = new FileReader();
+              reader.onload = function (e) {
+                  $('#candidate_img').attr('src', e.target.result);
+              }
+
+              reader.readAsDataURL(input.files[0]);
+          }
+      }
+    
+      $("#Image_Name").change(function(){
+          $.fn.readURL(this);
+      });
+  });
+</script>
+
 <?php $school = $this->session->userdata('school'); ?>
 <div class="bodyPanel">
   <div class="container headingText">
@@ -42,18 +61,18 @@
       <div class="form-group">
         <label for="Candidate_Name" class="col-md-4 control-label">* Candidate Name</label>
         <div class="col-md-8">
-          <input type="text" name="Candidate_Name" value="<?php echo ($this->input->post('Candidate_Name') ? $this->input->post('Candidate_Name') : $candidate['Candidate_Name']); ?>" class="form-control" id="Candidate_Name" required='required' pattern='[a-zA-Z ]+$' title="Enter only alphabets and spaces" />
+          <input type="text" name="Candidate_Name" value="<?php echo ($this->input->post('Candidate_Name') ? $this->input->post('Candidate_Name') : $candidate['Candidate_Name']); ?>" class="form-control" id="Candidate_Name" required='required' pattern='[a-zA-Z .]+$' title="Enter only alphabets and spaces" />
         </div>
       </div>
       <div class="form-group">
         <label for="Candidate_Name" class="col-md-4 control-label">* Candidate Photo</label>
         <div class="col-md-8">
           <?php if (!empty($candidate['Image_Name'])) { ?>
-            <img src="<?php echo get_image_path($candidate['Image_Name'], 'candidate'); ?>" width="100">
+            <img src="<?php echo get_image_path($candidate['Image_Name'], 'candidate'); ?>" id="candidate_img" width="100">
           <?php } else { ?>
-            <img src="<?php echo get_image_path("", 'candidate'); ?>" width="100">
+            <img src="<?php echo get_image_path("", 'candidate'); ?>" id="candidate_img" width="100">
           <?php } ?>
-          <input type="file" name="Image_Name" />
+          <input type="file" name="Image_Name" id="Image_Name" />
         </div>
       </div>
       <div class="form-group">
@@ -97,7 +116,7 @@
       <div class="form-group">
         <label for="Guardian_Name" class="col-md-4 control-label">* Guardian Name</label>
         <div class="col-md-8">
-          <input type="text" name="Guardian_Name" value="<?php echo ($this->input->post('Guardian_Name') ? $this->input->post('Guardian_Name') : $candidate['Guardian_Name']); ?>" class="form-control" id="Guardian_Name" required='required' pattern='[a-zA-Z ]+$' title="Enter only alphabets and spaces"  />
+          <input type="text" name="Guardian_Name" value="<?php echo ($this->input->post('Guardian_Name') ? $this->input->post('Guardian_Name') : $candidate['Guardian_Name']); ?>" class="form-control" id="Guardian_Name" required='required' pattern='[a-zA-Z .]+$' title="Enter only alphabets and spaces"  />
         </div>
       </div>
       <div class="form-group">
@@ -159,20 +178,20 @@
           <select name="Is_Admin" class="form-control">
             <option value="">--- Select ---</option>
             <?php 
-					$Is_Admin_values = array(
-						'0'=>'No',
-						'1'=>'Yes',
-					);
+              $Is_Admin_values = array(
+                '0'=>'No',
+                '1'=>'Yes',
+              );
 
-					foreach($Is_Admin_values as $value => $display_text)
-					{
-						$selected = "";
-						if($value == $candidate['Is_Admin'])
-							$selected = 'selected="selected"';
+              foreach($Is_Admin_values as $value => $display_text)
+              {
+                $selected = "";
+                if($value == $candidate['Is_Admin'])
+                  $selected = 'selected="selected"';
 
-						echo '<option value="'.$value.'" '.$selected.'>'.$display_text.'</option>';
-					} 
-					?>
+                echo '<option value="'.$value.'" '.$selected.'>'.$display_text.'</option>';
+              } 
+            ?>
           </select>
         </div>
       </div>

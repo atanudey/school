@@ -201,6 +201,7 @@
                     if (data.success) {
                         $('#Title').val("");
                         $('#Message').val("");
+                        $('#chars').val(160);
                         $('.flashInfo').text("Event notification has been sent.");
                         $('.flashInfo').show();
                     }
@@ -208,6 +209,28 @@
 
                 return false;
             }   
+        });
+
+        $('#notification_type_sms').on('click', function(){
+            $('#Message').attr('maxlength', 160);
+            $('#remaining').show();
+            $('textarea').val("");
+        });
+
+        $('#notification_type_email').on('click', function(){
+            $('#Message').removeAttr('maxlength');
+            $('#remaining').hide();
+            $('textarea').val("");
+        });
+
+        var maxLength = 160;
+        $('textarea').keyup(function() {
+            var msg_type = $('input[name=notification_type]:checked', '#notify_frm').val();
+            if (msg_type == "sms") {                           
+                var length = $(this).val().length;
+                var length = maxLength-length;
+                $('#chars').text(length);
+            }
         });
     });
 </script>
@@ -293,13 +316,14 @@
             <div class="form-group">
                 <label for="Title" class="col-md-3">* Title</label>
                 <div class="col-md-8">
-                <input type="text" name="Title" id="Title" value="<?php echo ($this->input->post('Title') ? $this->input->post('Title') : ""); ?>" class="form-control" id="School_Name" required="required" />
+                <input type="text" name="Title" disabled="disabled" id="Title" value="<?php echo ($this->input->post('Title') ? $this->input->post('Title') : $event['Title']); ?>" class="form-control" id="School_Name" required="required" />
                 </div>
             </div>
             <div class="form-group">
                 <label for="Message" class="col-md-3">* Message</label>
                 <div class="col-md-8">
                 <textarea name="Message" id="Message" class="form-control" required="required"><?php echo ($this->input->post('Message') ? $this->input->post('Message') : ""); ?></textarea>
+                <div id="remaining" style="display:none"><span id="chars">160</span> characters remaining</div>
                 </div>
             </div>
             <div class="form-group">

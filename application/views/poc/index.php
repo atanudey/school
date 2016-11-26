@@ -15,7 +15,7 @@
 
 <div class="bodyPanel">
   <div class="container headingText">
-    <h1>List of Class & Section</h1>
+    <h1>Point Of Contacts</h1>
   </div>
   <div class="container tblwrap">
     <a href="<?php echo site_url('poc/addedit'); ?>" class="btn btn-success add"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>

@@ -9,6 +9,7 @@ class Machine_model extends CI_Model
     function __construct()
     {
         parent::__construct();
+        $this->school_id = $this->session->userdata('school_id');
     }
     
     /*
@@ -16,7 +17,7 @@ class Machine_model extends CI_Model
      */
     function get_machine($ID)
     {
-        return $this->db->get_where('school_machines',array('ID'=>$ID))->row_array();
+        return $this->db->get_where('School_Machines',array('ID'=>$ID))->row_array();
     }
     
     /*
@@ -24,7 +25,8 @@ class Machine_model extends CI_Model
      */
     function get_all_machines()
     {
-        return $this->db->get('school_machines')->result_array();
+        $this->db->where('School_ID', $this->school_id);
+        return $this->db->get('School_Machines')->result_array();
     }
     
     /*
@@ -32,7 +34,7 @@ class Machine_model extends CI_Model
      */
     function add_machine($params)
     {
-        $this->db->insert('school_machines',$params);
+        $this->db->insert('School_Machines',$params);
         return $this->db->insert_id();
     }
     
@@ -42,7 +44,7 @@ class Machine_model extends CI_Model
     function update_machine($ID,$params)
     {
         $this->db->where('ID',$ID);
-        $response = $this->db->update('school_machines',$params);
+        $response = $this->db->update('School_Machines',$params);
         if($response)
         {
             return "machine updated successfully";
@@ -58,7 +60,7 @@ class Machine_model extends CI_Model
      */
     function delete_machine($ID)
     {
-        $response = $this->db->delete('school_machines',array('ID'=>$ID));
+        $response = $this->db->delete('School_Machines',array('ID'=>$ID));
         if($response)
         {
             return "machine deleted successfully";

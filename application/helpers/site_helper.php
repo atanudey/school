@@ -23,7 +23,7 @@ if(!function_exists('upload_file'))
     //upload a file
     function upload_file($params)
     {
-        if (!empty($params["files"]["event_file"]["name"])) {
+        if (!empty($params["files"][$params["input_name"]]["name"])) {
             $config['upload_path']   = $params['path'];
 
             if ($params["upload_for"] == "candidate") {

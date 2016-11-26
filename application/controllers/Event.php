@@ -117,7 +117,7 @@ class Event extends MY_Controller
             $path = "./assets/sitedata/". $this->school_id . "/events/";
 
             $check_file = $path . $event['File_Name'];
-            if (file_exists($check_file)){
+            if (!empty($check_file) && file_exists($check_file)){
                 unlink($check_file);
             }
 
@@ -129,6 +129,8 @@ class Event extends MY_Controller
     }
 
     function notify($Event_ID) {
+
+        $data["event"] = $this->Event_model->get_event($Event_ID);
 
         $this->load->model('report_model');	
 		$this->load->model('school_model');
@@ -188,15 +190,30 @@ class Event extends MY_Controller
             $notify_param[$key] = preg_replace('/<[^<]+?>/', ' ', urldecode($val));
         }
 
+        $params = array(
+            "Message" => $notify_param["Message"],
+            "Notification_Type" => $notify_param["notification_type"]
+        );
+
+        //print_r($params); die;
+
         switch($notify_param["notification_type"]) {
             case "email":
+                $params["SMS_Count"] = 0;
+                $this->Event_model->update_event($notify_param['Event_ID'], $params);
+
                 if ($this->send_email_notification($students, $notify_param))
                     echo json_encode(array("success" => true));
 
                 break;
 
             case "sms":
-                $this->send_sms_notification($students, $notify_param);
+                $params["SMS_Count"] = count($students);
+                $this->Event_model->update_event($notify_param['Event_ID'], $params);
+
+                if ($this->send_sms_notification($students, $notify_param))
+                    echo json_encode(array("success" => true));
+
                 break;
         }
     }
@@ -229,6 +246,6 @@ class Event extends MY_Controller
     }
 
     function send_sms_notification($students, $notify_param) {
-
+        return true;
     }
 }

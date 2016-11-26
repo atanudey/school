@@ -244,13 +244,15 @@
                 op = 'OUT';
             }
 
-            $.ajax({
-                method: "POST",
-                url: "<?php echo base_url(); ?>report/do_adjustment_ajax",
-                data: { "school_id": "<?php echo $session_user["school_id"]; ?>", "candidate_id": candidate_id, "op": op, "correction_date": $("#report_date").val() }
-            })
-            .done(function( data ) {
-            });
+            if (op == "OUT") {
+                $.ajax({
+                    method: "POST",
+                    url: "<?php echo base_url(); ?>report/do_adjustment_ajax",
+                    data: { "school_id": "<?php echo $session_user["school_id"]; ?>", "candidate_id": candidate_id, "op": op, "correction_date": $("#report_date").val() }
+                })
+                .done(function( data ) {
+                });
+            }
         }
 
         Array.prototype.remove = function() {

@@ -269,7 +269,8 @@ class User extends MY_Controller {
 	public function home() {
 
 		$this->load->model('Event_model');
-		$data['event'] = $this->Event_model->get_all_event(array('YEAR(Date)' => date('Y')));
+		$data['event'] = $this->Event_model->get_all_event(array('YEAR(Date)' => date('Y'), 'Event_Type_ID' => 1));
+		$data['notice'] = $this->Event_model->get_all_event(array('YEAR(Date)' => date('Y'), 'Event_Type_ID' => 2));
 
 		$template = "admin_staff";
 		if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {

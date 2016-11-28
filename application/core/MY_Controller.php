@@ -72,9 +72,9 @@ class MY_Controller extends CI_Controller {
 
         $this->school_id = $this->session->userdata('school_id');
 
-        $allowed_school_dropdown = array('user', 'edu_class', 'school', 'privilege');
+        $deny_school_dropdown = array('user', 'edu_class', 'school', 'privilege');
         $school_dropdown_view = true;
-        if (in_array($this->router->fetch_class(), $allowed_school_dropdown)) {
+        if (in_array($this->router->fetch_class(), $deny_school_dropdown)) {
             $school_dropdown_view = false;
         }
 

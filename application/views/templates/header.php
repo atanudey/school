@@ -27,7 +27,7 @@
 		<script type="text/javascript" language="javascript" src="<?= base_url('assets/js/dataTables.bootstrap.min.js') ?>"></script>
         <script type="text/javascript" language="javascript" src="<?= base_url('assets/js/moment.min.js') ?>"></script>
 		<script type="text/javascript" language="javascript" src="<?= base_url('assets/js/bootstrap-datepicker.min.js') ?>"></script>
-        <script type="text/javascript" language="javascript" src="<?= base_url('assets/js/bootstrap-datetimepicker.min.js') ?>"></script>
+        <script type="text/javascript" language="javascript" src="<?= base_url('assets/js/bootstrap-datetimepicker.min.js') ?>"></script>                
 		<script type="text/javascript" src="<?= base_url('assets/js/slider.js') ?>"></script>
         <script type="text/javascript" src="<?= base_url('assets/js/script.js') ?>"></script>
         <script type="text/javascript" language="javascript" src="<?= base_url('assets/js/common.js') ?>"></script>

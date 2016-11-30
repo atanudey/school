@@ -301,11 +301,11 @@
                 </div>
             </div>
         </div>
-        <div><p class='flashMsg flashInfo'></p></div>
+        <div class="event-msg-wrap"><p class='flashMsg flashInfo'></p></div>
         <input type="hidden" name="Event_ID" value="<?php echo $Event_ID; ?>">
         <div class="innerPanel">
             <div class="form-group"> 
-                <label for="Notification Type" class="col-md-3">* Notification Type</label>               
+                <label for="Notification Type" class="col-md-3"><span class="mandatory">*</span> Notification Type</label>               
                 <div class="col-md-8">
                     <div class="fldRowInline">
                         <label><input type="radio" name="notification_type" id="notification_type_email" value="email" checked="checked"> Email</label>
@@ -315,14 +315,14 @@
             </div>
             <div class="form-group">
                 <input type="hidden" name="Title" id="Title" value="<?php echo ($this->input->post('Title') ? $this->input->post('Title') : $event['Title']); ?>">
-                <label for="Title" class="col-md-3">* Title</label>
+                <label for="Title" class="col-md-3"><span class="mandatory">*</span> Title</label>
                 <div class="col-md-8">
                     <!--<input type="text" name="Title" disabled="disabled" id="Title" value="" class="form-control" id="School_Name" required="required" />-->
-                    <label for="Title" class="col-md-3"><?php echo ($this->input->post('Title') ? $this->input->post('Title') : $event['Title']); ?></label>
+                    <label for="Title" class="col-md-6 title-label"><?php echo ($this->input->post('Title') ? $this->input->post('Title') : $event['Title']); ?></label>
                 </div>
             </div>
             <div class="form-group">
-                <label for="Message" class="col-md-3">* Message</label>
+                <label for="Message" class="col-md-3"><span class="mandatory">*</span> Message</label>
                 <div class="col-md-8">
                 <textarea name="Message" id="Message" class="form-control" required="required"><?php echo ($this->input->post('Message') ? $this->input->post('Message') : ""); ?></textarea>
                 <div id="remaining" style="display:none"><span id="chars">160</span> characters remaining</div>

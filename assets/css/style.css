@@ -814,6 +814,8 @@ color:#fff !important;
 	}
 .reportBlockContent .fldRowInline{
 	padding-bottom:10px;
+	width: 48%;
+    float: left;
 	}
 .boxPadding{
 	padding:30px 15px;
@@ -1030,6 +1032,9 @@ color:#fff !important;
 .homePage .topPanel .container{
 	position:relative;
 	}
+.homePage .dropDownMenu{
+	z-index: 500;
+}	
 .homePage .dropDownMenu,
 .adminDropdown{
 	background:#fff;
@@ -1038,9 +1043,13 @@ color:#fff !important;
 	top:40px;
 	right:15px;
 	padding:20px 0;
-	z-index:99;
+	z-index:1000;
 	display:none;
 	border:1px solid #bebebe;
+	box-shadow: 2px 6px 10px rgba(0,0,0,0.6);
+	-webkit-box-shadow: 2px 6px 10px rgba(0,0,0,0.6);
+	-moz-box-shadow: 2px 6px 10px rgba(0,0,0,0.6);
+	-ms-box-shadow: 2px 6px 10px rgba(0,0,0,0.6);
 	}
 .adminDropdown{
 	width: 260px;
@@ -1070,6 +1079,21 @@ color:#fff !important;
 .homePage .dropDownMenu ul li{
 	padding-bottom:5px;
 }
+.homePage .dropDownMenu ul li.sub-btn{
+	position: relative;
+}
+.homePage .dropDownMenu ul li.sub-btn:before{
+	content: "";
+	position: absolute;
+	left: 66px;
+	top: 12px;
+	width: 0;
+	height: 0;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 5px solid #989797;
+}
+
 .homePage .dropDownMenu ul li a{
 	color: #646464;
 	padding:5px 20px;
@@ -1541,4 +1565,18 @@ color:#fff !important;
 	margin-top: 8px;
 	cursor: pointer;
 	margin-left: -27px;
+}
+.mandatory{
+	color: red;
+}
+.title-label{
+	padding-left: 0;
+}
+.event-msg-wrap{
+	text-align: center;
+
+}
+.event-msg-wrap p{
+	padding-bottom: 10px!important;
+	color: green;
 }

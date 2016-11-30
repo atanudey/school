@@ -11,6 +11,10 @@
 		overflow-x: auto; 
 		width: 100%;
 	}
+	.reportBlockContent .fldRowInline{
+		width: 100%;
+    	float: none;
+	}
 }
 @media (max-width: 768px) {
 .theme3 .bodyPanel{

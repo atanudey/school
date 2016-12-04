@@ -10,6 +10,9 @@ class Timing extends MY_Controller
     {
         parent::__construct();
         $this->load->model('Timing_model');
+
+        $this->load->library('session');
+		$this->school_id = $this->session->userdata('school_id');
     } 
 
     /*
@@ -23,79 +26,6 @@ class Timing extends MY_Controller
 
         $this->load->template('timing/index',$data);
     }
-
-    /*
-     * Adding a new timing
-     */
-    function add()
-    {   
-        if(isset($_POST) && count($_POST) > 0)     
-        {   
-            $params = array(
-				'IN_OUT' => $this->input->post('IN_OUT'),
-				'Cut_Off_Time' => $this->input->post('Cut_Off_Time'),
-				'GressTime_To_InOut' => $this->input->post('GressTime_To_InOut'),
-				'Class_ID' => $this->input->post('Class_ID'),
-				'School_ID' => $this->input->post('School_ID'),
-				'Added_On' => $this->input->post('Added_On'),
-				'Updated_On' => $this->input->post('Updated_On'),
-				'Updated_By' => $this->input->post('Updated_By'),
-				'Is_Deleted' => $this->input->post('Is_Deleted'),
-            );
-            
-            $timing_id = $this->Timing_model->add_timing($params);
-            redirect('timing/index');
-        }
-        else
-        {
-
-			$this->load->model('Clas_model');
-			$data['all_class'] = $this->Clas_model->get_all_class();
-                
-            $this->load->view('timing/add',$data);
-        }
-    }  
-
-    /*
-     * Editing a timing
-     */
-    function edit($ID)
-    {   
-        // check if the timing exists before trying to edit it
-        $timing = $this->Timing_model->get_timing($ID);
-        
-        if(isset($timing['ID']))
-        {
-            if(isset($_POST) && count($_POST) > 0)     
-            {   
-                $params = array(
-					'IN_OUT' => $this->input->post('IN_OUT'),
-					'Cut_Off_Time' => $this->input->post('Cut_Off_Time'),
-					'GressTime_To_InOut' => $this->input->post('GressTime_To_InOut'),
-					'Class_ID' => $this->input->post('Class_ID'),
-					'School_ID' => $this->input->post('School_ID'),
-					'Added_On' => $this->input->post('Added_On'),
-					'Updated_On' => $this->input->post('Updated_On'),
-					'Updated_By' => $this->input->post('Updated_By'),
-					'Is_Deleted' => $this->input->post('Is_Deleted'),
-                );
-
-                $this->Timing_model->update_timing($ID,$params);            
-                redirect('timing/index');
-            }
-            else
-            {   
-                $data['timing'] = $this->Timing_model->get_timing($ID);
-    
-				$this->load->model('Clas_model');
-				$data['all_class'] = $this->Clas_model->get_all_class();
-
-                $this->load->view('timing/edit',$data);
-            }
-        }
-        else
-            show_error('The timing you are trying to edit does not exist.');
-    } 
 
     /*
      * Adding or Editing a timing
@@ -112,8 +42,8 @@ class Timing extends MY_Controller
 
         $params = array(
                 'IN_OUT' => $this->input->post('IN_OUT'),
-                'Cut_Off_Time' => $this->input->post('Cut_Off_Time'),
-                'GressTime_To_InOut' => $this->input->post('GressTime_To_InOut'),
+                'Cut_Off_Time' => str_replace(" ", "", $this->input->post('Cut_Off_Time')),
+                'GressTime_To_InOut' => str_replace(" ", "", $this->input->post('GressTime_To_InOut')),
                 'Class_ID' => $this->input->post('Class_ID'),
                 'School_ID' => $this->input->post('School_ID'),
                 'Added_On' => $this->input->post('Added_On'),

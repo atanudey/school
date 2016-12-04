@@ -7,6 +7,7 @@ class Event extends MY_Controller
         parent::__construct();
         $this->load->model('Event_type_model');
         $this->load->model('Event_model');
+        $this->load->model('Sms_provider_model');
 
         $this->load->library('session');
 		$this->school_id = $this->session->userdata('school_id');
@@ -218,6 +219,10 @@ class Event extends MY_Controller
 
     function send_email_notification($students, $notify_param) {
         $event = $this->Event_model->get_event($notify_param['Event_ID']);
+
+        /*$to_emails = implode(', ', array_map(function ($entry) {
+            return $entry['Email_ID'];
+        }, $students));*/
         
         foreach ($students as $student) {
 
@@ -244,6 +249,37 @@ class Event extends MY_Controller
     }
 
     function send_sms_notification($students, $notify_param) {
+        
+        $sms_provider = $this->Sms_provider_model->get_all_sms_provider(array('SMS_Type' => 'Transaction'));
+
+        //foreach ($students as $student) {
+
+        $username = 'prana_chak@hotmail.com';            
+        $hash = $sms_provider[0]["API_Key"];
+
+        // Message details
+        $numbers = implode(', ', array_map(function ($entry) {
+            return $entry['Mob1'];
+        }, $students));
+
+        $sender = urlencode('TXTLCL');
+        $message = rawurlencode($notify_param["Message"]);
+
+        // Prepare data for POST request
+        $data = array('username' => $username, 'hash' => $hash, 'numbers' => $numbers, "sender" => $sender, "message" => $message);
+
+        // Send the POST request with cURL
+        $ch = curl_init('http://api.textlocal.in/send/');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch);
+        curl_close($ch);        
+
+        // Process your response here
+        // var_dump($response); die;
+        //}
+        
         return true;
     }
 }

@@ -13,6 +13,7 @@
 		<link href="<?= base_url('assets/css/responsive-style.css') ?>" rel="stylesheet" type="text/css" />
 		<link rel="stylesheet" type="text/css" href="<?= base_url('assets/css/slider.css') ?>" />
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/css/font-awesome.min.css') ?>" />
+        <link rel="stylesheet" type="text/css" href="<?= base_url('assets/css/wickedpicker.min.css') ?>" />        
 		<link href='https://fonts.googleapis.com/css?family=Roboto:400,300,500,700,900,900italic|Open+Sans' rel='stylesheet' type='text/css'>
 		<link rel="shortcut icon" href="<?= base_url('assets/images/favicon.ico') ?>" type="image/x-icon">
 
@@ -28,6 +29,7 @@
         <script type="text/javascript" language="javascript" src="<?= base_url('assets/js/moment.min.js') ?>"></script>
 		<script type="text/javascript" language="javascript" src="<?= base_url('assets/js/bootstrap-datepicker.min.js') ?>"></script>
         <script type="text/javascript" language="javascript" src="<?= base_url('assets/js/bootstrap-datetimepicker.min.js') ?>"></script>                
+        <script type="text/javascript" language="javascript" src="<?= base_url('assets/js/wickedpicker.min.js') ?>"></script>
 		<script type="text/javascript" src="<?= base_url('assets/js/slider.js') ?>"></script>
         <script type="text/javascript" src="<?= base_url('assets/js/script.js') ?>"></script>
         <script type="text/javascript" language="javascript" src="<?= base_url('assets/js/common.js') ?>"></script>

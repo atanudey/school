@@ -9,13 +9,14 @@ class Timing_model extends CI_Model
     function __construct()
     {
         parent::__construct();
+        $this->school_id = $this->session->userdata('school_id');
     }
     
     /*
      * Get timing by ID
      */
     function get_timing($ID)
-    {
+    {        
         return $this->db->get_where('School_Timing',array('ID'=>$ID))->row_array();
     }
     
@@ -24,6 +25,7 @@ class Timing_model extends CI_Model
      */
     function get_all_timing()
     {
+        $this->db->where('School_ID', $this->school_id);
         return $this->db->get('School_Timing')->result_array();
     }
     

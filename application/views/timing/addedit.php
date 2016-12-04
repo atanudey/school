@@ -1,8 +1,28 @@
 <script type="text/javascript">
 	$(document).ready(function(){
-		$("#Cut_Off_Time,#GressTime_To_InOut").datetimepicker({
-        	"format": 'HH:mm:ss'
-		});
+
+		var options_cutoff = {
+			now: "00:00:00",
+        	twentyFour: true,
+			showSeconds: true,
+		};
+
+		var options_gress = {
+			now: "00:00:00",
+        	twentyFour: true,
+			showSeconds: true,
+		};
+
+		<?php if (!empty($timing['Cut_Off_Time'])) { ?>
+			options_cutoff.now = "<?php echo $timing['Cut_Off_Time']; ?>";
+		<?php } ?>
+
+		<?php if (!empty($timing['GressTime_To_InOut'])) { ?>
+			options_gress.now = "<?php echo $timing['GressTime_To_InOut']; ?>";
+		<?php } ?>
+
+		$("#Cut_Off_Time").wickedpicker(options_cutoff);
+		$("#GressTime_To_InOut").wickedpicker(options_gress);
 	});
 	
 </script>

@@ -82,7 +82,8 @@
 				<div class="fldRow">					
 					<input type="text" id="name" name="name" placeholder="* Enter your name" value="<?php echo set_value("name");?>" required='required'>				
 				</div>
-				<div class="fldRow">					
+				<div class="fldRow phone-wrap-register">
+					<span class="num">+91</span>					
 					<input type="text" id="mob1" name="mob1" placeholder="* Enter your mobile no" value="<?php echo set_value("mob1");?>" required='required' pattern='[0-9]{10}$' title="Enter 10 digit mobile number">								
 				</div>
 				<div class="fldRow">					

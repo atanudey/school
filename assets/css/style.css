@@ -962,6 +962,17 @@ color:#fff !important;
 .themeSelect:after {
     clear: both;
 }
+
+.floatHolder h1{
+	color: #000!important;
+	padding-top: 5px!important;
+}
+.floatHolder img{
+	margin-right: 15px;
+}
+.floatHolder img, .floatHolder .headingText{
+	float: left;
+}
 .homePage .topNavPanel{
 	background:#c6c6c6;
 	padding:10px 0;

@@ -72,6 +72,11 @@
                     });
                 });
 
+                var msg = $('.flashInfo').text();
+                $('.flashInfo').text("");
+
+                $('.flashInfo').text("<span>" + msg + "</span>");
+
                 $('.flashInfo').fadeIn(800).delay(8000).fadeOut(800);
             });
         </script>		

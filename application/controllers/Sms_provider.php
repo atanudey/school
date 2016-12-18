@@ -6,6 +6,9 @@ class Sms_provider extends MY_Controller
     {
         parent::__construct();
         $this->load->model('Sms_provider_model');
+
+        $this->load->library('session');
+		$this->school_id = $this->session->userdata('school_id');        
     } 
 
     /*
@@ -14,7 +17,7 @@ class Sms_provider extends MY_Controller
     function index()
     {
         $data['sms_provider'] = $this->Sms_provider_model->get_all_sms_provider();
-        $this->load->template('sms_provider/index',$data);
+        $this->load->template('sms_provider/index',$data);      
     }
 
     /*
@@ -22,7 +25,7 @@ class Sms_provider extends MY_Controller
      */
     function addedit($mode = 'add', $ID = 0) {
 
-        $this->load->library('form_validation');
+        $this->load->library('form_validation');        
 		$this->form_validation->set_rules('Provider_Name','Provider Name','required');
         $this->form_validation->set_rules('SMS_Type','SMS Type','required');
         $this->form_validation->set_rules('SMS_Count','SMS Count','required|numeric');
@@ -32,6 +35,7 @@ class Sms_provider extends MY_Controller
         //$this->form_validation->set_rules('Provider_Password','Provider Password','required');
 
         $params = array(
+            'School_ID' => $this->school_id,
             'Provider_Name' => $this->input->post('Provider_Name'),
             'SMS_Type' => $this->input->post('SMS_Type'),
             'SMS_Count' => $this->input->post('SMS_Count'),
@@ -64,8 +68,20 @@ class Sms_provider extends MY_Controller
                 $data['sms_provider'] = $params;
             }
 
+            $providers = $this->Sms_provider_model->Predefined_SMS_Provider();
+
+            foreach($providers as $provider) {
+                $data['predefined_sms_provider'][$provider["ID"]] = $provider["Provider_Name"] . " (" . $provider["SMS_Type"] . ")";
+            }
+
             $this->load->template('sms_provider/addedit', $data);
         }
+    }    
+
+    function get_provider_info() {
+
+        $ID = $this->input->post("ID");
+        echo json_encode($this->Sms_provider_model->get_sms_provider($ID));        
     }
 
     /*

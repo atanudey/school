@@ -227,9 +227,12 @@ class Event extends MY_Controller
         foreach ($students as $student) {
 
             $SITE_EMAIL = $this->config->item('site_email');
-			$SITE_EMAIL_NAME = $this->config->item('site_email_name');
+			$SITE_EMAIL_NAME = $this->config->item('site_email_name');            
             
             $data = array_merge($student, $notify_param);
+
+            $school = $this->session->userdata('school');
+            $data["School_Name"] = $school["School_Name"];
             
             $email_params = array(			
                 "template_path" => 'templates/event_notify_email',

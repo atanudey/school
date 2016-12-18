@@ -5,6 +5,22 @@ $(function() {
         autoclose: true,
 		endDate: "today"
     });
+
+	$("#copy_information").on("click", function(){
+		$.ajax({
+			method: "POST",
+			url: "<?php echo base_url('sms_provider/get_provider_info'); ?>",
+			data: { "ID": $('#Copy_Provider').val() },
+			dataType: "json",
+		})
+		.done(function( data ) {
+			//console.log(data);
+			$.each(data, function(item, info){
+				if (item != "Recharge_Date")
+					$("[name='" + item + "']").val(info);				
+			});
+		});
+	});
 });
 </script>
 <div class="bodyPanel">
@@ -22,11 +38,34 @@ $(function() {
           		<?php echo validation_errors('<li>', '</li>'); ?>
         	</ul>
       	</div>
+		<form name="copy" class="form-horizontal">
+		<div class="form-group">
+			<label for="Provider_Name" class="col-md-4 control-label">* Copy From</label>
+			<div class="col-md-8">
+				<select name="Copy_Provider" id="Copy_Provider" class="form-control">
+					<option value="">--- Select ---</option>
+					<?php 
+					foreach($predefined_sms_provider as $value => $display_text)
+					{
+						$selected = "";
+						echo '<option value="'.$value.'" '.$selected.'>'.$display_text.'</option>';
+					}
+					?>
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-offset-4 col-sm-8">
+				<a href="javascript:void(0)" class="btn btn-success" id="copy_information" >Copy Info</a> </div>
+			</div>
+		</div>
+		<hr />
+		</form>
 		<?php if (!empty($sms_provider['ID'])) { ?>
 		<?php echo form_open('sms_provider/addedit/edit/'.$sms_provider['ID'], array("class"=>"form-horizontal")); ?>
 		<?php } else { ?>
 		<?php echo form_open('sms_provider/addedit/', array("class"=>"form-horizontal")); ?>
-		<?php } ?>
+		<?php } ?>		
 		<div class="form-group">
 			<label for="Provider_Name" class="col-md-4 control-label">* Provider Name</label>
 			<div class="col-md-8">
@@ -102,7 +141,7 @@ $(function() {
 				</select>
 			</div>
 		</div>
-		<input type="hidden" name="School_ID" value="<?php echo (!empty($session_user["school_id"])) ? $session_user["school_id"]:"" ?>">		
+		<!--<input type="hidden" name="School_ID" value="<?php echo (!empty($session_user["school_id"])) ? $session_user["school_id"]:"" ?>">-->
 		<div class="form-group">
 			<div class="col-sm-offset-4 col-sm-8">
 				<button type="submit" class="btn btn-success school_choose_submit">Save</button>

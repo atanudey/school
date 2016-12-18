@@ -125,10 +125,11 @@
           <input type="text" name="Email_ID" value="<?php echo ($this->input->post('Email_ID') ? $this->input->post('Email_ID') : $candidate['Email_ID']); ?>" class="form-control" id="Email_ID" required='required' pattern='[^@]+@[^@]+\.[a-zA-Z]{2,6}' />
         </div>
       </div>
-      <div class="form-group">
+      <div class="form-group phone-wrap">
         <label for="Mob1" class="col-md-4 control-label">* Mobile 1</label>
-        <div class="col-md-8">
-          <input type="text" name="Mob1" value="<?php echo ($this->input->post('Mob1') ? $this->input->post('Mob1') : $candidate['Mob1']); ?>" class="form-control" id="Mob1" required='required' pattern='[0-9]{10}$' title="Enter 10 digit mobile number" />
+        <div class="col-md-8 phone-wrap">
+			<span class="num">+91</span>
+			<input type="text" name="Mob1" value="<?php echo ($this->input->post('Mob1') ? $this->input->post('Mob1') : $candidate['Mob1']); ?>" class="form-control" id="Mob1" required='required' pattern='[0-9]{10}$' title="Enter 10 digit mobile number" />
         </div>
       </div>
       <div class="form-group">

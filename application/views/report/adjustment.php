@@ -268,19 +268,19 @@
 
 
         $('#report_frm').on('click', function() {
-            if ($('#report_type_student').is(":checked") && $('input[name=student\\[\\]]:checked').length == 0) {
+            //if ($('#report_type_student').is(":checked") && $('input[name=student\\[\\]]:checked').length == 0) {
+            if (candidate_ids.length == 0) {
                alert("Please select atleast one student.");
+               return false;
+            } else {
+                $.ajax({
+                    method: "POST",
+                    url: "<?php echo base_url(); ?>report/do_adjustment_ajax",
+                    data: { "school_id": "<?php echo $session_user["school_id"]; ?>", "candidate_id": candidate_ids.join(','), "op": 'IN', "correction_date": $("#report_date").val() }
+                })
+                .done(function( data ) {
+                });    
             }
-
-            $.ajax({
-                method: "POST",
-                url: "<?php echo base_url(); ?>report/do_adjustment_ajax",
-                data: { "school_id": "<?php echo $session_user["school_id"]; ?>", "candidate_id": candidate_ids.join(','), "op": 'IN', "correction_date": $("#report_date").val() }
-            })
-            .done(function( data ) {
-            });    
-
-            return false;
         });
 
         //Triggering to fetch todays report beforehand

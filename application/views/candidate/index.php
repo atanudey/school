@@ -47,7 +47,7 @@
 	  <a href="<?php echo site_url('candidate/addedit'); ?>" class="btn btn-success add"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
 	  <div class="innerPanel">			
       <?php if($this->session->flashdata('flashInfo')): ?>
-      <p class='flashMsg flashInfo'> <?php echo $this->session->flashdata('flashInfo'); ?> </p>
+      <p class='flashMsg flashInfo'> <span> <?php echo $this->session->flashdata('flashInfo'); ?> </span> </p>
       <?php endif ?>
 		</div>		
     <table id="candidate_list" class="table table-striped table-bordered">

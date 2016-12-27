@@ -151,8 +151,8 @@
             <option value="">--- Select ---</option>
             <?php 
 				$gender_values = array(
-					'Male'=>'Male',
-					'Female'=>'Female',
+					'M'=>'Male',
+					'F'=>'Female',
 				);
 				foreach($gender_values as $value => $display_text)
 				{

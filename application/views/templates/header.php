@@ -72,12 +72,13 @@
                     });
                 });
 
-                var msg = $('.flashInfo').text();
-                $('.flashInfo').text("");
+                //var msg = $('.flashInfo').text();
+                //$('.flashInfo').text("");
 
-                $('.flashInfo').text("<span>" + msg + "</span>");
+                //$('.flashInfo').text("<span>" + msg + "</span>");
 
-                $('.flashInfo').fadeIn(800).delay(8000).fadeOut(800);
+                $('.flashInfo').fadeIn(800).delay(6000).fadeOut(800);
+                $('.flashError').fadeIn(800).delay(6000).fadeOut(800);
             });
         </script>		
 	</head>

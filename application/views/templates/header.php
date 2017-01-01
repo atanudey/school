@@ -77,8 +77,10 @@
 
                 //$('.flashInfo').text("<span>" + msg + "</span>");
 
+
                 $('.flashInfo').fadeIn(800).delay(6000).fadeOut(800);
-                $('.flashError').fadeIn(800).delay(6000).fadeOut(800);
+                $('.flashError').fadeIn(800).delay(6000).fadeOut(800);                                                        
+
             });
         </script>		
 	</head>

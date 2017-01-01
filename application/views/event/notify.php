@@ -198,12 +198,17 @@
                     dataType: "json"
                 })
                 .done(function( data ) {
+                    
+                    $('#Title').val("");
+                    $('#Message').val("");
+                    $('#chars').val(160);                    
                     if (data.success) {
-                        $('#Title').val("");
-                        $('#Message').val("");
-                        $('#chars').val(160);
                         $('.flashInfo').text("Event notification has been sent.");
                         $('.flashInfo').show();
+                    } else {
+                        var error = data["errors"][0];                        
+                        $('.flashError').text(error.message);                        
+                        $('.flashError').show();
                     }
                 });
 
@@ -302,6 +307,7 @@
             </div>
         </div>
         <div class="event-msg-wrap"><p class='flashMsg flashInfo'></p></div>
+        <div class="event-msg-wrap"><p class='flashMsg flashError'></p></div>
         <input type="hidden" name="Event_ID" value="<?php echo $Event_ID; ?>">
         <div class="innerPanel">
             <div class="form-group"> 

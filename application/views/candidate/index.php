@@ -1,41 +1,45 @@
 <script type="text/javascript" language="javascript">
 	$(document).ready(function(){
-		$('#candidate_list').DataTable({ 
-			"processing": true, //Feature control the processing indicator.
-			"serverSide": true, //Feature control DataTables' server-side processing mode.
-			"order": [], //Initial no order.
+            $('#candidate_list').DataTable({ 
+                "processing": true, //Feature control the processing indicator.
+                "serverSide": true, //Feature control DataTables' server-side processing mode.
+                "order": [], //Initial no order.
 
-			// Load data for the table's content from an Ajax source
-			"ajax": {
-				"url": "<?php echo site_url('candidate/ajax_list') ?>",
-				"type": "POST"
-			},
+                // Load data for the table's content from an Ajax source
+                "ajax": {
+                        "url": "<?php echo site_url('candidate/ajax_list') ?>",
+                        "type": "POST"
+                },
 
-			//Set column definition initialisation properties.
-			"columnDefs": [
-				{ 
-					"targets": [ -1 ], //last column
-					"orderable": false, //set not orderable
-					"width": "15%",
-				},
-				{ 
-					"targets": [ 4 ],
-					"orderable": false, //set not orderable
-				},
-				{ 
-					"targets": [ 6 ],
-					"orderable": false, //set not orderable
-				},
-				{ 
-					"targets": [ 7 ],
-					"orderable": false, //set not orderable
-				},
-				{ 
-					"targets": [ 8 ],
-					"orderable": false, //set not orderable
-				},
-			],
-    	});
+                //Set column definition initialisation properties.
+                "columnDefs": [
+                    { 
+                            "targets": [ -1 ], //last column
+                            "orderable": false, //set not orderable
+                            "width": "15%",
+                    },
+                    { 
+                            "targets": [ 4 ],
+                            "orderable": false, //set not orderable
+                    },
+                    { 
+                            "targets": [ 6 ],
+                            "orderable": false, //set not orderable
+                    },
+                    { 
+                            "targets": [ 7 ],
+                            "orderable": false, //set not orderable
+                    },
+                    { 
+                            "targets": [ 8 ],
+                            "orderable": false, //set not orderable
+                    },
+                ],
+            });
+        
+            $('html, body').animate({
+                    scrollTop: $('#tblwrap').offset().top
+                }, 'slow'); 
 	});
 </script>
 
@@ -43,11 +47,14 @@
   	<div class="container headingText">
     	<h1>List of Candidates</h1>
     </div>
-  <div class="container tblwrap">
+  <div id="tblwrap" class="container tblwrap">
 	  <a href="<?php echo site_url('candidate/addedit'); ?>" class="btn btn-success add"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
 	  <div class="innerPanel">			
       <?php if($this->session->flashdata('flashInfo')): ?>
       <p class='flashMsg flashInfo'> <span> <?php echo $this->session->flashdata('flashInfo'); ?> </span> </p>
+      <?php endif ?>
+      <?php if($this->session->flashdata('flashError')): ?>
+      <p class='flashMsg flashError'> <span> <?php echo $this->session->flashdata('flashError'); ?> </span> </p>
       <?php endif ?>
 		</div>		
     <table id="candidate_list" class="table table-striped table-bordered">

@@ -55,9 +55,22 @@ class Timing extends MY_Controller
         if($this->form_validation->run())     
         {
             if ($mode == 'add') {
-                $timing_id = $this->Timing_model->add_timing($params);                                           
+                $result = $timing_id = $this->Timing_model->add_timing($params);  
+                
+                if ($result) {
+                    $this->session->set_flashdata('flashInfo', 'Timing added sucessfully.');
+                } else {
+                    $this->session->set_flashdata('flashError', 'Failed to add Timing!');
+                }
+                
             } else if ($mode == 'edit') {
-                $this->Timing_model->update_timing($ID,$params); 
+                $result = $this->Timing_model->update_timing($ID,$params); 
+                
+                if ($result) {
+                    $this->session->set_flashdata('flashInfo', 'Timing modified sucessfully.');
+                } else {
+                    $this->session->set_flashdata('flashError', 'Failed to modify Timing!');
+                }
             }
 
             redirect('timing/index');
@@ -71,7 +84,8 @@ class Timing extends MY_Controller
             $data['all_class'] = $this->Edu_class_model->get_all_class();
     
             if (empty($data['timing']) && $mode == 'edit') {
-                show_error('The poc you are trying to edit does not exist.');
+                $this->session->set_flashdata('flashError', 'The poc you are trying to edit does not exist.');
+                redirect('timing/index');
             } else if ($mode == 'add') {
                 $data['timing'] = $params;
             }
@@ -92,10 +106,12 @@ class Timing extends MY_Controller
         if(isset($timing['ID']))
         {
             $this->Timing_model->delete_timing($ID);
-            redirect('timing/index');
-        }
-        else
-            show_error('The timing you are trying to delete does not exist.');
+            $this->session->set_flashdata('flashInfo','The timing deleted successfully.');           
+        } else {
+            $this->session->set_flashdata('flashError','The timing you are trying to delete does not exist.');
+        }    
+        
+        redirect('timing/index');
     }
     
 }

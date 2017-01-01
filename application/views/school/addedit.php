@@ -38,10 +38,11 @@
           <input type="text" name="Address2" value="<?php echo ($this->input->post('Address2') ? $this->input->post('Address2') : $school['Address2']); ?>" class="form-control" id="Address2" />
         </div>
       </div>
-      <div class="form-group">
+      <div class="form-group phone-wrap">
         <label for="Contact" class="col-md-3">* Contact Number</label>
-        <div class="col-md-8">
-          <input type="text" name="Contact" value="<?php echo ($this->input->post('Contact') ? $this->input->post('Contact') : $school['Contact']); ?>" class="form-control" id="Contact" required='required' pattern='[0-9]{10}$' title="Enter 10 digit mobile number" />
+        <div class="col-md-8 phone-wrap">
+            <span class="num">+91</span>
+            <input type="text" name="Contact" value="<?php echo ($this->input->post('Contact') ? $this->input->post('Contact') : $school['Contact']); ?>" class="form-control" id="Contact" required='required' pattern='[0-9]{10}$' title="Enter 10 digit mobile number" />
         </div>
       </div>
       <div class="form-group">

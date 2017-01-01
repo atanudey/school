@@ -1,338 +1,338 @@
 <?php
+
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Report extends MY_Controller {
 
-	private $school_id;
+    private $school_id;
 
-	function __construct() {		
-		parent::__construct();
-		$this->load->model('report_model');	
-		$this->load->model('school_model');
-		$this->load->model('edu_class_model');
-		
-		// Load Third Party PDF Library MPDF
-		$this->load->library('mpdf60/mpdf');
+    function __construct() {
+        parent::__construct();
+        $this->load->model('report_model');
+        $this->load->model('school_model');
+        $this->load->model('edu_class_model');
 
-		// Load Third Party Excel Library PHPExcel
-		$this->load->library('PhpExcelLib');
+        // Load Third Party PDF Library MPDF
+        $this->load->library('mpdf60/mpdf');
 
-		// Load Template parsing library
-		$this->load->library('parser');
-		$this->load->library('session');
+        // Load Third Party Excel Library PHPExcel
+        $this->load->library('PhpExcelLib');
 
-		$this->school_id = $this->session->userdata('school_id');		
-		$this->data['report'] = $this->session->userdata('report');
-		$this->data['report_parameters'] = $this->session->userdata('report_parameters');		
-		$this->data['school'] = $this->session->userdata('school');
-	}
-	
-	function index() {		
+        // Load Template parsing library
+        $this->load->library('parser');
+        $this->load->library('session');
 
-		$data = $this->data;
-		if (!empty($this->school_id))
-			$classes = $this->edu_class_model->get_all_class_by_school($this->school_id);
+        $this->school_id = $this->session->userdata('school_id');
+        $this->data['report'] = $this->session->userdata('report');
+        $this->data['report_parameters'] = $this->session->userdata('report_parameters');
+        $this->data['school'] = $this->session->userdata('school');
+    }
 
-		$data['classes'] = array();
-		$data['sections'] = array();
-		if (!empty($classes)) {
-			foreach($classes as $class) {
-				if (!in_array($class['Name'], $data['classes'])) {
-					$data['classes'][] = $class['Name'];
-				}	
-			}
+    function index() {
 
-			foreach($classes as $class) {
-				if (!in_array($class['Section'], $data['sections'])) {
-					$data['sections'][] = $class['Section'];
-				}	
-			}
-		}
+        $data = $this->data;
+        if (!empty($this->school_id))
+            $classes = $this->edu_class_model->get_all_class_by_school($this->school_id);
 
-		$this->load->template('report/index', $data);
-	}
+        $data['classes'] = array();
+        $data['sections'] = array();
+        if (!empty($classes)) {
+            foreach ($classes as $class) {
+                if (!in_array($class['Name'], $data['classes'])) {
+                    $data['classes'][] = $class['Name'];
+                }
+            }
 
-	function populate_data() {
+            foreach ($classes as $class) {
+                if (!in_array($class['Section'], $data['sections'])) {
+                    $data['sections'][] = $class['Section'];
+                }
+            }
+        }
 
-		/*require_once(APPPATH . "../assets/reportico44/reportico.php"); 
-		$q = new reportico();		
-		$q->embedded_report = true;
-		$q->forward_url_get_parameters = "execute_mode=EXECUTE&project=educare&project_password=guitar&xmlin=student_attendance_report.xml&target_format=HTML";
-		$q->execute();*/
+        $this->load->template('report/index', $data);
+    }
 
-		$date_arr = array();
-		$str = "";
-		for ($i=1; $i <= 1000; $i++) {
-			//for  ($j=1; $j < 11; $j++) {
-				$date = "2016-".rand(1, 12)."-".rand(1,30);
-				$time_in = "10:00:00";
-				$time_out = "16:00:00";
+    function populate_data() {
 
-				if (!in_array($date, $date_arr)) {
-					$date_arr[] = $date;					 
-				} else {
-					continue;
-				}
+        /* require_once(APPPATH . "../assets/reportico44/reportico.php"); 
+          $q = new reportico();
+          $q->embedded_report = true;
+          $q->forward_url_get_parameters = "execute_mode=EXECUTE&project=educare&project_password=guitar&xmlin=student_attendance_report.xml&target_format=HTML";
+          $q->execute(); */
 
-				$ci = rand(1,7);
-				
-				$str .= "INSERT INTO `educare_db`.`SC00001_Attendance` (`ID`, `Date_Attendance`, `IN_Time`, `OUT_Time`, `Candidate_ID`) VALUES (NULL, '".$date."', '".$time_in."', '".$time_out."', '".$ci."');" . "\n";
-				//$str .= "INSERT INTO `educare_db`.`sc00001_attendance` (`ID`, `DateTime`, `IN_OUT`, `SC00001_Candidate_ID`) VALUES (NULL, '".$date." ".$time_out."', 'OUT', '".$ci."');" . "\n";
-				//$str .= "INSERT INTO `educare_db`.`school_days` (`School_ID`, `Month`, `Year`, `school_days`) VALUES ('SC00001', ". $i .", '2016', " . rand(18, 25) ."); \n";
-			//}
+        $date_arr = array();
+        $str = "";
+        for ($i = 1; $i <= 1000; $i++) {
+            //for  ($j=1; $j < 11; $j++) {
+            $date = "2016-" . rand(1, 12) . "-" . rand(1, 30);
+            $time_in = "10:00:00";
+            $time_out = "16:00:00";
 
-			//$str .= "INSERT INTO `educare_db`.`school_days` (`ID`, `Month`, `Month_Days`, `Month_Off_Days`, `Extra_Leave`, `Remarks`, `School_ID`, `Added_On`, `Updated_On`, `Updated_By`) VALUES (NULL, $i, 30, ". (30 - rand(18, 25)) .", '0', NULL, 'SC00001', '2016-08-28 14:52:46', '2016-08-28 14:52:46', '1');" . "\n";		
-		}
+            if (!in_array($date, $date_arr)) {
+                $date_arr[] = $date;
+            } else {
+                continue;
+            }
 
-		//for ($i=1; $i < 40; $i++) {
-		//	$str .= "UPDATE  `educare_db`.`sc00001_attendance` SET  `IN_OUT` =  'OUT' WHERE  `sc00001_attendance`.`ID` = " . rand(1, 159) . "; \n";
-		//}
+            $ci = rand(1, 7);
 
-		echo $str; die;
+            $str .= "INSERT INTO `educare_db`.`SC00001_Attendance` (`ID`, `Date_Attendance`, `IN_Time`, `OUT_Time`, `Candidate_ID`) VALUES (NULL, '" . $date . "', '" . $time_in . "', '" . $time_out . "', '" . $ci . "');" . "\n";
+            //$str .= "INSERT INTO `educare_db`.`sc00001_attendance` (`ID`, `DateTime`, `IN_OUT`, `SC00001_Candidate_ID`) VALUES (NULL, '".$date." ".$time_out."', 'OUT', '".$ci."');" . "\n";
+            //$str .= "INSERT INTO `educare_db`.`school_days` (`School_ID`, `Month`, `Year`, `school_days`) VALUES ('SC00001', ". $i .", '2016', " . rand(18, 25) ."); \n";
+            //}
+            //$str .= "INSERT INTO `educare_db`.`school_days` (`ID`, `Month`, `Month_Days`, `Month_Off_Days`, `Extra_Leave`, `Remarks`, `School_ID`, `Added_On`, `Updated_On`, `Updated_By`) VALUES (NULL, $i, 30, ". (30 - rand(18, 25)) .", '0', NULL, 'SC00001', '2016-08-28 14:52:46', '2016-08-28 14:52:46', '1');" . "\n";		
+        }
 
-		/*if(isset($_POST) && count($_POST) > 0)     
-		{   
-			$params = array(
-				'class' => $this->input->post('class')				
-			);
-		}
-				
-		$session_user = $this->session->userdata('user');
+        //for ($i=1; $i < 40; $i++) {
+        //	$str .= "UPDATE  `educare_db`.`sc00001_attendance` SET  `IN_OUT` =  'OUT' WHERE  `sc00001_attendance`.`ID` = " . rand(1, 159) . "; \n";
+        //}
 
-		$SQL = "CREATE OR REPLACE VIEW attendance_view AS
-			SELECT 
-				'" . $session_user->ID . "' as Session_User_ID,
-				Roll_No Roll, 
-				Candidate_Name Name, 
-				CONCAT( `Address1` , ', ', `Address2` ) Address, 
-				`Class_ID` Class, 
-				SUM( CASE WHEN a.IN_OUT = 'IN' THEN 1 ELSE 0 END ) Present, 
-				(COUNT( A.IN_OUT ) - SUM(CASE WHEN a.IN_OUT = 'IN' THEN 1 ELSE 0 END )) Absent
-			FROM `sc00001_candidate` C, `sc00001_attendance` A
-			WHERE `Candidate_ID` = `SC00001_Candidate_ID` 
-			AND `School_ID` = '" . $session_user->School_ID . "'
-			AND `Class_ID` = 1
-			GROUP BY SC00001_Candidate_ID";
+        echo $str;
+        die;
 
-		$result = $this->db->query($SQL);	
+        /* if(isset($_POST) && count($_POST) > 0)     
+          {
+          $params = array(
+          'class' => $this->input->post('class')
+          );
+          }
 
-		$this->load->template('report/output');	*/		
-	}
+          $session_user = $this->session->userdata('user');
 
-	function generate() {
-		$data["report"] = array();
-		if (!empty($this->school_id)) {
-			$data = $this->data;
+          $SQL = "CREATE OR REPLACE VIEW attendance_view AS
+          SELECT
+          '" . $session_user->ID . "' as Session_User_ID,
+          Roll_No Roll,
+          Candidate_Name Name,
+          CONCAT( `Address1` , ', ', `Address2` ) Address,
+          `Class_ID` Class,
+          SUM( CASE WHEN a.IN_OUT = 'IN' THEN 1 ELSE 0 END ) Present,
+          (COUNT( A.IN_OUT ) - SUM(CASE WHEN a.IN_OUT = 'IN' THEN 1 ELSE 0 END )) Absent
+          FROM `sc00001_candidate` C, `sc00001_attendance` A
+          WHERE `Candidate_ID` = `SC00001_Candidate_ID`
+          AND `School_ID` = '" . $session_user->School_ID . "'
+          AND `Class_ID` = 1
+          GROUP BY SC00001_Candidate_ID";
 
-			$start_date = explode("/",$this->input->post('start_date'));
-			$end_date = explode("/",$this->input->post('end_date'));
+          $result = $this->db->query($SQL);
 
-			if ($this->input->post('student_report_type') == "all") {
-				$class = "";
-				$section = "";
-			} else if ($this->input->post('student_report_type') == "class") {
-				if (!empty($_REQUEST['class'])) {
-					$class = implode(",", $this->input->post('class'));			
-				} else {
-					$class = "";
-				}
-				if (!empty($_REQUEST['section'])) {
-					$section = implode(",", $this->input->post('section'));	
-				} else {
-					$section = "";
-				}
-			}
+          $this->load->template('report/output'); */
+    }
 
-			$interval = array('yly' => 12, 'hly' => 6, 'qly' => 3, 'mly' => 1);
+    function generate() {
+        $data["report"] = array();
+        if (!empty($this->school_id)) {
+            $data = $this->data;
 
-			//print_r($_REQUEST); die;
+            $start_date = explode("/", $this->input->post('start_date'));
+            $end_date = explode("/", $this->input->post('end_date'));
 
-			if ($this->input->post('student_report_type') != "student") {
-				$params = array(
-					'type' => 'other',
-					'start_month' => intval($start_date[1]),
-					'end_month' => intval($end_date[1]),
-					'school_id' => $this->school_id,
-					'classes' => $class,
-					'sections' => $section,
-					'interval' => $interval[$this->input->post('report_range_type')]		
-				);
-			} else {
-				$params = array(
-					'type' => 'student',
-					'start_date' => $start_date[2]."-".$start_date[1]."-".$start_date[0],
-					'end_date' => $end_date[2]."-".$end_date[1]."-".$end_date[0],
-					'school_id' => $this->school_id,
-					'student_id_list' => implode(",", $this->input->post('student'))		
-				);
-			}
+            if ($this->input->post('student_report_type') == "all") {
+                $class = "";
+                $section = "";
+            } else if ($this->input->post('student_report_type') == "class") {
+                if (!empty($_REQUEST['class'])) {
+                    $class = implode(",", $this->input->post('class'));
+                } else {
+                    $class = "";
+                }
+                if (!empty($_REQUEST['section'])) {
+                    $section = implode(",", $this->input->post('section'));
+                } else {
+                    $section = "";
+                }
+            }
 
-			//print_r($params); die;
+            $interval = array('yly' => 12, 'hly' => 6, 'qly' => 3, 'mly' => 1);
 
-			$data['report'] = $this->report_model->get_attendance($params);
-			$data["report_parameters"] = $params;
+            //print_r($_REQUEST); die;
 
-			//Modifying date format to show in pdf report			
-			$params['start_date'] = $this->input->post('start_date');
-			$params['end_date'] = $this->input->post('end_date');
+            if ($this->input->post('student_report_type') != "student") {
+                $params = array(
+                    'type' => 'other',
+                    'start_month' => intval($start_date[1]),
+                    'end_month' => intval($end_date[1]),
+                    'school_id' => $this->school_id,
+                    'classes' => $class,
+                    'sections' => $section,
+                    'interval' => $interval[$this->input->post('report_range_type')]
+                );
+            } else {
+                $params = array(
+                    'type' => 'student',
+                    'start_date' => $start_date[2] . "-" . $start_date[1] . "-" . $start_date[0],
+                    'end_date' => $end_date[2] . "-" . $end_date[1] . "-" . $end_date[0],
+                    'school_id' => $this->school_id,
+                    'student_id_list' => implode(",", $this->input->post('student'))
+                );
+            }
 
-			$this->session->set_userdata('report_parameters', $params);
-			$this->session->set_userdata('report', $data['report']);
-		}
+            //print_r($params); die;
 
-		//print_r($data); die;
+            $data['report'] = $this->report_model->get_attendance($params);
+            $data["report_parameters"] = $params;
 
-		$this->load->template('report/output', $data);
-	}
+            //Modifying date format to show in pdf report			
+            $params['start_date'] = $this->input->post('start_date');
+            $params['end_date'] = $this->input->post('end_date');
 
-	function getReportContent($type = ""){
-		$content = $this->parser->parse('report/save', $this->data, true);
+            $this->session->set_userdata('report_parameters', $params);
+            $this->session->set_userdata('report', $data['report']);
+        }
 
-		if ($type == "prnt") {
-			$style = "<style>".$this->parser->parse('report/save_style', $this->data, true)."</style>";
-			$content = $style . $content;
-		}
+        //print_r($data); die;
 
-		return $content;
-	}
+        $this->load->template('report/output', $data);
+    }
 
-	function prnt() {
-		$this->data["font"] = "Arial";
-		echo $this->getReportContent('prnt');
-	}
+    function getReportContent($type = "") {
+        $content = $this->parser->parse('report/save', $this->data, true);
 
-	function pdf() {	
-		$this->data["font"] = "DejaVuSans";	
-		$content = $this->getReportContent();
-		$this->getReport($content);
-	}
+        if ($type == "prnt") {
+            $style = "<style>" . $this->parser->parse('report/save_style', $this->data, true) . "</style>";
+            $content = $style . $content;
+        }
 
-	function excel() {
-		$this->data["font"] = "Arial";
+        return $content;
+    }
 
-		$content = $this->getReportContent();
-		$inputFileName = tempnam(sys_get_temp_dir(), "excel_report");
-		$outputFileName = REPORT_PATH . "excel_report_".time().".xlsx";
-		$handle = fopen($inputFileName, 'w');
-		fwrite($handle, $content);
-		fclose($handle);		
+    function prnt() {
+        $this->data["font"] = "Arial";
+        echo $this->getReportContent('prnt');
+    }
 
-		$objPHPExcelReader = PHPExcel_IOFactory::createReader('HTML');
-		$objPHPExcel = $objPHPExcelReader->load($inputFileName);
+    function pdf() {
+        $this->data["font"] = "DejaVuSans";
+        $content = $this->getReportContent();
+        $this->getReport($content);
+    }
 
-		$objPHPExcelWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-		$objPHPExcel = $objPHPExcelWriter->save($outputFileName);
+    function excel() {
+        $this->data["font"] = "Arial";
 
-		unlink($inputFileName); 
+        $content = $this->getReportContent();
+        $inputFileName = tempnam(sys_get_temp_dir(), "excel_report");
+        $outputFileName = REPORT_PATH . "excel_report_" . time() . ".xlsx";
+        $handle = fopen($inputFileName, 'w');
+        fwrite($handle, $content);
+        fclose($handle);
 
-		header('Content-Description: File Transfer');
-    	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-		header("Content-Disposition: attachment; filename=" . basename($outputFileName));
-		header('Expires: 0');
-		header('Cache-Control: must-revalidate');
-		header('Pragma: public');
-		header('Content-Length: ' . filesize($outputFileName));
+        $objPHPExcelReader = PHPExcel_IOFactory::createReader('HTML');
+        $objPHPExcel = $objPHPExcelReader->load($inputFileName);
 
-		readfile($outputFileName);
-		unlink($outputFileName);
-	}
+        $objPHPExcelWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objPHPExcel = $objPHPExcelWriter->save($outputFileName);
 
-	function getReport($content, $output = 'download')
-	{
-	    $this->mpdf->SetDisplayMode('fullpage');
+        unlink($inputFileName);
 
-	    $this->mpdf->list_indent_first_level = 0;	// 1 or 0 - whether to indent the first level of a list
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment; filename=" . basename($outputFileName));
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($outputFileName));
 
-	    // LOAD a stylesheet
-	    $stylesheet = $this->parser->parse('report/save_style', $this->data, true);
-	    $this->mpdf->WriteHTML($stylesheet,1);	// The parameter 1 tells that this is css/style only and no body/html/text
+        readfile($outputFileName);
+        unlink($outputFileName);
+    }
 
+    function getReport($content, $output = 'download') {
+        $this->mpdf->SetDisplayMode('fullpage');
+
+        $this->mpdf->list_indent_first_level = 0; // 1 or 0 - whether to indent the first level of a list
+        // LOAD a stylesheet
+        $stylesheet = $this->parser->parse('report/save_style', $this->data, true);
+        $this->mpdf->WriteHTML($stylesheet, 1); // The parameter 1 tells that this is css/style only and no body/html/text
         // If download requested
-	    if ($output == 'download'){
-	       $this->mpdf->WriteHTML($content,2);
-	       $this->mpdf->Output('report.pdf','I');
-	    } elseif ($output == 'mail') { //if  mail requested
-	       $this->mpdf->WriteHTML(utf8_encode($content));
-	       return $customer;
-	    }
-	}
+        if ($output == 'download') {
+            $this->mpdf->WriteHTML($content, 2);
+            $this->mpdf->Output('report.pdf', 'I');
+        } elseif ($output == 'mail') { //if  mail requested
+            $this->mpdf->WriteHTML(utf8_encode($content));
+            return $customer;
+        }
+    }
 
-	function missing() {
-		$date = $this->input->post('report_date');
-		if (empty($date))
-			$date = date('d/m/Y');
-		
-		$this->data["report"] = $this->report_model->get_missing(implode("-", array_reverse(explode("/", $date))), $this->school_id);	
+    function missing() {
+        $date = $this->input->post('report_date');
+        if (empty($date))
+            $date = date('d/m/Y');
 
-		$params = array(
-			'type' => 'missing',
-			'date' => $date,			
-			'school_id' => $this->school_id		
-		);
+        $this->data["report"] = $this->report_model->get_missing(implode("-", array_reverse(explode("/", $date))), $this->school_id);
 
-		$this->data["report_parameters"] = $params;
+        $params = array(
+            'type' => 'missing',
+            'date' => $date,
+            'school_id' => $this->school_id
+        );
 
-		$this->session->set_userdata('report', $this->data['report']);
-		$this->session->set_userdata('report_parameters', $params);
+        $this->data["report_parameters"] = $params;
 
-		//print_r($params); die;
+        $this->session->set_userdata('report', $this->data['report']);
+        $this->session->set_userdata('report_parameters', $params);
 
-		$this->load->template('report/missing', $this->data);
-	}
+        //print_r($params); die;
 
-	function adjustment() {
-		$data = $this->get_adjustments();
-		$this->load->template('report/adjustment', $data);
-	}
+        $this->load->template('report/missing', $this->data);
+    }
 
-	function do_adjustment_ajax() {
-		$response = $this->report_model->do_adjustment($this->input->post(NULL, TRUE));
-		echo json_encode(array("success" => true));
-	}
+    function adjustment() {
+        $data = $this->get_adjustments();
+        $this->load->template('report/adjustment', $data);
+    }
 
-	function adjustment_list_ajax() {
-		$data = $this->get_adjustments();
-		echo json_encode($data['report']);
-	}
+    function do_adjustment_ajax() {
+        $response = $this->report_model->do_adjustment($this->input->post(NULL, TRUE));
+        echo json_encode(array("success" => true));
+    }
 
-	function get_adjustments() {
-		$data = $this->data;
-		if (!empty($this->school_id)) {
-			$classes = $this->edu_class_model->get_all_class_by_school($this->school_id);
-		}
+    function adjustment_list_ajax() {
+        $data = $this->get_adjustments();
+        echo json_encode($data['report']);
+    }
 
-		$data['classes'] = array();
-		$data['sections'] = array();
-		if (!empty($classes)) {
-			foreach($classes as $class) {
-				if (!in_array($class['Name'], $data['classes'])) {
-					$data['classes'][] = $class['Name'];
-				}	
-			}
+    function get_adjustments() {
+        $data = $this->data;
+        if (!empty($this->school_id)) {
+            $classes = $this->edu_class_model->get_all_class_by_school($this->school_id);
+        }
 
-			foreach($classes as $class) {
-				if (!in_array($class['Section'], $data['sections'])) {
-					$data['sections'][] = $class['Section'];
-				}	
-			}
-		}
+        $data['classes'] = array();
+        $data['sections'] = array();
+        if (!empty($classes)) {
+            foreach ($classes as $class) {
+                if (!in_array($class['Name'], $data['classes'])) {
+                    $data['classes'][] = $class['Name'];
+                }
+            }
 
-		$sp_params["school_id"] = $this->school_id;
-		$sp_params = array_merge($sp_params, $this->input->post(NULL, TRUE));
+            foreach ($classes as $class) {
+                if (!in_array($class['Section'], $data['sections'])) {
+                    $data['sections'][] = $class['Section'];
+                }
+            }
+        }
 
-		$sp_params['correction_date'] = convert_to_mysql_date($this->input->post('correction_date'));
+        $sp_params["school_id"] = $this->school_id;
+        $sp_params = array_merge($sp_params, $this->input->post(NULL, TRUE));
 
-		$data["report"] = $this->report_model->get_adjustment($sp_params);
+        $sp_params['correction_date'] = convert_to_mysql_date($this->input->post('correction_date'));
 
-		$params = array(
-			"date" => $this->input->post('report_date'),
-			"type" => 'adjustment'
-		);
+        $data["report"] = $this->report_model->get_adjustment($sp_params);
 
-		$this->session->set_userdata('report', $data['report']);
-		$this->session->set_userdata('report_parameters', $params);
+        $params = array(
+            "date" => $this->input->post('report_date'),
+            "type" => 'adjustment'
+        );
 
-		return $data;
-	}
+        $this->session->set_userdata('report', $data['report']);
+        $this->session->set_userdata('report_parameters', $params);
+
+        return $data;
+    }
+
 }
+
 ?>

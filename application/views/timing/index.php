@@ -23,6 +23,9 @@
       <?php if($this->session->flashdata('flashInfo')): ?>
       <p class='flashMsg flashInfo'> <?php echo $this->session->flashdata('flashInfo'); ?> </p>
       <?php endif ?>
+      <?php if($this->session->flashdata('flashError')): ?>
+      <p class='flashMsg flashError'> <span> <?php echo $this->session->flashdata('flashError'); ?> </span> </p>
+      <?php endif ?>
 		</div>
     <table id="timing_list" class="table table-striped table-bordered">
       <thead>

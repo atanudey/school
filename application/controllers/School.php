@@ -72,26 +72,33 @@ class School extends MY_Controller
             if(!empty($params))
             {
                 $result = $this->school_model->update_school($ID, $params); 
-                if ($result)
+                if ($result) {
                     $this->session->set_flashdata('flashInfo', 'School modified sucessfully.');
-
+                } else {
+                    $this->session->set_flashdata('flashError', 'Failed to modify school!');
+                }
+                
                 redirect('school/index');
             }
             else
             { 
                 $school = $this->school_model->get_school($ID);  
-                if (!empty($school))
+                if (!empty($school)) {
                     $data['school'] = $school;
-                else
-                    $this->session->set_flashdata('flashInfo', 'The school you are trying to edit does not exist.');                          
+                } else {
+                    $this->session->set_flashdata('flashError', 'The school you are trying to edit does not exist.');                          
+                    redirect('school/index');
+                }
             }
         } else if ($mode == 'add') { 
             if (!empty($params)) {
                 $school_id = $this->school_model->add_school($params);
 
-                if ($school_id)
-                    $this->session->set_flashdata('flashInfo', 'School modified sucessfully.');
-
+                if ($school_id) {
+                    $this->session->set_flashdata('flashInfo', 'School added sucessfully.');
+                } else {
+                    $this->session->set_flashdata('flashError', 'Failed to add school!');
+                }
                 redirect('school/index');
             } else {
                  $params = array(
@@ -125,10 +132,13 @@ class School extends MY_Controller
         if(isset($school['ID']))
         {
             $this->school_model->delete_school($ID);
-            redirect('school/index');
+            $this->session->set_flashdata('flashInfo','The school deleted successfully.');
         }
-        else
-            $this->session->set_flashdata('flashInfo', 'The school you are trying to delete does not exist.');
+        else {
+            $this->session->set_flashdata('flashError', 'The school you are trying to delete does not exist.');
+        }
+        
+        redirect('school/index');
     }
     
 }

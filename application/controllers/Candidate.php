@@ -2,7 +2,7 @@
  
 class Candidate extends MY_Controller
 {
-	private $school_id;
+    private $school_id;
 
     function __construct()
     {
@@ -182,15 +182,18 @@ class Candidate extends MY_Controller
     function remove($Candidate_ID)
     {
         $candidate = $this->candidate_model->get_candidate($Candidate_ID);
-
+        
         // check if the candidate exists before trying to delete it
-        if(isset($candidate['Candidate_ID']))
+        if(!empty($candidate['Candidate_ID']))
         {
             $this->candidate_model->delete_candidate($Candidate_ID);
-            redirect('candidate/index');
+            $this->session->set_flashdata('flashInfo','The candidate deleted successfully.');            
         }
-        else
+        else {
             $this->session->set_flashdata('flashError','The candidate you are trying to delete does not exist.');
+        }
+        
+        redirect('candidate/index');
     }
     
 }

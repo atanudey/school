@@ -86,9 +86,22 @@ class Poc extends MY_Controller
         if($this->form_validation->run())     
         {
             if ($mode == 'add') {
-                $poc_id = $this->Poc_model->add_poc($params);                                            
+                $result = $this->Poc_model->add_poc($params);  
+                
+                if ($result) {
+                    $this->session->set_flashdata('flashInfo', 'POC added sucessfully.');
+                } else {
+                    $this->session->set_flashdata('flashError', 'Failed to add POC!');
+                }
+                
             } else if ($mode == 'edit') {
-                $this->Poc_model->update_poc($ID,$params);
+                $result = $this->Poc_model->update_poc($ID,$params);
+                
+                if ($result) {
+                    $this->session->set_flashdata('flashInfo', 'POC modified sucessfully.');
+                } else {
+                    $this->session->set_flashdata('flashError', 'Failed to modify POC!');
+                }
             }
 
             redirect('poc/index');
@@ -101,7 +114,8 @@ class Poc extends MY_Controller
             $data['poc'] = $this->Poc_model->get_poc($ID);
     
             if (empty($data['poc']) && $mode == 'edit') {
-                show_error('The poc you are trying to edit does not exist.');
+                $this->session->set_flashdata('flashError', 'The poc you are trying to edit does not exist.');
+                redirect('poc/index');
             } else if ($mode == 'add') {
                 $data['poc'] = $params;
             }
@@ -121,10 +135,12 @@ class Poc extends MY_Controller
         if(isset($poc['ID']))
         {
             $this->Poc_model->delete_poc($ID);
-            redirect('poc/index');
-        }
-        else
-            show_error('The poc you are trying to delete does not exist.');
+            $this->session->set_flashdata('flashInfo','The poc deleted successfully.');           
+        } else {
+            $this->session->set_flashdata('flashError','The poc you are trying to delete does not exist.');
+        }        
+        
+        redirect('poc/index');
     }
     
 }

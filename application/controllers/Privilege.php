@@ -54,9 +54,21 @@ class Privilege extends MY_Controller
         if($this->form_validation->run())     
         {
             if ($mode == 'add') {
-                $privilege_id = $this->User_privilege_model->add_privilege($params);                                           
+                $result = $this->User_privilege_model->add_privilege($params);    
+                
+                if ($result) {
+                    $this->session->set_flashdata('flashInfo', 'Privilege added sucessfully.');
+                } else {
+                    $this->session->set_flashdata('flashError', 'Failed to add Privilege!');
+                }
             } else if ($mode == 'edit') {
-                $this->User_privilege_model->update_privilege($ID,$params); 
+                $result = $this->User_privilege_model->update_privilege($ID,$params); 
+                
+                if ($result) {
+                    $this->session->set_flashdata('flashInfo', 'Privilege modified sucessfully.');
+                } else {
+                    $this->session->set_flashdata('flashError', 'Failed to modify Privilege!');
+                }
             }
 
             redirect('privilege/index');
@@ -74,7 +86,7 @@ class Privilege extends MY_Controller
             $data['privilege']['Screen_Name'] = $data['all_screen_master'];
     
             if (empty($data['privilege']) && $mode == 'edit') {
-                show_error('The privilege you are trying to edit does not exist.');
+                $this->session->set_flashdata('flashError', 'The privilege you are trying to edit does not exist.');
             } else if ($mode == 'add') {
                 $data['privilege'] = $params;
             }
@@ -94,10 +106,12 @@ class Privilege extends MY_Controller
         if(isset($privilege['ID']))
         {
             $this->User_privilege_model->delete_privilege($ID);
-            redirect('privilege/index');
-        }
-        else
-            show_error('The privilege you are trying to delete does not exist.');
+            $this->session->set_flashdata('flashInfo','The privilege deleted successfully.');           
+        } else {
+            $this->session->set_flashdata('flashError','The privilege you are trying to delete does not exist.');
+        }    
+        
+        redirect('privilege/index');        
     }
     
 }

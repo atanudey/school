@@ -2,11 +2,11 @@
 
 <?php if (!empty($error) || validation_errors()) { ?>
 <script language="javascript">
-	$(document).ready(function() {
-		$('html, body').animate({
-			scrollTop: $("#alert").offset().top
-		}, 2000);
-	});
+    $(document).ready(function() {
+        $('html, body').animate({
+                scrollTop: $("#alert").offset().top
+        }, 2000);
+    });
 </script>
 <?php } ?>
 

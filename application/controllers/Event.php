@@ -73,9 +73,12 @@ class Event extends MY_Controller
                 $result = $this->Event_model->add_event($params);
 
                 if ($result) {
-                    $this->session->set_flashdata('flashInfo', 'Event added sucessfully.');
-                    redirect('event/index');
-                }  
+                    $this->session->set_flashdata('flashInfo', 'Event added sucessfully.');                    
+                } else {
+                    $this->session->set_flashdata('flashError', 'Failed to add event!');                    
+                }
+                
+                redirect('event/index');
             }
         } else if (!empty($params["Title"])) {   
             if($this->form_validation->run())     
@@ -87,8 +90,11 @@ class Event extends MY_Controller
                     $this->session->set_flashdata('flashInfo','The event you are trying to edit does not exist.');
                 } else {                    
                     $result = $this->Event_model->update_event($ID, $params);
-                    if ($result)
+                    if ($result) {
                         $this->session->set_flashdata('flashInfo', 'Eevnt modified sucessfully.');	
+                    } else {
+                        $this->session->set_flashdata('flashError', 'Failed to modify event!');                    
+                    }
                 } 
 
                 redirect('event/index');
@@ -111,7 +117,7 @@ class Event extends MY_Controller
         $event = $this->Event_model->get_event($ID);
 
         // check if the event exists before trying to delete it
-        if(isset($event['ID']))
+        if(!empty($event['ID']))
         {
             $this->Event_model->delete_event($ID);
 
@@ -124,9 +130,9 @@ class Event extends MY_Controller
 
             $this->session->set_flashdata('flashInfo', 'Event deleted successfully.');            
         }
-        else
-            $this->session->set_flashdata('flashInfo','The event you are trying to delete does not exist.');
-
+        else {
+            $this->session->set_flashdata('flashError','The event you are trying to delete does not exist.');
+        }
         redirect('event/index');
     }
 
@@ -210,8 +216,12 @@ class Event extends MY_Controller
                 break;
 
             case "sms":
-                if ($this->send_sms_notification($students, $notify_param))
+                $response = json_decode($this->send_sms_notification($students, $notify_param));
+                
+                if (!empty($response) && $response->status != "failure")
                     echo json_encode(array("success" => true));
+                else
+                    echo json_encode($response);
 
                 break;
         }
@@ -227,7 +237,7 @@ class Event extends MY_Controller
         foreach ($students as $student) {
 
             $SITE_EMAIL = $this->config->item('site_email');
-			$SITE_EMAIL_NAME = $this->config->item('site_email_name');            
+            $SITE_EMAIL_NAME = $this->config->item('site_email_name');            
             
             $data = array_merge($student, $notify_param);
 
@@ -253,11 +263,11 @@ class Event extends MY_Controller
 
     function send_sms_notification($students, $notify_param) {
         
-        $sms_provider = $this->Sms_provider_model->get_all_sms_provider(array('SMS_Type' => 'Transaction'));
+        $sms_provider = $this->Sms_provider_model->get_all_sms_provider(array('SMS_Type' => 'Promotion'));
 
         //foreach ($students as $student) {
 
-        $username = 'prana_chak@hotmail.com';            
+        $username = $sms_provider[0]["Provider_Username"];            
         $hash = $sms_provider[0]["API_Key"];
 
         // Message details
@@ -265,24 +275,15 @@ class Event extends MY_Controller
             return $entry['Mob1'];
         }, $students));
 
-        $sender = urlencode('TXTLCL');
+        $provider_code = urlencode($sms_provider[0]["Provider_Code"]);
         $message = rawurlencode($notify_param["Message"]);
 
         // Prepare data for POST request
-        $data = array('username' => $username, 'hash' => $hash, 'numbers' => $numbers, "sender" => $sender, "message" => $message);
-
-        // Send the POST request with cURL
-        $ch = curl_init('http://api.textlocal.in/send/');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($ch);
-        curl_close($ch);        
-
-        // Process your response here
-        // var_dump($response); die;
-        //}
+        $data = array('username' => $username, 'hash' => $hash, 'numbers' => $numbers, "sender" => $provider_code, "message" => $message);
         
-        return true;
+        //Send SMS helper called
+        $response = send_sms($provider_code, $data);
+        
+        return $response;
     }
 }

@@ -86,3 +86,27 @@ if(!function_exists('get_image_path'))
         }
     }
 }
+
+if(!function_exists('send_sms'))
+{
+    function send_sms($provider_code, $data) {
+        $response = array();
+        switch($provider_code) {
+            case "TXTLCL":
+                                
+                // Send the POST request with cURL
+                $ch = curl_init('http://api.textlocal.in/send/');
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                $response = curl_exec($ch);
+                curl_close($ch);
+                
+                break;
+            
+            default: break;
+        }
+        
+        return $response;
+    }
+}

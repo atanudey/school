@@ -40,10 +40,22 @@ class Machine extends MY_Controller
         if($this->form_validation->run())     
         {
             if ($mode == 'add') {
-                $machine_id = $this->Machine_model->add_machine($params);                                            
+                $result = $this->Machine_model->add_machine($params);  
+                
+                if ($result) {
+                    $this->session->set_flashdata('flashInfo', 'Machine added sucessfully.');
+                } else {
+                    $this->session->set_flashdata('flashError', 'Failed to add machine!');
+                }
             } else if ($mode == 'edit') {
-                $this->Machine_model->update_machine($ID,$params);
-            }
+                $result = $this->Machine_model->update_machine($ID,$params);
+                
+                if ($result) {
+                    $this->session->set_flashdata('flashInfo', 'Machine modified sucessfully.');
+                } else {
+                    $this->session->set_flashdata('flashError', 'Failed to modify machine!');
+                }
+            }                      
 
             redirect('machine/index');
 
@@ -55,7 +67,8 @@ class Machine extends MY_Controller
             $data['machine'] = $this->Machine_model->get_machine($ID);
     
             if (empty($data['machine']) && $mode == 'edit') {
-                show_error('The poc you are trying to edit does not exist.');
+                $this->session->set_flashdata('flashError','The poc you are trying to edit does not exist.');
+                redirect('machine/index');
             } else if ($mode == 'add') {
                 $data['machine'] = $params;
             }
@@ -75,10 +88,12 @@ class Machine extends MY_Controller
         if(isset($machine['ID']))
         {
             $this->Machine_model->delete_machine($ID);
-            redirect('machine/index');
+            $this->session->set_flashdata('flashInfo','The machine deleted successfully.');           
+        } else {
+            $this->session->set_flashdata('flashError','The machine you are trying to delete does not exist.');
         }
-        else
-            show_error('The machine you are trying to delete does not exist.');
+        
+        redirect('machine/index');
     }
     
 }

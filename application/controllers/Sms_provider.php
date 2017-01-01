@@ -49,9 +49,21 @@ class Sms_provider extends MY_Controller
         if($this->form_validation->run())     
         {
             if ($mode == 'add') {
-                $sms_provider_id = $this->Sms_provider_model->add_sms_provider($params);
+                $result = $this->Sms_provider_model->add_sms_provider($params);
+                
+                if ($result) {
+                    $this->session->set_flashdata('flashInfo', 'Provider added sucessfully.');
+                } else {
+                    $this->session->set_flashdata('flashError', 'Failed to add Provider!');
+                }
             } else if ($mode == 'edit') {
-                $this->Sms_provider_model->update_sms_provider($ID,$params);
+                $result = $this->Sms_provider_model->update_sms_provider($ID,$params);
+                
+                if ($result) {
+                    $this->session->set_flashdata('flashInfo', 'Provider modified sucessfully.');
+                } else {
+                    $this->session->set_flashdata('flashError', 'Failed to modify Provider!');
+                }
             }
 
             redirect('sms_provider/index');
@@ -63,7 +75,8 @@ class Sms_provider extends MY_Controller
             //print_r($data); die;
     
             if (empty($data['sms_provider']) && $mode == 'edit') {
-                show_error('The sms provider you are trying to edit does not exist.');
+                $this->session->set_flashdata('flashError', 'The sms provider you are trying to edit does not exist.');
+                redirect('timing/index');                
             } else if ($mode == 'add') {
                 $data['sms_provider'] = $params;
             }
@@ -95,10 +108,12 @@ class Sms_provider extends MY_Controller
         if(isset($sms_provider['ID']))
         {
             $this->Sms_provider_model->delete_sms_provider($ID);
-            redirect('sms_provider/index');
-        }
-        else
-            show_error('The sms_provider you are trying to delete does not exist.');
+            $this->session->set_flashdata('flashInfo','The provider deleted successfully.');           
+        } else {
+            $this->session->set_flashdata('flashError','The provider you are trying to delete does not exist.');
+        }    
+        
+        redirect('sms_provider/index');
     }
     
 }

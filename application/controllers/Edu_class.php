@@ -41,7 +41,9 @@ class Edu_class extends MY_Controller
             if ($mode == 'add') {
                 $result = $this->Edu_class_model->add_educlass($params);
                 if ($result)
-                    $this->session->set_flashdata('flashInfo', 'Class added sucessfully.');  
+                    $this->session->set_flashdata('flashInfo', 'Class added sucessfully.');
+                else
+                    $this->session->set_flashdata('flashError', 'Failed to add Class!');
             } else if (!empty($ID) && intval($ID) > 0) {                    
                 // check if the educlass exists before trying to edit it
                 $educlass = $this->Edu_class_model->get_educlass($ID);
@@ -51,7 +53,9 @@ class Edu_class extends MY_Controller
                 } else {
                    $result = $this->Edu_class_model->update_educlass($ID, $params);
                    if ($result)
-                        $this->session->set_flashdata('flashInfo', 'Class modified sucessfully.');	
+                        $this->session->set_flashdata('flashInfo', 'Class modified sucessfully.');
+                   else
+                        $this->session->set_flashdata('flashError', 'Failed to modify Class!');
                 }  
             }                                  
             redirect('edu_class/index');
@@ -78,13 +82,16 @@ class Edu_class extends MY_Controller
         $educlass = $this->Edu_class_model->get_educlass($ID);
 
         // check if the educlass exists before trying to delete it
-        if(isset($educlass['ID']))
+        if(!empty($educlass['ID']))
         {
             $this->Edu_class_model->delete_educlass($ID);
-            redirect('edu_class/index');
+            $this->session->set_flashdata('flashInfo','The Class has been deleted successfully.');            
         }
-        else
-            $this->session->set_flashdata('flashInfo','The educlass you are trying to delete does not exist.');
+        else {
+            $this->session->set_flashdata('flashError','The Class you are trying to delete does not exist.');
+        }
+        
+        redirect('edu_class/index');
     }
     
 }

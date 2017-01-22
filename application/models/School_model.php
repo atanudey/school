@@ -1,7 +1,10 @@
 <?php
  
-class School_model extends CI_Model
+class School_model extends MY_Model
 {
+    public $_table = 'School';
+    public $primary_key = 'ID';
+
     function __construct()
     {
         parent::__construct();
@@ -14,6 +17,7 @@ class School_model extends CI_Model
      */
     function get_school($ID)
     {
+        $this->db->where('Is_Deleted', '0');
         return $this->db->get_where('School',array('ID'=>$ID))->row_array();
     }
 
@@ -23,6 +27,7 @@ class School_model extends CI_Model
 
     function get_school_name($ID)
     {    
+        $this->db->where('Is_Deleted', '0');
         return $this->db->select('School_Name')->get_where('School',array('ID'=>$ID))->row()->School_Name;
     }
     
@@ -31,6 +36,7 @@ class School_model extends CI_Model
      */
     function get_all_school()
     {
+        $this->db->where('Is_Deleted', '0');
         return $this->db->get('School')->result_array();
     }
     
@@ -84,6 +90,8 @@ class School_model extends CI_Model
     {
         $this->db->where('ID',$ID);
         $result = $this->db->update('School',$params);
+
+        $this->save_audit_info($this->_table, 'update', $ID);
         
         return $result;  
     }
@@ -93,7 +101,9 @@ class School_model extends CI_Model
      */
     function delete_school($ID)
     {
-        $this->db->delete('School',array('ID'=>$ID));
+        //$this->db->delete('School',array('ID'=>$ID));
+        $this->save_audit_info($this->_table, 'delete', $ID);
+
         //$this->dbforge->drop_table($ID . "_Candidate");
         //$this->dbforge->drop_table($ID . "_Attendance");
     }

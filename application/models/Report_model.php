@@ -7,7 +7,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @extends CI_Model
  */
 class Report_model extends CI_Model {
-
 	/**
 	 * __construct function.
 	 * 

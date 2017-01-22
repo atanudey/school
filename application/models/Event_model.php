@@ -13,6 +13,7 @@ class Event_model extends CI_Model
      */
     function get_event($ID)
     {
+        $this->db->where('Is_Deleted', '0');
         return $this->db->get_where('Event',array('ID'=>$ID))->row_array();
     }
 
@@ -28,6 +29,8 @@ class Event_model extends CI_Model
      */
     function get_all_event($params = array())
     {
+        $this->db->where('Is_Deleted', '0');
+
         $this->db->order_by("Date", "DESC");
         $this->db->where('School_ID', $this->school_id);
         return $this->db->get_where('Event', $params)->result_array();
@@ -39,7 +42,10 @@ class Event_model extends CI_Model
     function add_event($params)
     {
         $this->db->insert('Event',$params);
-        return $this->db->insert_id();
+        $ID = $this->db->insert_id();
+
+        $this->save_audit_info($this->_table, 'insert', $ID);
+        return $ID;
     }
     
     /*
@@ -50,6 +56,8 @@ class Event_model extends CI_Model
         $this->db->where('ID',$ID);        
         $result = $this->db->update('Event',$params);
 
+        $this->save_audit_info($this->_table, 'update', $ID);
+
         return $result;
     }
     
@@ -58,6 +66,7 @@ class Event_model extends CI_Model
      */
     function delete_event($ID)
     {
-        $this->db->delete('Event', array('ID'=>$ID));
+        //$this->db->delete('Event', array('ID'=>$ID));
+        $this->save_audit_info($this->_table, 'delete', $ID);
     }
 }

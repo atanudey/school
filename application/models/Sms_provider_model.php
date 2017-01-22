@@ -1,6 +1,9 @@
 <?php
-class Sms_provider_model extends CI_Model
+class Sms_provider_model extends MY_Model
 {
+    public $_table = 'SMS_Provider';
+    public $primary_key = 'ID';
+
     function __construct()
     {
         parent::__construct();
@@ -11,6 +14,7 @@ class Sms_provider_model extends CI_Model
      */
     function get_sms_provider($ID)
     {
+        $this->db->where('Is_Deleted', '0');
         return $this->db->get_where('SMS_Provider',array('ID'=>$ID))->row_array();
     }
 
@@ -36,7 +40,8 @@ class Sms_provider_model extends CI_Model
      * Get all SMS_Provider
      */
     function get_all_sms_provider($params = array())
-    {       
+    {      
+        $this->db->where('Is_Deleted', '0'); 
         $this->db->where('School_ID', $this->school_id); 
         $result = $this->db->get_where('SMS_Provider', $params)->result_array();     
 
@@ -49,7 +54,10 @@ class Sms_provider_model extends CI_Model
     function add_sms_provider($params)
     {
         $this->db->insert('SMS_Provider',$params);
-        return $this->db->insert_id();
+        $ID = $this->db->insert_id();
+
+        $this->save_audit_info($this->_table, 'insert', $ID);
+        return $ID;
     }
     
     /*
@@ -59,6 +67,9 @@ class Sms_provider_model extends CI_Model
     {
         $this->db->where('ID',$ID);
         $response = $this->db->update('SMS_Provider',$params);
+
+        $this->save_audit_info($this->_table, 'update', $ID);
+
         if($response)
         {
             return "sms provider updated successfully";
@@ -74,7 +85,9 @@ class Sms_provider_model extends CI_Model
      */
     function delete_sms_provider($ID)
     {
-        $response = $this->db->delete('SMS_Provider',array('ID'=>$ID));
+        //$response = $this->db->delete('SMS_Provider',array('ID'=>$ID));
+        $response = $this->save_audit_info($this->_table, 'delete', $ID);
+
         if($response)
         {
             return "sms provider deleted successfully";

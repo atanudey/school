@@ -11,6 +11,8 @@ class Edu_class_model extends CI_Model
     * Get all Class by school
     */
     function get_all_class_by_school($School_ID) {
+
+        $this->db->where('Is_Deleted', '0');
         
         $candidate = $School_ID.'_Candidate';
 
@@ -28,6 +30,7 @@ class Edu_class_model extends CI_Model
      */
     function get_all_class($params = array())
     {
+        $this->db->where('Is_Deleted', '0');
         return $this->db->get_where('Class', $params)->result_array();
     }
     
@@ -36,6 +39,7 @@ class Edu_class_model extends CI_Model
      */
     function get_educlass($ID)
     {
+        $this->db->where('Is_Deleted', '0');
         return $this->db->get_where('Class',array('ID'=>$ID))->row_array();
     }
     
@@ -44,6 +48,7 @@ class Edu_class_model extends CI_Model
      */
     function get_all_educlasses()
     {
+        $this->db->where('Is_Deleted', '0');
         return $this->db->get('Class')->result_array();
     }
     
@@ -53,7 +58,10 @@ class Edu_class_model extends CI_Model
     function add_educlass($params)
     {
         $this->db->insert('Class',$params);
-        return $this->db->insert_id();
+        $ID = $this->db->insert_id();
+
+        $this->save_audit_info($this->_table, 'insert', $ID);
+        return $ID;
     }
     
     /*
@@ -64,6 +72,8 @@ class Edu_class_model extends CI_Model
         $this->db->where('ID',$ID);
         $result = $this->db->update('Class',$params);
 
+        $this->save_audit_info($this->_table, 'update', $ID);
+
         return $result;
     }
     
@@ -72,6 +82,7 @@ class Edu_class_model extends CI_Model
      */
     function delete_educlass($ID)
     {
-        $this->db->delete('Class',array('ID'=>$ID));
+        //$this->db->delete('Class',array('ID'=>$ID));
+        $this->save_audit_info($this->_table, 'delete', $ID);
     }
 }

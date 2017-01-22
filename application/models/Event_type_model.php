@@ -16,6 +16,7 @@ class Event_type_model extends CI_Model
      */
     function get_event_type($ID)
     {
+        $this->db->where('Is_Deleted', '0');
         return $this->db->get_where('Event_Type',array('ID'=>$ID))->row_array();
     }
     
@@ -24,6 +25,7 @@ class Event_type_model extends CI_Model
      */
     function get_all_event_type()
     {
+        $this->db->where('Is_Deleted', '0');
         return $this->db->get('Event_Type')->result_array();
     }
     
@@ -33,7 +35,10 @@ class Event_type_model extends CI_Model
     function add_event_type($params)
     {
         $this->db->insert('Event_Type',$params);
-        return $this->db->insert_id();
+        $ID = $this->db->insert_id();
+
+        $this->save_audit_info($this->_table, 'insert', $ID);
+        return $ID;
     }
     
     /*
@@ -43,6 +48,9 @@ class Event_type_model extends CI_Model
     {
         $this->db->where('ID',$ID);
         $response = $this->db->update('Event_Type',$params);
+
+        $this->save_audit_info($this->_table, 'update', $ID);
+
         if($response)
         {
             return "event_type updated successfully";
@@ -58,7 +66,9 @@ class Event_type_model extends CI_Model
      */
     function delete_event_type($ID)
     {
-        $response = $this->db->delete('Event_Type',array('ID'=>$ID));
+        //$response = $this->db->delete('Event_Type',array('ID'=>$ID));
+        $response = $this->save_audit_info($this->_table, 'delete', $ID);
+
         if($response)
         {
             return "event_type deleted successfully";

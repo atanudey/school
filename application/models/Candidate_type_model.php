@@ -12,6 +12,7 @@ class Candidate_type_model extends CI_Model
      */
     function get_candidate_type($ID)
     {
+        //$this->db->where('Is_Deleted', '0');
         return $this->db->get_where('Candidate_Type',array('ID'=>$ID))->row_array();
     }
     
@@ -20,6 +21,7 @@ class Candidate_type_model extends CI_Model
      */
     function get_all_candidate_type()
     {
+        //$this->db->where('Is_Deleted', '0');
         return $this->db->get('Candidate_Type')->result_array();
     }
     
@@ -29,7 +31,10 @@ class Candidate_type_model extends CI_Model
     function add_candidate_type($params)
     {
         $this->db->insert('Candidate_Type',$params);
-        return $this->db->insert_id();
+        $ID = $this->db->insert_id();
+
+        //$this->save_audit_info($this->_table, 'insert', $ID);
+        return $ID;
     }
     
     /*
@@ -39,6 +44,8 @@ class Candidate_type_model extends CI_Model
     {
         $this->db->where('ID',$ID);
         $this->db->update('Candidate_Type',$params);
+
+        //$this->save_audit_info($this->_table, 'update', $ID);
     }
     
     /*
@@ -47,5 +54,6 @@ class Candidate_type_model extends CI_Model
     function delete_candidate_type($ID)
     {
         $this->db->delete('Candidate_Type',array('ID'=>$ID));
+        //$this->save_audit_info($this->_table, 'delete', $ID);
     }
 }

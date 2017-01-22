@@ -1,7 +1,10 @@
 <?php
 
-class Screen_model extends CI_Model
+class Screen_model extends MY_Model
 {
+    public $_table = 'Screen_Master';
+    public $primary_key = 'ID';
+
     function __construct()
     {
         parent::__construct();
@@ -12,6 +15,7 @@ class Screen_model extends CI_Model
      */
     function get_screen($ID)
     {
+        //$this->db->where('Is_Deleted', '0');
         return $this->db->get_where('Screen_Master',array('ID'=>$ID))->row_array();
     }
     
@@ -20,6 +24,7 @@ class Screen_model extends CI_Model
      */
     function get_all_screen()
     {
+        //$this->db->where('Is_Deleted', '0');
         return $this->db->get('Screen_Master')->result_array();
     }
     
@@ -29,7 +34,10 @@ class Screen_model extends CI_Model
     function add_screen($params)
     {
         $this->db->insert('Screen_Master',$params);
-        return $this->db->insert_id();
+        $ID = $this->db->insert_id();
+
+        //$this->save_audit_info($this->_table, 'insert', $ID);
+        return $ID;
     }
     
     /*
@@ -39,6 +47,9 @@ class Screen_model extends CI_Model
     {
         $this->db->where('ID',$ID);
         $response = $this->db->update('Screen_Master',$params);
+
+        //$this->save_audit_info($this->_table, 'update', $ID);
+
         if($response)
         {
             return "screen updated successfully";
@@ -55,6 +66,8 @@ class Screen_model extends CI_Model
     function delete_screen($ID)
     {
         $response = $this->db->delete('Screen_Master',array('ID'=>$ID));
+        //$response = $this->save_audit_info($this->_table, 'delete', $ID);
+
         if($response)
         {
             return "screen deleted successfully";

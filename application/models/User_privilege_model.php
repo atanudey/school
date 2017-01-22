@@ -1,6 +1,9 @@
 <?php
 
-Class User_privilege_model extends CI_Model {
+Class User_privilege_model extends MY_Model {
+
+    public $_table = 'User_Privilege';
+    public $primary_key = 'ID';
 
     function __construct() {
         parent::__construct();
@@ -20,7 +23,7 @@ Class User_privilege_model extends CI_Model {
     function get_user_privileges_by_type($user_type_id) {        
         $params['P.User_Type_ID'] = $user_type_id;
         $params['P.Is_Active'] = '1';
-        
+
         return $this->get_user_privileges($params);
     }
 
@@ -77,6 +80,7 @@ Class User_privilege_model extends CI_Model {
      */
     function get_privilege($ID)
     {
+        //$this->db->where('Is_Deleted', '0');
         return $this->db->get_where('User_Privilege',array('ID'=>$ID))->row_array();
     }
     
@@ -85,6 +89,7 @@ Class User_privilege_model extends CI_Model {
      */
     function get_all_privilege()
     {
+        //$this->db->where('Is_Deleted', '0');
         return $this->db->get('User_Privilege')->result_array();
     }
     
@@ -94,7 +99,10 @@ Class User_privilege_model extends CI_Model {
     function add_privilege($params)
     {
         $this->db->insert('User_Privilege',$params);
-        return $this->db->insert_id();
+        $ID = $this->db->insert_id();
+
+        //$this->save_audit_info($this->_table, 'insert', $ID);
+        return $ID;
     }
     
     /*
@@ -104,6 +112,9 @@ Class User_privilege_model extends CI_Model {
     {
         $this->db->where('ID',$ID);
         $response = $this->db->update('User_Privilege',$params);
+
+        //$this->save_audit_info($this->_table, 'update', $ID);
+
         if($response)
         {
             return "privilege updated successfully";
@@ -120,6 +131,8 @@ Class User_privilege_model extends CI_Model {
     function delete_privilege($ID)
     {
         $response = $this->db->delete('User_Privilege',array('ID'=>$ID));
+        //$response = $this->save_audit_info($this->_table, 'delete', $ID);
+
         if($response)
         {
             return "privilege deleted successfully";

@@ -1,7 +1,10 @@
 <?php
 
-class Poc_model extends CI_Model
+class Poc_model extends MY_Model
 {
+    public $_table = 'School_PointOfContact';
+    public $primary_key = 'ID';
+
     function __construct()
     {
         parent::__construct();
@@ -13,6 +16,7 @@ class Poc_model extends CI_Model
      */
     function get_poc($ID)
     {
+        $this->db->where('Is_Deleted', '0');
         return $this->db->get_where('School_PointOfContact',array('ID'=>$ID))->row_array();
     }
     
@@ -21,6 +25,7 @@ class Poc_model extends CI_Model
      */
     function get_all_poc()
     {
+        $this->db->where('Is_Deleted', '0');
         $this->db->where('School_ID', $this->school_id);
         return $this->db->get('School_PointOfContact')->result_array();
     }
@@ -31,7 +36,10 @@ class Poc_model extends CI_Model
     function add_poc($params)
     {
         $this->db->insert('School_PointOfContact',$params);
-        return $this->db->insert_id();
+        $ID = $this->db->insert_id();
+
+        $this->save_audit_info($this->_table, 'insert', $ID);
+        return $ID;
     }
     
     /*
@@ -39,8 +47,10 @@ class Poc_model extends CI_Model
      */
     function update_poc($ID,$params)
     {
-        $this->db->where('ID',$ID);
-        $response = $this->db->update('School_PointOfContact',$params);
+        //$this->db->where('ID',$ID);
+        //$response = $this->db->update('School_PointOfContact',$params);
+        $response = $this->save_audit_info($this->_table, 'update', $ID);
+
         if($response)
         {
             return "poc updated successfully";
@@ -56,7 +66,9 @@ class Poc_model extends CI_Model
      */
     function delete_poc($ID)
     {
-        $response = $this->db->delete('School_PointOfContact',array('ID'=>$ID));
+        //$response = $this->db->delete('School_PointOfContact',array('ID'=>$ID));
+        $response = $this->save_audit_info($this->_table, 'delete', $ID);
+
         if($response)
         {
             return "poc deleted successfully";

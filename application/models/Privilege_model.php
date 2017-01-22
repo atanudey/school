@@ -1,7 +1,10 @@
 <?php
  
-class Privilege_model extends CI_Model
+class Privilege_model extends MY_Model
 {
+    public $_table = 'User_Privilege';
+    public $primary_key = 'ID';
+
     function __construct()
     {
         parent::__construct();
@@ -12,7 +15,8 @@ class Privilege_model extends CI_Model
      */
     function get_privilege($ID)
     {
-        return $this->db->get_where('user_privilege',array('ID'=>$ID))->row_array();
+        $this->db->where('Is_Deleted', '0');
+        return $this->db->get_where('User_Privilege',array('ID'=>$ID))->row_array();
     }
     
     /*
@@ -20,7 +24,8 @@ class Privilege_model extends CI_Model
      */
     function get_all_privilege()
     {
-        return $this->db->get('user_privilege')->result_array();
+        $this->db->where('Is_Deleted', '0');
+        return $this->db->get('User_Privilege')->result_array();
     }
     
     /*
@@ -28,8 +33,11 @@ class Privilege_model extends CI_Model
      */
     function add_privilege($params)
     {
-        $this->db->insert('user_privilege',$params);
-        return $this->db->insert_id();
+        $this->db->insert('User_Privilege',$params);
+        $ID = $this->db->insert_id();
+
+        $this->save_audit_info($this->_table, 'insert', $ID);
+        return $ID;
     }
     
     /*
@@ -38,7 +46,10 @@ class Privilege_model extends CI_Model
     function update_privilege($ID,$params)
     {
         $this->db->where('ID',$ID);
-        $response = $this->db->update('user_privilege',$params);
+        $response = $this->db->update('User_Privilege',$params);
+
+        $this->save_audit_info($this->_table, 'update', $ID);
+
         if($response)
         {
             return "privilege updated successfully";
@@ -54,7 +65,9 @@ class Privilege_model extends CI_Model
      */
     function delete_privilege($ID)
     {
-        $response = $this->db->delete('user_privilege',array('ID'=>$ID));
+        //$response = $this->db->delete('User_Privilege',array('ID'=>$ID));
+        $response = $this->save_audit_info($this->_table, 'delete', $ID);
+
         if($response)
         {
             return "privilege deleted successfully";

@@ -6,7 +6,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * 
  * @extends CI_Model
  */
-class User_model extends CI_Model {
+class User_model extends MY_Model {
+
+	public $_table = 'login';
+    public $primary_key = 'ID';
 
 	/**
 	 * __construct function.
@@ -30,7 +33,9 @@ class User_model extends CI_Model {
 	 */
 	public function create_user($data) {
 		if (!empty($data)) {            
-			return $this->db->insert('login', $data);
+			$result = $this->db->insert('login', $data);
+			$ID = $this->db->insert_id();
+			$this->save_audit_info($this->_table, 'insert', $ID);
 		}		
 	}
 	
@@ -116,6 +121,8 @@ class User_model extends CI_Model {
      */
     function update_user($ID, $params)
     {
+		//$this->save_audit_info($this->_table, 'update', $ID);
+
         $this->db->where('ID', $ID);
         return $this->db->update('login', $params);
     }

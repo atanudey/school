@@ -29,7 +29,6 @@ class MY_Controller extends CI_Controller {
             $this->load->model('user_privilege_model');
         
             $allowed = $this->user_privilege_model->get_allowed_controllers_methods($sess_user["user"]->User_Type_ID);
-
             $screens = $this->user_privilege_model->get_allowed_screens($sess_user["user"]->User_Type_ID);
 
             //print_r($screens);
@@ -78,12 +77,24 @@ class MY_Controller extends CI_Controller {
             $school_dropdown_view = false;
         }
 
+        $session = $this->session->userdata();
+
+        $audit_info = array(
+                        'Added_On' => date("Y-m-d H:i:s"),
+                        'Updated_On' => date("Y-m-d H:i:s"),
+                        'Updated_By' => $session['user']->ID,            
+                    );
+
+        //print_r($audit_info);
+
+        $user = $this->session->set_userdata('audit_info', $audit_info);
+
         $this->load->vars( array(
                 'school_list' => $this->school_model->get_all_school(),
                 'session_user' => $this->session->userdata(),
                 'school_dropdown_view' => $school_dropdown_view
             )
-        );        
+        );
     }
 
     /*function list_controller() {

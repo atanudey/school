@@ -266,6 +266,8 @@ class Event extends MY_Controller
         $sms_provider = $this->Sms_provider_model->get_all_sms_provider(array('SMS_Type' => 'Promotion'));
 
         //foreach ($students as $student) {
+        
+        $provider_name = $sms_provider[0]["Provider_Name"];
 
         $username = $sms_provider[0]["Provider_Username"];            
         $hash = $sms_provider[0]["API_Key"];
@@ -275,14 +277,14 @@ class Event extends MY_Controller
             return $entry['Mob1'];
         }, $students));
 
-        $provider_code = urlencode($sms_provider[0]["Provider_Code"]);
+        $sender_id = urlencode($sms_provider[0]["Sender_ID"]);
         $message = rawurlencode($notify_param["Message"]);
 
         // Prepare data for POST request
-        $data = array('username' => $username, 'hash' => $hash, 'numbers' => $numbers, "sender" => $provider_code, "message" => $message);
+        $data = array('username' => $username, 'hash' => $hash, 'numbers' => $numbers, "sender" => $sender_id, "message" => $message);
         
         //Send SMS helper called
-        $response = send_sms($provider_code, $data);
+        $response = send_sms($provider_name, $data);
         
         return $response;
     }

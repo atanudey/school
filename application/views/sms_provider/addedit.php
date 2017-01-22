@@ -103,6 +103,12 @@ $(function() {
 				<input type="text" name="API_Key" value="<?php echo ($this->input->post('API_Key') ? $this->input->post('API_Key') : $sms_provider['API_Key']); ?>" required="required" class="form-control" id="API_Key" />
 			</div>
 		</div>
+                <div class="form-group">
+			<label for="Sender_ID" class="col-md-4 control-label">* Sender ID</label>
+			<div class="col-md-8">
+				<input type="text" name="Sender_ID" value="<?php echo ($this->input->post('Sender_ID') ? $this->input->post('Sender_ID') : $sms_provider['Sender_ID']); ?>" required="required" class="form-control" pattern='[A-Za-z0-9]{6}$' id="Sender_ID" />
+			</div>
+		</div>
 		<div class="form-group">
 			<label for="Route" class="col-md-4 control-label">* Route</label>
 			<div class="col-md-8">
@@ -113,6 +119,12 @@ $(function() {
 			<label for="Recharge_Date" class="col-md-4 control-label">* Recharge Date</label>
 			<div class="col-md-8">
 				<input type="text" name="Recharge_Date" id="Recharge_Date" value="<?php echo ($this->input->post('Recharge_Date') ? convert_to_default_date($this->input->post('Recharge_Date')) : convert_to_default_date($sms_provider['Recharge_Date'])); ?>" required="required" class="form-control" id="Recharge_Date" />
+			</div>
+		</div>
+                <div class="form-group">
+			<label for="Provider_Username" class="col-md-4 control-label">* Provider Username</label>
+			<div class="col-md-8">
+				<input type="text" name="Provider_Username" value="<?php echo ($this->input->post('Provider_Username') ? $this->input->post('Provider_Username') : $sms_provider['Provider_Username']); ?>" class="form-control" id="Provider_Username" />
 			</div>
 		</div>
 		<div class="form-group">

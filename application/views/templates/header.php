@@ -72,10 +72,10 @@
                     });
                 });
 
-                //var msg = $('.flashInfo').text();
-                //$('.flashInfo').text("");
+                var msg = $('.flashMsg').text();
+                $('.flashMsg').text("");
 
-                //$('.flashInfo').text("<span>" + msg + "</span>");
+                $('.flashMsg').html("<span>" + msg + "</span>");
 
 
                 $('.flashInfo').fadeIn(800).delay(6000).fadeOut(800);

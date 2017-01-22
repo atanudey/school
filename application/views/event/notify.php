@@ -202,13 +202,13 @@
                     $('#Title').val("");
                     $('#Message').val("");
                     $('#chars').val(160);                    
-                    if (data.success) {
-                        $('.flashInfo').text("Event notification has been sent.");
-                        $('.flashInfo').show();
+                    if (data.success) {        
+                        $('.tblwrap').append('<div class="event-msg-wrap"><p class="flashMsg flashInfo"><span>Event notification has been sent.</span></p></div>');
+                        $('.flashInfo').fadeIn(800).delay(6000).fadeOut(800);
                     } else {
-                        var error = data["errors"][0];                        
-                        $('.flashError').text(error.message);                        
-                        $('.flashError').show();
+                        var error = data["errors"][0];  
+                        $('.tblwrap').append('<div class="event-msg-wrap"><p class="flashMsg flashError"><span>'+error.message+'</span></p></div>');
+                        $('.flashError').fadeIn(800).delay(6000).fadeOut(800);                        
                     }
                 });
 
@@ -305,9 +305,7 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="event-msg-wrap"><p class='flashMsg flashInfo'></p></div>
-        <div class="event-msg-wrap"><p class='flashMsg flashError'></p></div>
+        </div>        
         <input type="hidden" name="Event_ID" value="<?php echo $Event_ID; ?>">
         <div class="innerPanel">
             <div class="form-group"> 

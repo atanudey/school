@@ -26,12 +26,14 @@ class Sms_provider extends MY_Controller
     function addedit($mode = 'add', $ID = 0) {
 
         $this->load->library('form_validation');        
-		$this->form_validation->set_rules('Provider_Name','Provider Name','required');
+        $this->form_validation->set_rules('Provider_Name','Provider Name','required');
         $this->form_validation->set_rules('SMS_Type','SMS Type','required');
         $this->form_validation->set_rules('SMS_Count','SMS Count','required|numeric');
         $this->form_validation->set_rules('API_Key','API Key','required');
+        $this->form_validation->set_rules('Sender_ID','Sender ID','required');
         $this->form_validation->set_rules('Route','Route','required');
         $this->form_validation->set_rules('Recharge_Date','Recharge Date','required');
+        $this->form_validation->set_rules('Provider_Username','Provider Username','required');
         //$this->form_validation->set_rules('Provider_Password','Provider Password','required');
 
         $params = array(
@@ -40,8 +42,10 @@ class Sms_provider extends MY_Controller
             'SMS_Type' => $this->input->post('SMS_Type'),
             'SMS_Count' => $this->input->post('SMS_Count'),
             'API_Key' => $this->input->post('API_Key'),
+            'Sender_ID' => $this->input->post('Sender_ID'),
             'Route' => $this->input->post('Route'),
             'Recharge_Date' => convert_to_mysql_date($this->input->post('Recharge_Date')),
+            'Provider_Username' => $this->input->post('Provider_Username'),
             'Provider_Password' => $this->input->post('Provider_Password'),
             'Is_Active' => $this->input->post('Is_Active'),            
         );

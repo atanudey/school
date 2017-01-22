@@ -89,10 +89,10 @@ if(!function_exists('get_image_path'))
 
 if(!function_exists('send_sms'))
 {
-    function send_sms($provider_code, $data) {
-        $response = array();
-        switch($provider_code) {
-            case "TXTLCL":
+    function send_sms($provider_name, $data) {
+        $response = json_encode(array());
+        switch($provider_name) {
+            case "Text Local":
                                 
                 // Send the POST request with cURL
                 $ch = curl_init('http://api.textlocal.in/send/');

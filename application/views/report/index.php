@@ -5,7 +5,10 @@
         text-align: center;
     }
 </style>
-<script>  
+<script>
+    
+    var Session_Start_Month = <?php echo $Session_Start_Month; ?>;
+    
     $(document).ready(function(){
         $("#student_select").on("change", function(){
             $("#student").show();
@@ -141,13 +144,17 @@
             var prevmonth = function(){
                 var month = (d.getMonth()+1) - offset;
                 var day = d.getDate();
+                var year = d.getFullYear();
                 if (month < 1) {
-                    month = 1;
-                    day = 1;
+                    month = ((d.getMonth()+1)+12) - offset;
+                    year = year - 1;
+                    if (month < Session_Start_Month) {
+                        month = Session_Start_Month;
+                        day = 1;
+                    }
                 }
                 var output = (day<10 ? '0' : '') + day + '/' + 
-                (month<10 ? '0' : '') + month + '/' +
-                d.getFullYear();
+                (month<10 ? '0' : '') + month + '/' + year;
                 return output;
             };        
 

@@ -49,6 +49,9 @@ class Report extends MY_Controller {
                 }
             }
         }
+        
+        $data['Session_Start_Month'] = 	$this->data['school']['Session_Start_Month'];
+        //print_r($data); die;
 
         $this->load->template('report/index', $data);
     }

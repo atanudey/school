@@ -12,7 +12,7 @@ class Edu_class_model extends CI_Model
     */
     function get_all_class_by_school($School_ID) {
 
-        $this->db->where('Is_Deleted', '0');
+        $this->db->where('cl.Is_Deleted', '0');
         
         $candidate = $School_ID.'_Candidate';
 

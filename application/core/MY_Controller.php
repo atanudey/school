@@ -78,15 +78,19 @@ class MY_Controller extends CI_Controller {
         }
 
         $session = $this->session->userdata();
-
-        $audit_info = array(
+        
+        $audit_info = array();
+        
+        if (!empty($session['user'])) {
+            $audit_info = array(
                         'Added_On' => date("Y-m-d H:i:s"),
                         'Updated_On' => date("Y-m-d H:i:s"),
                         'Updated_By' => $session['user']->ID,            
                     );
 
         //print_r($audit_info);
-
+        }
+        
         $user = $this->session->set_userdata('audit_info', $audit_info);
 
         $this->load->vars( array(

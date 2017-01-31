@@ -1,6 +1,6 @@
 <div class="bodyPanel">
   <div class="container headingText">
-	<?php if (!empty($machine['ID'])) { ?>
+	<?php if (!empty($privilege['ID'])) { ?>
 		<h1>Edit User Privileges</h1>
 	<?php } else { ?>
 		<h1>Add User Privileges</h1>
@@ -13,8 +13,8 @@
           		<?php echo validation_errors('<li>', '</li>'); ?>
         	</ul>
       	</div>
-		<?php if (!empty($machine['ID'])) { ?>
-		<?php echo form_open('privilege/addedit/edit/'.$machine['ID'], array("class"=>"form-horizontal")); ?>
+		<?php if (!empty($privilege['ID'])) { ?>
+		<?php echo form_open('privilege/addedit/edit/'.$privilege['ID'], array("class"=>"form-horizontal")); ?>
 		<?php } else { ?>
 		<?php echo form_open('privilege/addedit/', array("class"=>"form-horizontal")); ?>
 		<?php } ?>

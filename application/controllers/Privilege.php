@@ -32,16 +32,19 @@ class Privilege extends MY_Controller
         $this->load->template('privilege/index',$data);
     }
     
-    public function combpk()
+    public function combpk($str, $ID)
     {
         $Screen_Master_ID = $this->input->post('Screen_Master_ID');
         $User_Type_ID = $this->input->post('User_Type_ID');
+        //$ID = $this->input->post('User_Type_ID');
         
         $this->db->where('Screen_Master_ID', $Screen_Master_ID);
         $this->db->where('User_Type_ID', $User_Type_ID);
         $result = $this->db->get('User_Privilege');
+        
+        $data = $result->row_array();
  
-        if($result->num_rows() > 0)
+        if($result->num_rows() > 0 && $data['ID'] != $ID)
         {
            $this->form_validation->set_message('combpk','A privilege already given for the type of the screen to the the type of the user.'); // set your message
            return false;
@@ -62,16 +65,15 @@ class Privilege extends MY_Controller
         $this->form_validation->set_rules('Screen_Master_ID','Screen Master ID','required');
         $this->form_validation->set_rules('User_Type_ID','User Type ID','required');
         
-        $this->form_validation->set_rules('Screen_Master_ID', 'User_Type_ID', 'callback_combpk');
+        $this->form_validation->set_rules('Screen_Master_ID', 'User_Type_ID', 'callback_combpk['.$ID.']');
     
         $params = array(
             'Is_Active' => $this->input->post('Is_Active'),
             'Remarks' => $this->input->post('Remarks'),
             'Screen_Master_ID' => $this->input->post('Screen_Master_ID'),
             'User_Type_ID' => $this->input->post('User_Type_ID'),
+            'ID' => $ID,
         );
-        
-        //print_r($params); die;
 
         if($this->form_validation->run())     
         {

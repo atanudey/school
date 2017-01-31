@@ -1,7 +1,10 @@
 <?php
 
-class Edu_class_model extends CI_Model
+class Edu_class_model extends MY_Model
 {
+    public $_table = 'Class';
+    public $primary_key = 'ID';
+    
     function __construct()
     {
         parent::__construct();

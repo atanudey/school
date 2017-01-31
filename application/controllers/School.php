@@ -52,7 +52,7 @@ class School extends MY_Controller
         //$this->form_validation->set_rules('Event_Active','Event Active','required');
 
         if($this->form_validation->run())     
-        {   
+        {              
             $params = array(
                 'School_Name' => $this->input->post('School_Name'),
                 'Description' => $this->input->post('Description'),
@@ -61,6 +61,7 @@ class School extends MY_Controller
                 'Contact'  => $this->input->post('Contact'),
                 'State' => $this->input->post('State'),
                 'Pin' => $this->input->post('Pin'),
+                'Session_Start_Month' => $this->input->post('Session_Start_Month'),
                 'No_Of_Students' => $this->input->post('No_Of_Students'),
                 'No_Of_Machines' => $this->input->post('No_Of_Machines'),
                 'Event_Active' => $this->input->post('Event_Active'),
@@ -73,6 +74,17 @@ class School extends MY_Controller
             {
                 $result = $this->school_model->update_school($ID, $params); 
                 if ($result) {
+                    
+                    //Updating school information stored in session
+                    if ($this->session->userdata('school_id') == $ID) {
+                        $school = $this->school_model->get_school($ID);                        
+                        $this->session->set_userdata(array(                                
+                            "school" => $school
+                        ));
+                    }
+                    
+                    $this->upload_school_logo($ID);
+                    
                     $this->session->set_flashdata('flashInfo', 'School modified sucessfully.');
                 } else {
                     $this->session->set_flashdata('flashError', 'Failed to modify school!');
@@ -94,7 +106,8 @@ class School extends MY_Controller
             if (!empty($params)) {
                 $school_id = $this->school_model->add_school($params);
 
-                if ($school_id) {
+                if ($school_id) {    
+                    $this->upload_school_logo($school_id);
                     $this->session->set_flashdata('flashInfo', 'School added sucessfully.');
                 } else {
                     $this->session->set_flashdata('flashError', 'Failed to add school!');
@@ -109,6 +122,7 @@ class School extends MY_Controller
                     'Contact'  => "",
                     'State' => "",
                     'Pin' => "",
+                    'Session_Start_Month' => 0,
                     'No_Of_Students' => "",
                     'No_Of_Machines' => "",
                     'Event_Active' => "",
@@ -119,6 +133,24 @@ class School extends MY_Controller
         }
 
         $this->load->template('school/addedit',$data); 
+    }
+    
+    function upload_school_logo($school_id) {
+        $upload_params = array(
+                "path" => "./assets/sitedata/". $school_id . "/school/",
+                "files" => $_FILES,
+                "prefix" => time(),
+                "input_name" => "Image_Name",
+                "upload_for" => "school",
+                "allowed_types" => CANDIDATE_MEDIA_TYPES
+        );
+
+        $upload_info = upload_file($upload_params);
+        $params["Image_Name"] = $upload_info["file_name"];
+        
+        $result = $this->school_model->update_school($school_id, $params);
+        
+        return $params["Image_Name"];
     }
 
     /*

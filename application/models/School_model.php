@@ -45,12 +45,12 @@ class School_model extends MY_Model
      */
     function add_school($params)
     {
-        /*$this->db->select_max('School_ID');
+        $this->db->select_max('School_ID');
         $result = $this->db->get('School')->row();  
         $school_id = intval($result->School_ID);
 
-        $params['School_ID'] = ++$school_id;
-        $params['ID'] = "SC" . str_pad($school_id, 5, '0', STR_PAD_LEFT);*/
+        $school_idx = ++$school_id; 
+        $new_school_id = "SC" . str_pad($school_idx, 5, '0', STR_PAD_LEFT);
 
         foreach($params as $key => $value) {
             $params[$key] = $this->db->escape_str($value);
@@ -77,10 +77,14 @@ class School_model extends MY_Model
 
         //$this->db->query("CALL CreateSchool('".implode(",", $finalParam)."','" . $params['ID'] . "')");
         $command = "CALL CreateSchool(\"".implode(",", $finalParam)."\")";
-        $this->db->query($command);
+        $result = $this->db->query($command);
         
         //$this->db->insert('School', $params);
         //return $this->db->insert_id();
+        if ($result)
+            return $new_school_id;
+        else 
+            return 0;
     }
     
     /*

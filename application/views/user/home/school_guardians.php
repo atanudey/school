@@ -9,7 +9,12 @@ $school = $this->session->userdata('school');
                 	<div class="leftContent">
                     	<div class="leftContentInner">
                         	<div class="mainHeading floatHolder">
-                            	<img src="<?php echo base_url('assets/images/no-logo.png'); ?>" width="65" />
+                                    <?php if (!empty($school['Image_Name'])) { ?>
+                                        <img src="<?php echo get_image_path($school['Image_Name'], 'school', $school['ID']); ?>" id="school_img" width="65">
+                                      <?php } else { ?>
+                                        <img src="<?php echo get_image_path("", 'school', $school['ID']); ?>" id="school_img" width="65">
+                                      <?php } ?>
+<!--                            	<img src="<?php echo base_url('assets/images/no-logo.png'); ?>" width="65" />-->
                                 <div class="headingText">
                                 	<h1><?php echo $school['School_Name']; ?></h1>
                                     <p><?php echo $school['Address1'] . ", " . $school['Address2'] . " - ". $school['Pin']; ?></p>

@@ -34,6 +34,9 @@ if(!function_exists('upload_file'))
                 $config['max_height']           = 768;*/
 
                 $config['file_name'] = str_replace(" ", "_", $params['prefix']) . "." . pathinfo($params["files"][$params["input_name"]]['name'], PATHINFO_EXTENSION);
+            } else if ($params["upload_for"] == "school") {
+                $config['allowed_types'] = $params['allowed_types'];
+                $config['file_name'] = str_replace(" ", "_", $params['prefix']) . "." . pathinfo($params["files"][$params["input_name"]]['name'], PATHINFO_EXTENSION);
             } else {
                 $config['allowed_types'] = $params['allowed_types'];
                 $config['file_name'] = str_replace(" ", "_", $params['prefix']). "_" . time(). "." . pathinfo($params["files"][$params["input_name"]]['name'], PATHINFO_EXTENSION);
@@ -46,6 +49,8 @@ if(!function_exists('upload_file'))
 
             $check_file = $params['path'] . $config['file_name'];
             if ($params["upload_for"] == "candidate" && file_exists($check_file)){
+                unlink($check_file);
+            } else if ($params["upload_for"] == "school" && file_exists($check_file)){
                 unlink($check_file);
             }
 
@@ -76,9 +81,12 @@ if(!function_exists('create_path_if_not_exists'))
 
 if(!function_exists('get_image_path'))
 {
-    function get_image_path($name, $type) {
+    function get_image_path($name, $type, $school_id = 0) {
         $CI =& get_instance();
-        $school_id = $CI->session->userdata('school_id');
+        
+        if ($type != 'school')
+            $school_id = $CI->session->userdata('school_id');
+
         if (!empty($school_id) && !empty($name)) {
             return base_url("assets/sitedata/".$school_id."/" . $type . "/".$name); 
         } else {

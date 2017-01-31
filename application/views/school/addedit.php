@@ -1,12 +1,30 @@
+<script language="javascript">
+    $(document).ready(function() {
+      $.fn.readURL = function(input) {
+          if (input.files && input.files[0]) {
+              var reader = new FileReader();
+              reader.onload = function (e) {
+                  $('#school_img').attr('src', e.target.result);
+              }
+
+              reader.readAsDataURL(input.files[0]);
+          }
+      }
+    
+      $("#Image_Name").change(function(){
+          $.fn.readURL(this);
+      });
+  });
+</script>
 <div class="bodyPanel">
   <div class="container headingText">
     <h1>Edit School</h1>
   </div>
   <div class="container tblwrap">
     <?php if (!empty($school['ID'])) { ?>
-    <?php echo form_open('school/addedit/edit/'.$school['ID'], array("id" => "school_frm", "class"=>"form-horizontal")); ?>    
+    <?php echo form_open('school/addedit/edit/'.$school['ID'], array("id" => "school_frm", "class"=>"form-horizontal", "enctype"=>"multipart/form-data")); ?>    
     <?php } else { ?>
-    <?php echo form_open('school/addedit/',array("id" => "school_frm", "class"=>"form-horizontal")); ?>
+    <?php echo form_open('school/addedit/',array("id" => "school_frm", "class"=>"form-horizontal", "enctype"=>"multipart/form-data")); ?>
     <?php } ?>   
     <div class="innerPanel">
       <div class="errorBox">
@@ -69,6 +87,39 @@
         <label for="Pin" class="col-md-3">* Pin</label>
         <div class="col-md-8">
           <input type="text" name="Pin" value="<?php echo ($this->input->post('Pin') ? $this->input->post('Pin') : $school['Pin']); ?>" class="form-control" id="Pin" required="required" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="School_LOGO" class="col-md-4 control-label">* School LOGO</label>
+        <div class="col-md-8">
+          <?php if (!empty($school['Image_Name'])) { ?>
+            <img src="<?php echo get_image_path($school['Image_Name'], 'school', $school['ID']); ?>" id="school_img" width="100">
+          <?php } else { ?>
+            <img src="<?php echo get_image_path("", 'school', $school['ID']); ?>" id="school_img" width="100">
+          <?php } ?>
+          <input type="file" name="Image_Name" id="Image_Name" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="Pin" class="col-md-3">Session Starts</label>
+        <div class="col-md-8">
+            <select name="Session_Start_Month" class="form-control">
+                <option value="0">--- Select ---</option>
+                <?php               
+                    for($i=1; $i <=12; $i++)
+                    {
+                        $selected = "";
+                        if($i == $school['Session_Start_Month'])
+                          $selected = 'selected="selected"';
+                        
+                        $monthNum  = $i;
+                        $dateObj   = DateTime::createFromFormat('!m', $monthNum);
+                        $monthName = $dateObj->format('F'); // March
+
+                        echo '<option value="'.$i.'" '.$selected.'>'.$monthName.'</option>';
+                    } 
+                ?>
+            </select>
         </div>
       </div>
       <div class="form-group">

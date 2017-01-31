@@ -29,6 +29,8 @@ class Report extends MY_Controller {
     }
 
     function index() {
+        
+        //print_r($_SESSION); die;
 
         $data = $this->data;
         if (!empty($this->school_id))

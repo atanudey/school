@@ -83,7 +83,7 @@ class Candidate_model extends CI_Model
         $this->db->insert($this->school_id . '_Candidate', $params);
         $ID = $this->db->insert_id();
 
-        $this->save_audit_info($this->_table, 'insert', $ID);
+        //$this->save_audit_info($this->_table, 'insert', $ID);
         return $ID;
     }
     
@@ -95,7 +95,7 @@ class Candidate_model extends CI_Model
         $this->db->where('Candidate_ID',$Candidate_ID);
         $result = $this->db->update($this->school_id . '_Candidate', $params);
 
-        $this->save_audit_info($this->_table, 'update', $ID);
+        //$this->save_audit_info($this->_table, 'update', $ID);
 
         return $result;
     }

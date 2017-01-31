@@ -297,7 +297,7 @@
                                 <div class="checkbox-inline"> <label><input type="checkbox" name="select_all_student" id="select_all_student" class="select_all" value="student">Student</label></div>
                             </div>
                             <div class="reportBlockContent">
-                                <div id="student_container" class="fldRowInline" style="position:relative; height:100%; margin:0; padding:0;">
+                                <div id="student_container" style="position:relative; height:100%; margin:0; padding:0;">
                                     
                                 </div>                               
                             </div>

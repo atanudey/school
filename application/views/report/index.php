@@ -7,7 +7,8 @@
 </style>
 <script>
     
-    var Session_Start_Month = <?php echo $Session_Start_Month; ?>;
+    
+    var Session_Start_Month = <?php echo ($Session_Start_Month > 0) ? $Session_Start_Month:0; ?>;
     
     $(document).ready(function(){
         $("#student_select").on("change", function(){
@@ -114,7 +115,10 @@
 <!-- Bootstrap Datepicker Script -->
 <script type="text/javascript">
     $(document).ready(function() {
+        
         $.fn.changeCalendar = function(type) { 
+            
+            var formfirstDate = null;
             var offset;
             switch(type) {
                 case "mly":
@@ -145,42 +149,49 @@
                 var month = (d.getMonth()+1) - offset;
                 var day = d.getDate();
                 var year = d.getFullYear();
-                if (month < 1) {
+                if (Session_Start_Month > 0 && month < 1) {
                     month = ((d.getMonth()+1)+12) - offset;
                     year = year - 1;
-                    if (month < Session_Start_Month) {
+                    if (month < Session_Start_Month){
                         month = Session_Start_Month;
                         day = 1;
                     }
+                } else if (Session_Start_Month == 0 && month < 1){
+                    month = 1;
+                    day = 1;
                 }
+                
+                formfirstDate = new Date(year + '-' + month + '-' + day);  
+ 
                 var output = (day<10 ? '0' : '') + day + '/' + 
                 (month<10 ? '0' : '') + month + '/' + year;
                 return output;
             };        
 
             $("#fromdate .datetimepicker-input").val(prevmonth);
-            $("#todate .datetimepicker-input").val(currentmonth);
-
-            var formfirstDate = new Date(d.getFullYear(), 0, 1);       
+            $("#todate .datetimepicker-input").val(currentmonth);     
 
             var first = prevmonth().split("/");
             var last = currentmonth().split("/");            
 
-            var firstDate = new Date(first[1] + "/" + first[0] + "/" + first[2]);
-            var lastDate = new Date(last[1]  + "/" + last[0]  + "/" + last[2]);
+            /*var firstDate = new Date(first[1] + "/" + first[0] + "/" + first[2]);
+            var lastDate = new Date(last[1]  + "/" + last[0]  + "/" + last[2]);*/
+                        
+            var firstDate = new Date(first[2] + "-" + first[1] + "-" + first[0]);
+            var lastDate = new Date(last[2]  + "-" + last[1]  + "/" + last[0]);
+            
+            /*console.log(firstDate);
+            console.log(lastDate);
+            console.log('FROM FIRST DATE = ' + formfirstDate);*/
 
             $('#todate').datetimepicker({
                 language: 'en',
                 format: 'dd/MM/yyyy',
-                startDate: firstDate,
-                endDate: lastDate
             });
 
             $('#fromdate').datetimepicker({
                 language: 'en',
                 format: 'dd/MM/yyyy',
-                startDate: formfirstDate,
-                endDate: lastDate
             });
         }
 
@@ -307,7 +318,7 @@
                                 <div class="checkbox-inline"> <label><input type="checkbox" name="select_all_student" id="select_all_student" class="select_all" value="student">Student</label></div>
                             </div>
                             <div class="reportBlockContent">
-                                <div id="student_container" class="fldRowInline" style="position:relative; height:100%; margin:0; padding:0;">
+                                <div id="student_container" style="position:relative; height:100%; margin:0; padding:0;">
                                     
                                 </div>                               
                             </div>

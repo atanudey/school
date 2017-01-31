@@ -39,11 +39,11 @@
       <?php if (!empty($candidate['Candidate_ID'])) { ?>
         <?php //echo form_open('candidate/addedit/edit/'.$candidate['Candidate_ID'], array("class"=>"form-horizontal", "id" => "candidate_frm")); ?>
         <form action="<?php echo base_url('candidate/addedit/edit/'.$candidate['Candidate_ID']); ?>" class="form-horizontal" id="candidate_frm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
-        <input type="hidden" name="mode" value="edit"?>
+        <input type="hidden" name="mode" value="edit">
       <?php } else { ?>
         <?php //echo form_open('candidate/addedit/',array("class"=>"form-horizontal")); ?>
         <form action="<?php echo base_url('candidate/addedit/'); ?>" class="form-horizontal" id="candidate_frm" method="post" accept-charset="utf-8" enctype="multipart/form-data">
-        <input type="hidden" name="mode" id="mode" value="add"?>
+        <input type="hidden" name="mode" id="mode" value="add">
       <?php } ?>
       <input type="hidden" name="School_ID" id="mode" value="<?php echo (!empty($session_user["school_id"])) ? $session_user["school_id"] : ""; ?>">
       <div class="form-group">
@@ -152,8 +152,8 @@
             <option value="">--- Select ---</option>
             <?php 
 				$gender_values = array(
-					'Male'=>'Male',
-					'Female'=>'Female',
+					'M'=>'Male',
+					'F'=>'Female',
 				);
 				foreach($gender_values as $value => $display_text)
 				{

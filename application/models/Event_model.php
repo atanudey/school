@@ -1,7 +1,10 @@
 <?php
 
-class Event_model extends CI_Model
+class Event_model extends MY_Model
 {
+    public $_table = 'Event';
+    public $primary_key = 'ID';
+    
     function __construct()
     {
         parent::__construct();
